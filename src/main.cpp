@@ -13,32 +13,7 @@
 
 namespace py = pybind11;
 
-// Examples
-
-inline double example1(xt::pyarray<double> &m)
-{
-    return m(0);
-}
-
-inline xt::pyarray<double> example2(xt::pyarray<double> &m)
-{
-    return m + 2;
-}
-
-// Readme Examples
-
-inline double readme_example1(xt::pyarray<double> &m)
-{
-    auto sines = xt::sin(m);
-    return std::accumulate(sines.cbegin(), sines.cend(), 0.0);
-}
-
-// Vectorize Examples
-
-inline double scalar_func(double i, double j)
-{
-    return std::sin(i) + std::cos(j);
-}
+#include "LSDIversonWrapper.hpp"
 
 // Python Module and Docstrings
 
@@ -60,10 +35,27 @@ PYBIND11_MODULE(lsdfailtools, m)
            vectorize_example1
     )pbdoc";
 
-    m.def("example1", example1, "Return the first element of an array, of dimension at least one");
-    m.def("example2", example2, "Return the the specified array plus 2");
+     py::class_<lsdiversonwrapper>(m, "lsdiverson",py::dynamic_attr())
+      .def(py::init<>())
+      //.def(py::init([](/*param*/){return std::unique_ptr<LSDDEM_xtensor>(new LSDDEM_xtensor(/*param without identifier*/)); })) // <- template for new constructors
+      .def(py::init([](float talpha,float tD_0,float tK_sat,float tD_hat,float td,float tbeta,float tIz_over_K_steady,
+        float tfriction_angle,float tcohesion,float tweight_of_water,float tweight_of_soil, float tminimum_depth){
+        return std::unique_ptr<lsdiversonwrapper>(new lsdiversonwrapper( talpha, tD_0, tK_sat, tD_hat, td, tbeta, tIz_over_K_steady,
+       tfriction_angle, tcohesion, tweight_of_water, tweight_of_soil, tminimum_depth)); }))
+      .def("set_duration_intensity",&lsdiversonwrapper::get_duration_intensity_from_preprocessed_input)
+      .def("ScanTimeseriesForFailure",&lsdiversonwrapper::ScanTimeseriesForFailure)
+      .def("set_depths_vector",&lsdiversonwrapper::set_depths_vector)
+      .def_readwrite("output_times", &lsdiversonwrapper::output_times)
+      .def_readwrite("output_depthsFS", &lsdiversonwrapper::output_depthsFS)
+      .def_readwrite("output_minFS", &lsdiversonwrapper::output_minFS)
+      .def_readwrite("output_PsiFS", &lsdiversonwrapper::output_PsiFS)
+      .def_readwrite("output_durationFS", &lsdiversonwrapper::output_durationFS)
+      .def_readwrite("output_intensityFS", &lsdiversonwrapper::output_intensityFS)
+      .def_readwrite("output_failure_times", &lsdiversonwrapper::output_failure_times)
+      .def_readwrite("output_failure_mindepths", &lsdiversonwrapper::output_failure_mindepths)
+      .def_readwrite("output_failure_maxdepths", &lsdiversonwrapper::output_failure_maxdepths)
+      .def_readwrite("output_Psi_timedepth", &lsdiversonwrapper::output_Psi_timedepth)
+      .def_readwrite("output_FS_timedepth", &lsdiversonwrapper::output_FS_timedepth)      
+      ;
 
-    m.def("readme_example1", readme_example1, "Accumulate the sines of all the values of the specified array");
-
-    m.def("vectorize_example1", xt::pyvectorize(scalar_func), "Add the sine and and cosine of the two specified values");
 }

@@ -75,12 +75,12 @@ class lsdiversonwrapper
 {
   public:
   	lsdiversonwrapper() {create();}
-  	lsdiversonwrapper(float talpha,float tD_0,float tK_sat,float tD_hat,float td,float tbeta,float tIz_over_K_steady,
-      float tfriction_angle,float tcohesion,float tweight_of_water,float tweight_of_soil, float tminimum_depth) {create( talpha, tD_0, tK_sat, tD_hat, td, tbeta, tIz_over_K_steady,
+  	lsdiversonwrapper(float talpha,float tD_0,float tK_sat, float td, float tIz_over_K_steady,
+      float tfriction_angle,float tcohesion,float tweight_of_water,float tweight_of_soil, float tminimum_depth) {create( talpha, tD_0, tK_sat, td, tIz_over_K_steady,
   		 tfriction_angle, tcohesion, tweight_of_water, tweight_of_soil, tminimum_depth); }
 
 
-  void get_duration_intensity_from_preprocessed_input(vector<float> duration_s, vector<float> this_intensity);
+  void set_duration_intensity(vector<float> duration_s, vector<float> this_intensity);
 
   void ScanTimeseriesForFailure();
 
@@ -101,6 +101,12 @@ class lsdiversonwrapper
   vector<float> F_c();
 
   vector<float> F_w();
+
+  void calculate_beta();
+
+  void calculate_D_hat();
+
+  void set_depths_vector(xt::pytensor<float,1> tdepths){Depths = tdepths;};
 
 
   protected:
@@ -165,7 +171,7 @@ class lsdiversonwrapper
     vector<float> potential_failure_max_depths;
     vector<bool> potential_failure_bool;
 
-    xt::pytensor<float,1>  output_times;
+    xt::pytensor<float,1> output_times;
     xt::pytensor<float,1> output_depthsFS;
     xt::pytensor<float,1> output_minFS;
     xt::pytensor<float,1> output_PsiFS;
@@ -181,9 +187,10 @@ class lsdiversonwrapper
 
   private:
     void create(); 
-    void create(float talpha,float tD_0,float tK_sat,float tD_hat,float td,float tbeta,float tIz_over_K_steady,
-      float tfriction_angle,float tcohesion,float tweight_of_water,float tweight_of_soil, float tminimum_depth){alpha = talpha ;D_0= tD_0;K_sat= tK_sat;D_hat= tD_hat;d= td;
-      beta= tbeta;Iz_over_K_steady= tIz_over_K_steady;friction_angle= tfriction_angle;cohesion= tcohesion;weight_of_water= tweight_of_water; weight_of_soil= tweight_of_soil, minimum_depth = tminimum_depth;};
+    void create(float talpha,float tD_0,float tK_sat,,float td,float tIz_over_K_steady,
+      float tfriction_angle,float tcohesion,float tweight_of_water,float tweight_of_soil, float tminimum_depth){alpha = talpha ;D_0= tD_0;K_sat= tK_sat;d= td;
+      Iz_over_K_steady= tIz_over_K_steady;friction_angle= tfriction_angle;cohesion= tcohesion;
+      weight_of_water= tweight_of_water; weight_of_soil= tweight_of_soil, minimum_depth = tminimum_depth;calculate_beta();calculate_D_hat();};
 
 };
 

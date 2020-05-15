@@ -71,7 +71,7 @@ using namespace std;
 
 
 
-void lsdiversonwrapper::get_duration_intensity_from_preprocessed_input(vector<float> duration_s, vector<float> this_intensity)
+void lsdiversonwrapper::set_duration_intensity(vector<float> duration_s, vector<float> this_intensity)
 {
   // Converting to the right units
   // first taking care of dimensionnalizing the intensity 
@@ -504,6 +504,29 @@ vector<float> lsdiversonwrapper::F_w()
   return F_w_vec;
 
 }
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// This calculates beta
+// Comes from Iverson's eq 27 (it is actually near the top of the first column)
+// on page 1902
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+void lsdiversonwrapper::calculate_beta()
+{
+
+  beta = cos(alpha)*cos(alpha)-Iz_over_K_steady;
+}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// This calculates D_hat
+// Comes from equation 26c
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+void lsdiversonwrapper::calculate_D_hat()
+{
+
+  D_hat = 4*D_0*(cos(alpha)*cos(alpha));
+}
+
+
 
 
 #endif
