@@ -1,4 +1,4 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 import sys
 import os
@@ -39,8 +39,8 @@ class get_numpy_include(object):
 
 ext_modules = [
     Extension(
-        'lsdfailtools',
-        ['src/main.cpp'],
+        'lsdfailtools_cpp',
+        ['src/main.cpp','src/LSDIversonWrapper.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
@@ -110,6 +110,7 @@ setup(
     url='https://github.com/LSDTopoTools/lsdfailtools',
     description= 'TO DO',
     long_description='',
+    packages=find_packages(include=['lsdfailtools', 'lsdfailtools.*']),
     ext_modules=ext_modules,
     install_requires=['pybind11>=2.0.1', 'numpy'],
     cmdclass={'build_ext': BuildExt},
