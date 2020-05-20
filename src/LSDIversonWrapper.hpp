@@ -80,33 +80,48 @@ class lsdiversonwrapper
   		 tfriction_angle, tcohesion, tweight_of_water, tweight_of_soil, tminimum_depth); }
 
 
-  void set_duration_intensity(vector<float> duration_s, vector<float> this_intensity);
+    void set_duration_intensity(vector<float> duration_s, vector<float> this_intensity);
 
-  void ScanTimeseriesForFailure();
+    void ScanTimeseriesForFailure();
 
-  void CalculatePsiFromTimeSeries(float t);
+    void CalculatePsiFromTimeSeries(float t);
 
-  vector<float> calculate_steady_psi();
+    vector<float> calculate_steady_psi();
 
-  vector<float> CalculatePsiDimensionalTimeTransient(float t, float T, float Iz_over_Kz);
+    vector<float> CalculatePsiDimensionalTimeTransient(float t, float T, float Iz_over_Kz);
 
-  float CalculateResponseFunction(float t_star);
+    float CalculateResponseFunction(float t_star);
 
-  void GetMinFS(float minimum_depth, float& depth_of_minFS, float& minFS);
+    void GetMinFS(float minimum_depth, float& depth_of_minFS, float& minFS);
 
-  vector<float> FS();
+    vector<float> FS();
 
-  float F_f();
+    float F_f();
 
-  vector<float> F_c();
+    vector<float> F_c();
 
-  vector<float> F_w();
+    vector<float> F_w();
 
-  void calculate_beta();
+    void calculate_beta();
 
-  void calculate_D_hat();
+    void calculate_D_hat();
 
-  void set_depths_vector(xt::pytensor<float,1> tdepths){Depths = tdepths;};
+    void set_depths_vector(xt::pytensor<float,1> tdepths){Depths.clear(); for(auto v:tdepths) {Depths.push_back(v);};};
+
+    xt::pytensor<float,1> output_times;
+    xt::pytensor<float,1> output_depthsFS;
+    xt::pytensor<float,1> output_minFS;
+    xt::pytensor<float,1> output_PsiFS;
+    xt::pytensor<float,1> output_durationFS;
+    xt::pytensor<float,1> output_intensityFS;
+    xt::pytensor<float,1> output_failure_times;
+    xt::pytensor<float,1> output_failure_mindepths;
+    xt::pytensor<float,1> output_failure_maxdepths;
+    xt::pytensor<bool,1> output_failure_bool;
+
+    xt::pytensor<float,2> output_Psi_timedepth;
+    xt::pytensor<float,2> output_FS_timedepth;
+
 
 
   protected:
@@ -171,26 +186,23 @@ class lsdiversonwrapper
     vector<float> potential_failure_max_depths;
     vector<bool> potential_failure_bool;
 
-    xt::pytensor<float,1> output_times;
-    xt::pytensor<float,1> output_depthsFS;
-    xt::pytensor<float,1> output_minFS;
-    xt::pytensor<float,1> output_PsiFS;
-    xt::pytensor<float,1> output_durationFS;
-    xt::pytensor<float,1> output_intensityFS;
-    xt::pytensor<float,1> output_failure_times;
-    xt::pytensor<float,1> output_failure_mindepths;
-    xt::pytensor<float,1> output_failure_maxdepths;
-
-    xt::pytensor<float,2> output_Psi_timedepth;
-    xt::pytensor<float,2> output_FS_timedepth;
 
 
   private:
-    void create(); 
-    void create(float talpha,float tD_0,float tK_sat,,float td,float tIz_over_K_steady,
-      float tfriction_angle,float tcohesion,float tweight_of_water,float tweight_of_soil, float tminimum_depth){alpha = talpha ;D_0= tD_0;K_sat= tK_sat;d= td;
-      Iz_over_K_steady= tIz_over_K_steady;friction_angle= tfriction_angle;cohesion= tcohesion;
-      weight_of_water= tweight_of_water; weight_of_soil= tweight_of_soil, minimum_depth = tminimum_depth;calculate_beta();calculate_D_hat();};
+    void create(){int flub =0;}; 
+    void create(float talpha,float tD_0,float tK_sat,float td,float tIz_over_K_steady,
+      float tfriction_angle,float tcohesion,float tweight_of_water,float tweight_of_soil, float tminimum_depth)
+    {alpha = talpha ;
+      D_0= tD_0;
+      K_sat= tK_sat;
+      d= td;
+      Iz_over_K_steady= tIz_over_K_steady;
+      friction_angle= tfriction_angle;
+      cohesion= tcohesion;
+      weight_of_water= tweight_of_water;
+       weight_of_soil= tweight_of_soil;
+       minimum_depth = tminimum_depth;
+       calculate_beta();calculate_D_hat();}; 
 
 };
 

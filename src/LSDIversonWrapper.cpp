@@ -94,6 +94,7 @@ void lsdiversonwrapper::set_duration_intensity(vector<float> duration_s, vector<
 
   durations = duration_s;
   intensities = this_intensity;
+
 }
 
 
@@ -155,6 +156,8 @@ void lsdiversonwrapper::ScanTimeseriesForFailure()
   output_failure_times = xt::adapt(potential_failure_times);
   output_failure_mindepths = xt::adapt(potential_failure_min_depths);
   output_failure_maxdepths = xt::adapt(potential_failure_max_depths);
+  output_failure_bool = xt::adapt(potential_failure_bool);
+
 
   // 2D output col = time row = depths
 
