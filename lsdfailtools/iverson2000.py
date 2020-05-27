@@ -163,26 +163,20 @@ def worker(arg, q):
 
 def listener(q):
   '''listens for messages on the q, writes to file. '''
-  # print("LISTENING")
   create = True
   cpt = 0
   while 1:
     m = q.get()
     cpt += 1
-    print("m is ", m)
     if(isinstance(m,str)):
       if m == 'kill':
-        # print("SAVING TO FILE")
         df.to_csv(output_name, index = False)
         break
 
     if(create):
-      # print("CREATING THE DF")
       df = m[0]
-      # print("test1")
 
       output_name = m[1]
-      # print("test2")
       create = False
     else:
       df = df.append(m,ignore_index=True)
