@@ -1,0 +1,37 @@
+# This is a parameter file for the Iverson model
+# Lines beginning with # are comments and are not read by the software
+
+# The read path is where the data will be read
+read path: /home/bgailleton/Desktop/FORSEE/lsdfailtools/examples/
+# The write path is where the data will be written
+write path: /home/bgailleton/Desktop/FORSEE/lsdfailtools/examples/
+# Write fname is the prefix of the written files
+write fname: mytestoutput
+
+# Name of the csv file containing the preprocessed precipitation data
+rainfall_csv: preprocessed_data.csv
+# Parameters for the models
+# See documentation for units
+D_0: 0.000005
+K_sat: 0.00000005
+d: 2
+Iz_over_K_steady: 0.2
+alpha: 0.51
+friction_angle: 0.38
+cohesion: 12000
+weight_of_soil: 19000
+weight_of_water: 9800
+depth_spacing: 0.1
+n_depths: 35
+
+full_1D_output: true
+#spatial_analysis: false
+
+#reload_alpha: false
+#resample_slope: false
+#resample_slope_res: 6
+#topo_raster: DTM
+#polyfit_window_radius: 1
+#n_threads: 4
+time_of_spatial_analysis: 1800
+#end of file

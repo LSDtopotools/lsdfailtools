@@ -1,0 +1,28 @@
+# This is a parameter file for the chi_mapping_tool
+# One day there will be documentation. 
+# These are parameters for the file i/o
+# IMPORTANT: You MUST make the write directory: the code will not work if it doens't exist.
+read path: ./test_run_marina_output/multiprotest_3/
+write path: ./test_run_marina_output/multiprotest_3/
+read fname: multiprotest_3
+write fname: multiprotest_3
+
+full_1D_output: true
+
+rainfall_csv: multiprotest_3_rainfall.csv
+
+D_0: 0.00000880500000000001
+K_sat: 0.00000000824999999999998
+d: 2.9499999999999975
+Iz_over_K_steady: 0.15000000000000002
+alpha: 0.7000000000000002
+friction_angle: 0.42000000000000004
+cohesion: 16200
+weight_of_soil: 15600
+weight_of_water: 9900
+
+depth_spacing: 0.1
+n_depths: 32
+
+
+#end of file
