@@ -8,7 +8,9 @@ from itertools import product
 import matplotlib.pyplot as plt
 from osgeo import gdal, ogr, osr
 
-
+# functions.py is in a different directory
+import sys
+sys.path.insert(0,'../Alldata_processing/InSAR')
 
 import Insar_functions as fn
 
@@ -29,7 +31,7 @@ raindata_start = datetime.datetime.strptime (raindata_start, '%Y-%m-%d')
 raintimes_list = [raindata_start]
 for i in range(1,len(raindata)):
 	dt = raindata['duration_s'].iloc[i]
-	raintimes_list.append(raintimes_list[-1]+datetime.timedelta(0,int(dt),0))	
+	raintimes_list.append(raintimes_list[-1]+datetime.timedelta(0,int(dt),0))
 
 raindata['DATE'] = raintimes_list
 raindata['Rainfall_mm'] = raindata['duration_s'] * raindata['intensity_mm_sec']
@@ -55,7 +57,7 @@ thresholds = [80, 100, 150, 200, 500, 1000]
 
 for i in range(len(thresholds)):
 
-	
+
 
 	for j in range(len(failtypes)):
 
@@ -109,7 +111,7 @@ for i in range(len(thresholds)):
 
 	ax1.legend(loc = 1)
 
-		
+
 	ax2.set_ylim(bottom = 0)
 	ax1.set_xlim(left = datetime.datetime(2016,10,1), right = datetime.datetime(2019,1,31))
 

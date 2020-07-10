@@ -1,3 +1,7 @@
+###
+# Has been tested for import functionality, need to test the functions, but need the data for this
+###
+
 # I'll need that to process the outputs
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
@@ -9,6 +13,11 @@ import shapefile
 import itertools
 
 #import functions as fn
+
+import sys
+
+sys.path.insert(0,'../../../lsdfailtools-master/lsdfailtools')
+
 
 # Importing the model
 import lsdfailtools.iverson2000 as iverson

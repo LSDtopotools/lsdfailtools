@@ -1,4 +1,6 @@
-
+#####
+# This validation file needs to be run with the data. Otherwise, I can't do anything. 
+######
 
 
 import time
@@ -36,6 +38,9 @@ import shapefile
 import itertools
 
 
+# set the directory to import the functions from
+import sys
+sys.path.insert(0,'../../lsdfailtools-master/lsdfailtools')
 
 # Importing the model
 import lsdfailtools.iverson2000 as iverson
@@ -64,7 +69,8 @@ import Validation_functions as fn
 Nodata_value = -9999.
 
 # Model directory
-rundir = "/home/willgoodwin/PostDoc/Foresee/Validation/TestMC/"
+# MR: not sure what this path points to?
+#rundir = "/home/willgoodwin/PostDoc/Foresee/Validation/TestMC/"
 
 # Number of MC runs
 Nruns = 25
@@ -75,7 +81,8 @@ itermax = 50
 # Setting the depth resolution vector
 depths = np.arange(0.2,3.1,0.1)
 
-#failure threshold
+# failure threshold
+# MR: not sure where this number comes from
 threshold = 80 # mm/yr
 
 # Number of points to be calibrated
@@ -83,12 +90,13 @@ Num_cal = 200
 
 
 # failure data files
-faildir = "/home/willgoodwin/PostDoc/Foresee/Data/Interferometry/Failure/"
+# MR: cannot find the Interferometry data...
+faildir = "/FORESEE/Data/Interferometry/Failure/"
 failfile = faildir + "All_1st_failtime__threshold"+str(threshold)+"mmyr.bil"
 prefailfile = faildir + "All_1st_prefailtime__threshold"+str(threshold)+"mmyr.bil"
 
 # topography files
-topodir = "/home/willgoodwin/PostDoc/Foresee/Data/Topography/"
+topodir = "/FORESEE/Data/Topography/"
 demfile = topodir + "eu_dem_AoI_epsg32633.bil"
 slopefile = topodir + "eu_dem_AoI_epsg32633_SLOPE.bil"
 

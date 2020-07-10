@@ -1,3 +1,7 @@
+###
+# Has been checked for imports not working. 
+###
+
 ################################################################################
 ################################################################################
 """Import Python packages"""
@@ -185,7 +189,7 @@ def select_pixels(distarr, Num_cal):
     # this bit can definitely be improved on!
 
     print ('Selecting pixels for calibration')
-   
+
     selectarr = (100 - distarr**(1/2) ) / 5000
     selectarr[selectarr <=0.] = 0.0
 
@@ -197,7 +201,7 @@ def select_pixels(distarr, Num_cal):
         print ('iteration:', iterations)
         for i,j in product (range(demarr.shape[0]), range(demarr.shape[1])):
             die_roll = np.random.rand()
-            
+
             if selectarr[i,j] > die_roll and final_selectarr[i,j] != 1  and failarr[i,j]-prefailarr[i,j] > 3*24*3600 and failarr[i,j]-prefailarr[i,j] < 100*24*3600 and npoints < Num_cal:
 
                 final_selectarr[i,j] = 1
@@ -248,7 +252,7 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, 
             S = slopearr[i,j]
             F = failarr[i,j]
             P = prefailarr[i,j]
-            
+
             # Define the interval of time in which the failure is observed on InSAR data
             failinterval = F-P
             print ('Observed failure interval:', failinterval/(24*3600), 'days')
@@ -297,7 +301,7 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, 
                 # Those runs have produced a "correctly calibrated" result
                 inbounds_ID = np.where(np.logical_and(A > 0, B > 0))[0]
 
-                # if there is more than one successful run 
+                # if there is more than one successful run
                 if len(inbounds_ID) > 1:
                     print ('Attempt number', n, ': we have a successful calibration!')
                     # keep the successful runs
@@ -307,14 +311,14 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, 
                     if storage_df_exists == 0:
                         print ('initiating storage of succesfully calibrated pixels')
                         storage_df = work_df.copy(deep = True)
-                        storage_df_exists = 1        
+                        storage_df_exists = 1
                     else:
                         print ('adding a calibrated pixel to storage')
                         storage_df = storage_df.append(work_df, ignore_index = True)
 
                     # we can stop here, the pixel is calibrated
                     break
-                    
+
                 n+=1
                 print ()
 
@@ -322,7 +326,7 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, 
             # once we have calibrated all the desired pixels (or we have run out of pixels to calibrate because we've skipped some ... ).
             # This IF statement is not super useful, it just stops the script from running through pixels not selected for calibration.
 
-            if npoints >= Num_cal: 
+            if npoints >= Num_cal:
 
                 # Save all these pixels to a .csv file
                 storage_df.to_csv(rundir + 'Calibrated.csv')
@@ -346,7 +350,7 @@ def assess_fitness (results, F, P, Nruns):
 
         # calculate the time differences
         notlater = F - failtimes
-        notsooner = failtimes - P        
+        notsooner = failtimes - P
 
         # Which failtimes are within observed times?
         inbounds_ID = np.where(np.logical_and(notlater > 0, notsooner>0))[0]
@@ -451,7 +455,7 @@ def MC_loop (rain, S, depths, Nruns, rundir, work_df):
     # Now run it
     MCrun.run_MC_failure_test(rain["duration_s"].values, rain["intensity_mm_sec"].values,
                       n_process = 2, output_name = "test_MC_close.csv", n_iterations = N1, replace = True)
-    
+
     # now open the MC test filexx
     results_close = pd.read_csv(rundir+"test_MC_close.csv")
 
@@ -462,7 +466,7 @@ def MC_loop (rain, S, depths, Nruns, rundir, work_df):
     # Now run it
     MCrun.run_MC_failure_test(rain["duration_s"].values, rain["intensity_mm_sec"].values,
                       n_process = 2, output_name = "test_MC_far.csv", n_iterations = N2, replace = True)
-    
+
     # now open the MC test filexx
     results_far = pd.read_csv(rundir+"test_MC_far.csv")
     results = results_close.append(results_far, ignore_index = True)

@@ -1,3 +1,7 @@
+###
+# MR: this has been checked for issues with imports. Runs OK
+###
+
 ################################################################################
 ################################################################################
 """Import Python packages"""
@@ -23,10 +27,10 @@ import csv
 import pandas as pd
 import numpy as np
 
-
+# set the directory to import the functions from
 import sys
+sys.path.insert(0,'../../lsdfailtools-master/lsdfailtools')
 
-sys.path.insert(0,'../../../lsdfailtools-master/lsdfailtools')
 from lsdfailtools import iverson2000 as iverson
 
 
@@ -157,7 +161,7 @@ def ENVI_raster_binary_from_2d_array(envidata, file_out, post, image_array):
     Args:
         envidata: the geospatial data needed to create your raster
         file_out (string): the name of the output file
-        post: coordinates for the goegraphical transformation
+        post: coordinates for the geographical transformation
         image_array (2-D numpy array): the input raster
 
     Returns:
