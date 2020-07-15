@@ -26,6 +26,8 @@ import pandas as bb
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
+import matplotlib
+matplotlib.use("Agg")
 import Insar_functions as fn
 
 
@@ -35,14 +37,14 @@ import Insar_functions as fn
 ################################################################################
 ################################################################################
 
-base_dir = "/home/willgoodwin/PostDoc/Foresee/Data/Interferometry/"
+base_dir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/"
 out_directory = base_dir+"Failure/"
 
 ew_file = base_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
 vert_file = base_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
 
 # Careful, this file is in the Italian EPSG
-topo_file = "/home/willgoodwin/PostDoc/Foresee/Data/Topography/eu_dem_AoI_epsg32633.bil"
+topo_file = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil"
 
 
 # Figure out direction of movement
@@ -104,11 +106,13 @@ preEWVarr = np.zeros((topo_array.shape[0],topo_array.shape[1], N_bands ), dtype 
 runstart = datetime.datetime.now()
 
 
+# not sure where the TestMC data is?
+
 # Start a plot for the lols
 fig=plt.figure(1, facecolor='White',figsize=[7, 7])
 ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 ax2 =  ax1.twinx()
-
+'''
 # Load rainfall data from 03/09/2016 until the end of 2018 for the lols
 rain = bb.read_csv("/home/willgoodwin/PostDoc/Foresee/Calib_Valid/TestMC/2016-09-03_to_2018-12-31_Intensity.csv")
 rainlist = [datetime.datetime(2016, 9, 3)]
@@ -120,7 +124,7 @@ rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 #plot the rain
 ax1.plot(rain['time'], rain['rainfall_mm'], '-b', lw = 0.5)
 
-
+'''
 
 
 
@@ -155,7 +159,7 @@ for th in range(len(threshold)):
 		if i > 1:
 			break
 
-		
+
 		"""
 		# 2.3 every time velocity > threshold, fill a band with the date of failure observation.
 
@@ -166,7 +170,7 @@ for th in range(len(threshold)):
 		failures = np.where(sq_magnitude_2D > threshold[th]**2)[0]
 
 
-		NOTE: Maybe this is not the best way to identify failures .... 
+		NOTE: Maybe this is not the best way to identify failures ....
 		# Why not try something with "instantaneous" acceleration?
 		# I guess it depends on you definition of failure ...
 		# It's always the same problem: the definition varies depending on your interests.
@@ -206,7 +210,7 @@ for th in range(len(threshold)):
 			# - there is an existing failure but it is later than the one we just found
 			# - there is a non-failing point (-1)
 			for k in range(len(failtimes[:N_bands])):
-				if EWVarr[y_id, x_id, k] <= 0: 
+				if EWVarr[y_id, x_id, k] <= 0:
 					EWVarr[y_id, x_id, k] = failtimes[k]
 					preEWVarr[y_id, x_id, k] = prefailtimes[k]
 				else:
@@ -228,8 +232,8 @@ for th in range(len(threshold)):
 	"""
 
 	ax1.set_xlim(left = datetime.datetime(2016, 9, 3), right = datetime.datetime(2019, 6, 3))
-	plt.show()
-
+	#plt.show()
+	plt.savefig("insar_ewv.png")
 	quit()
 
 
@@ -254,18 +258,3 @@ for th in range(len(threshold)):
 
 
 # 4. repeat for the ascending and descending data
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

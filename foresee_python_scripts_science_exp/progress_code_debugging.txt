@@ -1,0 +1,6 @@
+Alldata_processing:
+
+    Inclinometers: DONE
+    InSAR: Process_insar_EXV: testMC directory cannot be found. Could only plot 1 out of 2 graphs. I think they are test graphs so not too important.
+           Process_insar_AD: Should potentially change the file paths to make them match the base directories. This seems to be very slow? Check if it's just the server being a pain.
+                             Somehow I cannot save files in the interferometry folder. I had to create a new folder to save the data in : Data_Marina_tests
