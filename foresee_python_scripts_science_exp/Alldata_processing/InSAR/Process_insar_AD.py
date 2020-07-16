@@ -9,15 +9,15 @@ import matplotlib.pyplot as plt
 import Insar_functions as fn
 
 
-base_dir = "/home/willgoodwin/PostDoc/Foresee/Data/Interferometry/"
-out_directory = base_dir+"Failure/"
+base_dir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/"
+out_directory = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/"
 
-ascending_file = directory + "FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.shp"
-descending_file = directory + "FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.shp"
-ew_file = directory + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
-vert_file = directory + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
+ascending_file = base_dir + "FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.shp"
+descending_file = base_dir + "FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.shp"
+ew_file = base_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
+vert_file = base_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
 
-topo_file = "Topography/eu_dem_AoI_epsg32633.bil"
+topo_file = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil"
 
 
 # Figure out direction of movement
@@ -67,6 +67,11 @@ for file in [ascending_file, descending_file]:
 	originY = geotransform[3]
 	pixelWidth = geotransform[1]
 	pixelHeight = geotransform[5]
+
+	# print("Origin X: {}".format(originX))
+	# print("Origin Y: {}".format(originY))
+	# print("pixel width: {}".format(pixelWidth))
+	# print("pixel height: {}".format(pixelHeight))
 
 
 
@@ -159,7 +164,7 @@ for file in [ascending_file, descending_file]:
 				# - there is an existing failure but it is later than the one we just found
 				# - there is a non-failing point (-1)
 				for k in range(len(failtimes[:N_bands])):
-					if Farr[y_id, x_id, k] <= 0: 
+					if Farr[y_id, x_id, k] <= 0:
 						Farr[y_id, x_id, k] = failtimes[k]
 						preFarr[y_id, x_id, k] = prefailtimes[k]
 					else:
@@ -184,12 +189,16 @@ for file in [ascending_file, descending_file]:
 quit()
 
 
+'''
 
+base_dir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/"
+out_directory = base_dir+"Failure/"
 
+ascending_file = base_dir + "FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.shp"
+descending_file = base_dir + "FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.shp"
+ew_file = base_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
+vert_file = base_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
 
+topo_file = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil"
 
-
-
-
-
-
+'''

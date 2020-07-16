@@ -27,7 +27,7 @@ import functions as fn
 ################################################################################
 ################################################################################
 
-path = "/home/willgoodwin/PostDoc/Foresee/Data/Terrestrial/"
+path = "/exports/csce/datastore/geos/users/s1440040/FORESEE/Terrestrial/"
 inclino_data = "Inclinometer/data_inclinometer.csv"
 inclino_loc = "Inclinometer/coo_inclinometer.csv"
 
@@ -49,6 +49,7 @@ ita_epsg = '32633' # for Italy
 
 # Load inclino locations
 Inclino_loc = bb.read_csv(path+inclino_loc)
+print("hello")
 Inclino_loc.drop('AZIMUTH OF CUMULATIVE DISPLACEMENT - FIGURE', axis = 1, inplace = True)
 Inclino_loc.drop('CUMULATIVE DISPLACEMENT - FIGURE', axis = 1, inplace = True)
 
@@ -70,8 +71,3 @@ for file in os.listdir(path):
 Reprojecting stuff automatically can be annoying. This stuff is helpful
 https://glenbambrick.com/2016/01/24/reproject-shapefile/
 """
-
-
-
-
-
