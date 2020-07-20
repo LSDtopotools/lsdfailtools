@@ -34,15 +34,14 @@ import Sentinel_functions as fn
 # Set the path variables
 ################################################################################
 ################################################################################
-
-base_dir = "/home/willgoodwin/PostDoc/Foresee/Data/Sentinel/"
-out_directory = base_dir+"Failure/"
+base_dir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Sentinel/"
+out_directory = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/Sentinel_data_failure/"
 
 # The coordinates in this file are in UTMZone32N: EPSG32632
 sentinel_file = base_dir + "FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2.shp"
 
 # Careful, this file is in WGS84
-topo_file = "/home/willgoodwin/PostDoc/Foresee/Data/Topography/eu_dem_epsg32632.bil"
+topo_file = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_epsg32632.bil"
 
 
 # Line of Sight (LoS) and axis vectors are given in (Easting, Northing, Vertical)
@@ -101,9 +100,8 @@ runstart = datetime.datetime.now()
 
 
 
-
 # Load rainfall data from 03/09/2016 until the end of 2018 for the lols
-rain = bb.read_csv("/home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
+rain = bb.read_csv("/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
 rainlist = [datetime.datetime(2014, 1, 1)]
 for i in range(1,len(rain)):
 	rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
@@ -197,7 +195,7 @@ for th in range(len(threshold)):
 				Tfail = []
 				Tprefail = []
 				for k in range(len(failtimes[:N_bands])):
-					if Sarr[y_id, x_id, k] <= 0: 
+					if Sarr[y_id, x_id, k] <= 0:
 						Sarr[y_id, x_id, k] = failtimes[k]
 						preSarr[y_id, x_id, k] = prefailtimes[k]
 					else:
@@ -225,24 +223,24 @@ for th in range(len(threshold)):
 		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"Sentinel_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"myr2.bil", pixelWidth, preSarr[:,:,i])
 
 
+	quit()
 
 
 
-		
 
 
-		"""
+"""
 		BEFORE YOU GO ANY FURTHER, ASK ERLI IF THIS IS DISPLACEMENT (POS. REL TO PREVIOUS POSITION) OR CUMULATIVE DISPLACEMENT (POS. REL. TO ORIGIN POSITION). FOR THE MOMENT, FAVOUR THE FORMER
 
 		ALSO, MAYBE RUN THE CALIBRATION ON SHORTER RAINFALL TIMESERIES. 1., IT WILL ACCELERATE THE PROCESS, AND 2., IT WILL AVOID IMPOSSIBLE CONVERGENCE ON SOME OF THE WEIRDER POINTS ..... THINK ABOUT THAT MORE
 
 		Ballpark number: there are about 8k points in the region of interest
-		"""
 
 
-	
-		
-		"""
+
+
+
+
 		# 2.3 every time velocity > threshold, fill a band with the date of failure observation.
 
 
@@ -252,7 +250,7 @@ for th in range(len(threshold)):
 		failures = np.where(sq_magnitude_2D > threshold[th]**2)[0]
 
 
-		NOTE: Maybe this is not the best way to identify failures .... 
+		#NOTE: Maybe this is not the best way to identify failures ....
 		# Why not try something with "instantaneous" acceleration?
 		# I guess it depends on you definition of failure ...
 		# It's always the same problem: the definition varies depending on your interests.
@@ -292,7 +290,7 @@ for th in range(len(threshold)):
 			# - there is an existing failure but it is later than the one we just found
 			# - there is a non-failing point (-1)
 			for k in range(len(failtimes[:N_bands])):
-				if EWVarr[y_id, x_id, k] <= 0: 
+				if EWVarr[y_id, x_id, k] <= 0:
 					EWVarr[y_id, x_id, k] = failtimes[k]
 					preEWVarr[y_id, x_id, k] = prefailtimes[k]
 				else:
@@ -306,19 +304,18 @@ for th in range(len(threshold)):
 
 
 	# 3. save the times of failure (depends on chosen number of bands)
-	for i in range(N_bands):
-		print ('saving band', i+1)
-		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"EWV_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, EWVarr[:,:,i])
-		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"EWV_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, preEWVarr[:,:,i])
-
-	"""
-
-	
-
-	quit()
+	#for i in range(N_bands):
+		#print ('saving band', i+1)
+		#fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"EWV_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, EWVarr[:,:,i])
+		#fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"EWV_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, preEWVarr[:,:,i])
 
 
 
+
+	#quit()
+
+
+"""
 
 # The approach is:
 # 0. Define a failure threshold for velocity. e.g.: 80 mm/yr
@@ -339,18 +336,3 @@ for th in range(len(threshold)):
 
 
 # 4. repeat for the ascending and descending data
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

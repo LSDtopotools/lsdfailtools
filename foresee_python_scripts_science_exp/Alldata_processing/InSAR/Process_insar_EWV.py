@@ -38,7 +38,7 @@ import Insar_functions as fn
 ################################################################################
 
 base_dir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/"
-out_directory = base_dir+"Failure/"
+out_directory = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/"
 
 ew_file = base_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
 vert_file = base_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
@@ -160,7 +160,7 @@ for th in range(len(threshold)):
 			break
 
 
-		"""
+
 		# 2.3 every time velocity > threshold, fill a band with the date of failure observation.
 
 
@@ -170,7 +170,7 @@ for th in range(len(threshold)):
 		failures = np.where(sq_magnitude_2D > threshold[th]**2)[0]
 
 
-		NOTE: Maybe this is not the best way to identify failures ....
+		# NOTE: Maybe this is not the best way to identify failures ....
 		# Why not try something with "instantaneous" acceleration?
 		# I guess it depends on you definition of failure ...
 		# It's always the same problem: the definition varies depending on your interests.
@@ -229,12 +229,12 @@ for th in range(len(threshold)):
 		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"EWV_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, EWVarr[:,:,i])
 		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"EWV_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, preEWVarr[:,:,i])
 
-	"""
 
-	ax1.set_xlim(left = datetime.datetime(2016, 9, 3), right = datetime.datetime(2019, 6, 3))
+
+	#ax1.set_xlim(left = datetime.datetime(2016, 9, 3), right = datetime.datetime(2019, 6, 3))
 	#plt.show()
-	plt.savefig("insar_ewv.png")
-	quit()
+	#plt.savefig("insar_ewv.png")
+quit()
 
 
 

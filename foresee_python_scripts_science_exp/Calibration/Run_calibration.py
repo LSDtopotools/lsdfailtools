@@ -2,28 +2,29 @@
 
 
 import time
-
+'''
 print ('Run_calibration.py')
 print ('This is the file that performs the calibration of the iverson model.')
 print('Author: GchGoodwin')
 print('Last update: 25/06/2020')
 print ('pausing for')
 print ('3 ... ')
-time.sleep(1.0)    
+time.sleep(1.0)
 print ('2 ... ')
-time.sleep(1.0)    
+time.sleep(1.0)
 print ('1 ... ')
-time.sleep(1.0)    
+time.sleep(1.0)
 print ('GO!')
-  
+'''
 ######################################################
 ######################################################
 # Importing modules
 ######################################################
 ######################################################
 
-# Importing the model
-import lsdfailtools.iverson2000 as iverson
+import sys
+sys.path.insert(0,'../../lsdfailtools-master/lsdfailtools')# Importing the model
+import iverson2000 as iverson
 
 # I'll need that to process the outputs
 from datetime import datetime
@@ -65,22 +66,20 @@ Num_cal = 200
 # set paths to important files nd open relevant data
 ######################################################
 ######################################################
-
 # Model directory
-rundir = "/home/willgoodwin/PostDoc/Foresee/Calibration/TestMC/"
-
+rundir = "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/foresee_python_scripts_science_exp/Calibration/TestMC/"
 # failure data files
-faildir = "/home/willgoodwin/PostDoc/Foresee/Data/Interferometry/Failure/"
+faildir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/"
 failfile = faildir + "All_1st_failtime__threshold"+str(threshold)+"mmyr.bil"
 prefailfile = faildir + "All_1st_prefailtime__threshold"+str(threshold)+"mmyr.bil"
 
 # topography files
-topodir = "/home/willgoodwin/PostDoc/Foresee/Data/Topography/"
+topodir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/"
 demfile = topodir + "eu_dem_AoI_epsg32633.bil"
 slopefile = topodir + "eu_dem_AoI_epsg32633_SLOPE.bil"
 
 # road file
-roaddir = "/home/willgoodwin/PostDoc/Foresee/Data/Road/"
+roaddir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Road/"
 roadfile = roaddir + "Road_line.shp"
 
 # Load rasters into arrays for DEM, slope, failtimes and prefailtimes for a given failure threshold.
@@ -102,12 +101,12 @@ roadline = np.array(road.shapes()[0].points)
 
 # calculate distances to main road.
 # We wanted to calibrate the points closest to the road, as this is where the landslides are likely to have a greater impact on the road
-distarr = fn.calc_dist2road(demarr.shape, roadline)
+distarr = fn.calc_dist2road(demarr.shape, roadline, geotransform,demarr)
 
 
 # Now select pixels based on the distance array and the number of pixels we want.
 # Note: the selection process could definitely be refined.
-final_selectarr = fn.select_pixels(distarr, Num_cal)
+final_selectarr = fn.select_pixels(distarr, Num_cal,demarr, failarr, prefailarr)
 
 
 
@@ -118,23 +117,21 @@ final_selectarr = fn.select_pixels(distarr, Num_cal)
 ######################################################
 
 
-
 # 1. Load rainfall data from 03/09/2016 until the end of 2018 (say). - the file is ready
-rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-
+rain = pd.read_csv("/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
 # to make this rain file:
 # python PPT_CMD_RUN.py --ProdTP GPM_D --StartDate 2016-09-03 --EndDate 2018-12-31 --ProcessDir /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data/ --SptSlc /home/willgoodwin/PostDoc/Foresee/Data/Topography/eu_dem_v11_E40N20_AoI.bil --OP --DirOut /home/willgoodwin/PostDoc/Foresee/Calibration/TestMC/
 
 # Now calibrate the points
-fn.calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, rain, depths, Nruns, rundir)
+fn.calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, rain, depths, Nruns, rundir, itermax, Num_cal)
 
 
 
 
-# PICK UP HERE!	
+# PICK UP HERE!
 
 # Things to do to improve this thing:
-# 1. 
+# 1.
 
 
 
@@ -142,7 +139,7 @@ fn.calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, r
 
 # 4. try further optimising by running MC in conjunction with GA stuff.
 
-# 5. Figure out this failure threshold thingy. But for now just use 80 mm/yr. 
+# 5. Figure out this failure threshold thingy. But for now just use 80 mm/yr.
 
 
 
@@ -177,12 +174,12 @@ plt.savefig(rundir+ 'selected_points_for_calibration.jpg')"""
 
 
 # set the parameters for the MC runs
-"""MCrun = iverson.MonteCarlo_Iverson( alpha_min = 0.1, D_0_min = 1e-6,K_sat_min = 1e-8, d_min = 0.5, Iz_over_K_steady_min = 0.1, friction_angle_min = 0.2, cohesion_min = 5000, weight_of_water_min = 9800, weight_of_soil_min = 15000,
+'''MCrun = iverson.MonteCarlo_Iverson( alpha_min = 0.1, D_0_min = 1e-6,K_sat_min = 1e-8, d_min = 0.5, Iz_over_K_steady_min = 0.1, friction_angle_min = 0.2, cohesion_min = 5000, weight_of_water_min = 9800, weight_of_soil_min = 15000,
       alpha_max = 0.11, D_0_max = 1e-4,K_sat_max = 1e-6, d_max = 3,Iz_over_K_steady_max = 0.8, friction_angle_max = 0.5, cohesion_max = 20000, weight_of_water_max = 9801, weight_of_soil_max = 25000, depths = depths)
 
 # Now run it
 MCrun.run_MC_failure_test(df["duration_s"].values, df["intensity_mm_sec"].values,
-                          n_process = 2, output_name = "test_MC.csv", n_iterations = 10, replace = True)"""
+                          n_process = 2, output_name = "test_MC.csv", n_iterations = 10, replace = True)'''
 
 
 

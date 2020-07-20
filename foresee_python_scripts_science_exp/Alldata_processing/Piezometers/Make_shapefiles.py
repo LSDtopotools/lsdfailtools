@@ -28,10 +28,10 @@ import functions as fn
 ################################################################################
 ################################################################################
 
-path = "/home/willgoodwin/PostDoc/Foresee/Data/Terrestrial/"
+path = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/"
 piezo_data = "Piezometer/data_piezometer.csv"
 piezo_loc = "Piezometer/coo_piezometer.csv"
-
+out_path = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/Piezometer_shapefiles/"
 
 ################################################################################
 ################################################################################
@@ -54,7 +54,7 @@ Piezo_loc = bb.read_csv(path+piezo_loc)
 # Load piezo data
 Piezo_data = bb.read_csv(path+piezo_data)
 DF = fn.inclino_to_one_df(Piezo_loc, Piezo_data)
-fn.piezo_to_shp(DF, path, 'test_')
+fn.piezo_to_shp(DF, out_path, 'test_')
 
 # read and reproject all shapefile
 for file in os.listdir(path):
@@ -62,11 +62,10 @@ for file in os.listdir(path):
         shapes = gpd.read_file(path + file)
         shapes.crs = 'epsg:'+world_epsg
         shapes_ita = shapes.to_crs({'init': 'epsg:'+ita_epsg})
-        shapes_ita.to_file(driver = 'ESRI Shapefile', filename= path+file[:-4]+"_epsg"+ita_epsg+".shp")
+        shapes_ita.to_file(driver = 'ESRI Shapefile', filename= out_path+file[:-4]+"_epsg"+ita_epsg+".shp")
 
 
 """
 Reprojecting stuff automatically can be annoying. This stuff is helpful
 https://glenbambrick.com/2016/01/24/reproject-shapefile/
 """
-

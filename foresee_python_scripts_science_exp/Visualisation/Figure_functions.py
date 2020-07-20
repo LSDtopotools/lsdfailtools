@@ -479,14 +479,15 @@ def plot_sensitivity(rain, calibrated, fig_height, fig_width, fig_name):
 		boundaries.append([min(X[:,i]), max(X[:,i])])
 
 
-	problem = {'num_vars': X.shape[1]+1,
+	problem = {'num_vars': X.shape[1],
 	           'names': cols,
 	           'bounds': boundaries
 	           }
 
 	print(problem)
 	# Perform analysis
-	Si = sobol.analyze(problem, y, print_to_console=False)
+
+	Si = sobol.analyze(problem, y, print_to_console = False)
 
 	S1 = Si['S1']
 
@@ -501,7 +502,7 @@ def plot_sensitivity(rain, calibrated, fig_height, fig_width, fig_name):
 
 	plt.savefig(fig_name)
 
-	quit()
+	#quit()
 
 
 	from sklearn import decomposition
@@ -522,7 +523,7 @@ def plot_sensitivity(rain, calibrated, fig_height, fig_width, fig_name):
 
 
 	plt.savefig(fig_name)
-
+    #quit()
 
 
 

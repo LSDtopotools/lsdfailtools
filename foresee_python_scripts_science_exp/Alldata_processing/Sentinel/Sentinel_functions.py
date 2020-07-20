@@ -264,10 +264,10 @@ def plot_dva_rainfall(i, rain, dates, disp, av10_disp, inst_vel, inst_vel_av10, 
 
     ax1.plot(dates, disp, '--', c = plt.cm.jet(0), lw = 0.5)
     ax1.plot(dates[5:-5], av10_disp, c = plt.cm.jet(0), lw = 1)
-    
+
     ax2.plot(dates[1:], inst_vel/1000., '--', c = plt.cm.jet(0), lw = 0.5)
     ax2.plot(dates[6:-5], inst_vel_av10/1000., c = plt.cm.jet(0), lw = 1)
-    
+
     ax3.plot(dates[2:], inst_acc/(1000.), '--', c = plt.cm.jet(0), lw = 0.5)
     ax3.plot(dates[7:-5], inst_acc_av10/(1000.), c = plt.cm.jet(0), lw = 1)
 
@@ -289,5 +289,4 @@ def plot_dva_rainfall(i, rain, dates, disp, av10_disp, inst_vel, inst_vel_av10, 
     ax1.set_ylabel('Displacement (mm)')
     ax2.set_ylabel('Abs. velocity (m/yr)')
     ax3.set_ylabel('Displacement acceleration (m/yr2)')
-
-    plt.savefig('/home/willgoodwin/PostDoc/Foresee/Figures/Sentinel_failure/'+str(i)+'.png')
+    plt.savefig('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/Figures/sentinel_failure/'+str(i)+'.png')

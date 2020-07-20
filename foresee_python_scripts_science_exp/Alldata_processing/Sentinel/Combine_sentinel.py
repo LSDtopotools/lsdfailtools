@@ -6,14 +6,16 @@ import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
+import sys
+sys.path.insert(0,'../InSAR')
 import Insar_functions as fn
 
 
 
-directory = "Interferometry/"
-fail_directory = directory+"Failure/"
+directory = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/"
+fail_directory = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/"
 
-topo_file = "Topography/eu_dem_AoI_epsg32633.bil"
+topo_file = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil"
 
 threshold = [40, 60, 80, 100, 150, 200, 500, 1000] # mm/yr
 
@@ -22,7 +24,7 @@ threshold = [40, 60, 80, 100, 150, 200, 500, 1000] # mm/yr
 for i in range(len(threshold)):
 
 	print ('threshold', threshold[i], 'mm/yr')
-	
+
 	Aarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_directory+"A_failtime_1_threshold"+str(threshold[i])+"mmyr.bil")
 	preAarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_directory+"A_prefailtime_1_threshold"+str(threshold[i])+"mmyr.bil")
 	A_startdate = datetime.datetime(2016, 11, 4)
@@ -43,8 +45,8 @@ for i in range(len(threshold)):
 
 		# If there is never a failure
 		if Aarr[x,y] == -1 and Darr[x,y] == -1 and EWVarr[x,y] == -1:
-			Combo_failarr[x,y] = -1		
-			Combo_prefailarr[x,y] = -1		
+			Combo_failarr[x,y] = -1
+			Combo_prefailarr[x,y] = -1
 
 		# if all three datasets show failures
 		# retain the earliest failure time
@@ -53,10 +55,10 @@ for i in range(len(threshold)):
 			# get all the dates
 			Afaildate = A_startdate + datetime.timedelta(0,int(Aarr[x,y]))
 			Aprefaildate = A_startdate + datetime.timedelta(0,int(preAarr[x,y]))
-			
+
 			Dfaildate = D_startdate + datetime.timedelta(0,int(Darr[x,y]))
 			Dprefaildate = D_startdate + datetime.timedelta(0,int(preDarr[x,y]))
-			
+
 			EWVfaildate = EWV_startdate + datetime.timedelta(0,int(EWVarr[x,y]))
 			EWVprefaildate = EWV_startdate + datetime.timedelta(0,int(preEWVarr[x,y]))
 
@@ -93,7 +95,7 @@ for i in range(len(threshold)):
 	fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fail_directory+"All_1st_prefailtime__threshold"+str(threshold[i])+"mmyr.bil", pixelWidth, Combo_prefailarr)
 
 
-		
+
 
 
 quit()
@@ -213,7 +215,7 @@ for th in range(len(threshold)):
 			# - there is an existing failure but it is later than the one we just found
 			# - there is a non-failing point (-1)
 			for k in range(len(failtimes[:N_bands])):
-				if EWVarr[y_id, x_id, k] <= 0: 
+				if EWVarr[y_id, x_id, k] <= 0:
 					EWVarr[y_id, x_id, k] = failtimes[k]
 					preEWVarr[y_id, x_id, k] = prefailtimes[k]
 				else:
@@ -236,14 +238,3 @@ for th in range(len(threshold)):
 
 
 quit()
-
-
-
-
-
-
-
-
-
-
-

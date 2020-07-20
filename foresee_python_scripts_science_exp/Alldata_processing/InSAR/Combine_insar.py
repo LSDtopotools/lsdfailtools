@@ -10,8 +10,11 @@ import Insar_functions as fn
 
 
 
-directory = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/"
-fail_directory = directory+"Failure/"
+directory = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/"
+
+# MR:the failure directory now points at the test directory where I had to save tfailure data cause I don't have permissions for the other one.
+
+fail_directory = directory+"InSAR_data_failure/"
 
 topo_file = "eu_dem_AoI_epsg32633.bil"
 

@@ -1,5 +1,5 @@
 ###
-# Has been checked for imports not working. 
+# Has been checked for imports not working.
 ###
 
 ################################################################################
@@ -22,15 +22,22 @@ import argparse
 import datetime
 from osgeo import gdal, ogr, osr
 from osgeo.gdalnumeric import *
+
 from osgeo.gdalconst import *
+
 import csv
 import pandas as pd
 import numpy as np
-import lsdfailtools.iverson2000 as iverson
+
+import sys
+sys.path.insert(0,'../../lsdfailtools-master/lsdfailtools')# Importing the model
+import iverson2000 as iverson
+
+#import lsdfailtools.iverson2000 as iverson
 
 import matplotlib.lines as mlines
 from itertools import product
-
+import itertools
 
 ################################################################################
 ################################################################################
@@ -160,7 +167,7 @@ def ENVI_raster_binary_from_2d_array(envidata, file_out, post, image_array):
 
 ################################################################################
 ################################################################################
-def calc_dist2road(dimensions, roadline):
+def calc_dist2road(dimensions, roadline, geotransform, demarr):
 
     print ('Calculating distance to road')
 
@@ -185,7 +192,7 @@ def calc_dist2road(dimensions, roadline):
 
 ################################################################################
 ################################################################################
-def select_pixels(distarr, Num_cal):
+def select_pixels(distarr, Num_cal, demarr, failarr, prefailarr):
     # this bit can definitely be improved on!
 
     print ('Selecting pixels for calibration')
@@ -228,12 +235,12 @@ def make_storage_df(results, selected, S, Z, i, j, F, P):
 
 ################################################################################
 ################################################################################
-def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, rain, depths, Nruns, rundir):
+def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, rain, depths, Nruns, rundir, itermax, Num_cal):
 
     print ('Starting calibration')
 
     # Time the calibration
-    start = datetime.now()
+    start = datetime.datetime.now()
 
     # initialisation
     work_df_exists = 0
@@ -331,7 +338,7 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, prefailarr, 
                 # Save all these pixels to a .csv file
                 storage_df.to_csv(rundir + 'Calibrated.csv')
 
-                print ('Calibrated', npoints, 'pixels in ', datetime.now()-start)
+                print ('Calibrated', npoints, 'pixels in ', datetime.datetime.now()-start)
                 print ()
 
                 break
@@ -468,7 +475,7 @@ def MC_loop (rain, S, depths, Nruns, rundir, work_df):
                       n_process = 2, output_name = "test_MC_far.csv", n_iterations = N2, replace = True)
 
     # now open the MC test filexx
-    results_far = pd.read_csv(rundir+"test_MC_far.csv")
+    results_far = pd.read_csv("./test_MC_far.csv")
     results = results_close.append(results_far, ignore_index = True)
 
 
@@ -480,7 +487,7 @@ def MC_loop (rain, S, depths, Nruns, rundir, work_df):
                       n_process = 2, output_name = "test_MC_ini.csv", n_iterations = N3, replace = True)
 
     # now open the MC test file
-    results_ini = pd.read_csv(rundir+"test_MC_ini.csv")
+    results_ini = pd.read_csv("./test_MC_ini.csv")
     results = results.append(results_ini, ignore_index = True)
 
     return results
