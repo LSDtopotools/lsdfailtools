@@ -1,5 +1,5 @@
 #####
-# This validation file needs to be run with the data. Otherwise, I can't do anything. 
+# This validation file needs to be run with the data. Otherwise, I can't do anything.
 ######
 
 
@@ -57,6 +57,10 @@ import itertools
 
 import Validation_functions as fn
 
+import sys
+sys.path.insert(0,'../Visualisation')
+
+import Figure_functions as ff
 
 
 
@@ -90,22 +94,22 @@ Num_cal = 200
 
 
 # failure data files
-# MR: cannot find the Interferometry data...
-faildir = "/FORESEE/Data/Interferometry/Failure/"
+# MR: cannot find the Interferometry data... - this is InSAR
+faildir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/"
 failfile = faildir + "All_1st_failtime__threshold"+str(threshold)+"mmyr.bil"
 prefailfile = faildir + "All_1st_prefailtime__threshold"+str(threshold)+"mmyr.bil"
 
 # topography files
-topodir = "/FORESEE/Data/Topography/"
+topodir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/"
 demfile = topodir + "eu_dem_AoI_epsg32633.bil"
 slopefile = topodir + "eu_dem_AoI_epsg32633_SLOPE.bil"
 
 # road files
-roaddir = "/home/willgoodwin/PostDoc/Foresee/Data/Road/"
+roaddir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Road/"
 roadfile = roaddir + "Road_line.shp"
 
 # calibrated points files
-calibdir = "/home/willgoodwin/PostDoc/Foresee/Calibration/TestMC/"
+calibdir = "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/foresee_python_scripts_science_exp/Calibration/TestMC/"
 calibfile = calibdir + "Calibrated.csv"
 
 
@@ -173,10 +177,11 @@ calibrated = pd.read_csv(calibfile)
 #ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Rain_failures_validation.png')
 
 ######################
+
 # Try a PCA on calibratd points
-rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
+rain = pd.read_csv("/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
 depths = np.arange(0.2,3.1,0.1)
-ff.plot_sensitivity(rain, calibrated, 10, 10, rundir + 'pca_test.png')
+ff.plot_sensitivity(rain, calibrated, 10, 10,  'pca_test.png')
 
 
 quit()
@@ -245,7 +250,7 @@ print (np.sum(final_selectarr))
 ######################################################
 
 # 1. Load rainfall data from 03/09/2016 until the end of 2018 (say). - the file is ready
-rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
+rain = pd.read_csv("/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
 
 # to make the file:
 # python PPT_CMD_RUN.py --ProdTP GPM_D --StartDate 2016-09-03 --EndDate 2018-12-31 --ProcessDir /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data/ --SptSlc /home/willgoodwin/PostDoc/Foresee/Data/Topography/eu_dem_v11_E40N20_AoI.bil --OP --DirOut /home/willgoodwin/PostDoc/Foresee/Calibration/TestMC/
