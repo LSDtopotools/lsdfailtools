@@ -5,20 +5,18 @@
 FORESEE is a Python library for dealing with word pluralization.
 
 ## Installation
-
 1 - Follow documentation indications from `plot_iverson_lsdtt`.This will indicate how to run the MonteCarlo model and how to get the output files.
 you only need to follow up to the step 2.3.1.
 2 - Go to the lsdfailtools-master and folow the documentation from the README file there. This is in charge of creating and installing the cpp-python interface. This will create a wheel which can be installed via pip.
 note: need to install gcc version 5+. conda install -c omgarcia gcc-6. This install version gcc (GCC) 6.1.0.
 note 2: before building the wheel, you need to install conda install -c conda-forge xtensor xtensor-python
 TRYING THE FOLLOWING WHILE ON THE INCLINOMETERS FOLDER
------------------
+
 note 3: Need to also install conda install -c conda-forge numpy scipy pandas pytables matplotlib
 note 4: Need to also import shapefile, pyshp, scikit-learn
 note 5: At this point it tells me that osgeo is not installed. I have to install gdal via conda install -c conda-forge gdal
 6 - seems to run fine. need to still install shapely and skimage. conda install -c conda-forge shapely scikit-image geopandas
 7 - When installing geopandas, there was a downgrade of gdal but everything seemed to be working.
------------------
 
 3 - Once this is all installed, we can start running the code.
 Scripts to run first:
@@ -60,7 +58,7 @@ Scripts to run first:
         SENTINEL
           Data needs: sentinel timeseries shapefile and DEM file. These include velocity and acceleration. Precipitation data as downloaded from the GPM website. InSAR data for combining sentinel with InSAR.
 
-          Process_sentinel.py: this follows the same logic as previous processing files. Find out what pixels have failures and when. Creates sentinel failtime files. 
+          Process_sentinel.py: this follows the same logic as previous processing files. Find out what pixels have failures and when. Creates sentinel failtime files.
 
           Combine_sentinel.py: Takes the InSAR data from A, D, EW and retains a failure if all 3 datasets show failures. Finds the dates of the failures. Creates the All-failtime files.
 
