@@ -22,6 +22,8 @@ NOTE to self #3: I have no idea why but I think installing gdal breaks everythin
 NOTE #4: When I leave the virtual environment it all works fine in the Calibration folder for some obscure reason... It asked me to install pyshp, which is the only thing missing and that
 was it.
 
+
+
 Environments: iverson-python --> this is a bit messed up at the minute, has all the packages but something fucked up
               test-iverson-python --> this has a lot less packages
               new_iverson_python --> latest environment where the wheel works. and the lsdfailtools_cpp import works.
@@ -29,17 +31,18 @@ Environments: iverson-python --> this is a bit messed up at the minute, has all 
 Alldata_processing:
 
     Inclinometers: DONE
-    InSAR: Process_insar_EXV: testMC directory cannot be found. Could only plot 1 out of 2 graphs. I think they are test graphs so not too important.
+    InSAR: Process_insar_EWV: testMC directory cannot be found. Could only plot 1 out of 2 graphs. I think they are test graphs so not too important.
                               There are some plotting going on here that has been commented out. Data is also saved in Data_Marina_tests. This somehow takes a lot less time to run somehow!
            Process_insar_AD: Should potentially change the file paths to make them match the base directories. This seems to be very slow? Check if it's just the server being a pain.
                              Somehow I cannot save files in the interferometry folder. I had to create a new folder to save the data in : Data_Marina_tests
            Combine_InSAR: DONE
     Piezometers: Make_shapefiles: DONE. Had to also change some output paths but works fine now.
     Precipitation: this mostly involves downloading data from the NASA website, so I am gonna leave this for a while now.
+        NEED TO CHECK WHERE ALL THE PRECIPITATION FILES ARE. SOME SEEM TO BE MISSING. 
     Sentinel: Functions: DONE. Had to change the directory where the figures are now saved. This is Data_marina_tests/Figures.
               Process_sentinel: DONE. Run the code up to the point where it takes the displacement into account, as we are not sure of what type of displacement this is.
                                 This has generated images for each of the failure points (922 in total).
-              Combine sentinel: DONE but not sure how this uses the sentinel data. It seems to just use the interferometry InSAR data.
+              Combine sentinel: DONE but not sure how this uses the sentinel data. It seems to just use the interferometry InSAR data. The path to the Insar_functions file had to be changed.
 
 Calibration:
 
@@ -55,3 +58,6 @@ Validation:
 Visualisation:
 
     Figure_functions: DONE. Had to be slightly edited.
+    Final_outputs_visualisation: DONE. Once again, there's a bit at the end for the calibration. Not sure why this is here.
+    Here I would like to clean the code, make it more explicit what the user wants to do/plot. Right now, there's a lot of lines that need to be uncommented.
+    Need to import Insar_functions and give path to this.

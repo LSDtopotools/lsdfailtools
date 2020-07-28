@@ -22,8 +22,9 @@ sys.path.insert(0,'../../../lsdfailtools-master/lsdfailtools')
 # Importing the model
 import lsdfailtools.iverson2000 as iverson
 
-
-
+from SALib.sample import saltelli
+from SALib.analyze import sobol
+from sklearn import decomposition
 
 
 ######################################################
@@ -226,11 +227,11 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 	unique, counts = np.unique(confusion, return_counts=True)
 	print(dict(zip(unique, counts)))
 
-	quit()
+	#quit()
 
 
 
-	plt.show()
+	#plt.show()
 
 
 	plt.tight_layout()
@@ -471,8 +472,7 @@ def plot_sensitivity(rain, calibrated, fig_height, fig_width, fig_name):
 
 
 
-	from SALib.sample import saltelli
-	from SALib.analyze import sobol
+
 
 	boundaries = []
 	for i in range(X.shape[1]):
@@ -505,7 +505,7 @@ def plot_sensitivity(rain, calibrated, fig_height, fig_width, fig_name):
 	#quit()
 
 
-	from sklearn import decomposition
+
 
 	pca = decomposition.PCA(n_components=X.shape[1])
 	pca.fit(X)
@@ -586,7 +586,7 @@ def plot_rain_parameters_correlation(rain, calibrated, fig_height, fig_width, fi
 
 
 	plt.show()
-	quit()
+	#quit()
 
 
 
@@ -608,8 +608,7 @@ def plot_rain_parameters_correlation(rain, calibrated, fig_height, fig_width, fi
 
 
 
-	from SALib.sample import saltelli
-	from SALib.analyze import sobol
+
 
 	boundaries = []
 	for i in range(X.shape[1]):

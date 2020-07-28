@@ -47,7 +47,7 @@ Nodata_value = -9999.
 
 # Model directory - change accordingly
 
-rundir = "/home/willgoodwin/PostDoc/Foresee/Calibration/TestMC/"
+rundir = "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/foresee_python_scripts_science_exp/Calibration/TestMC/"
 
 # Number of MC runs
 Nruns = 25
@@ -64,23 +64,22 @@ threshold = 80 # mm/yr
 # Number of points to be calibrated
 Num_cal = 200
 
-
 # failure data files
-faildir = "/home/willgoodwin/PostDoc/Foresee/Data/Interferometry/Failure/"
+faildir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/"
 failfile = faildir + "All_1st_failtime__threshold"+str(threshold)+"mmyr.bil"
 prefailfile = faildir + "All_1st_prefailtime__threshold"+str(threshold)+"mmyr.bil"
 
 # topography files
-topodir = "/home/willgoodwin/PostDoc/Foresee/Data/Topography/"
+topodir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/"
 demfile = topodir + "eu_dem_AoI_epsg32633.bil"
 slopefile = topodir + "eu_dem_AoI_epsg32633_SLOPE.bil"
 
 # road files
-roaddir = "/home/willgoodwin/PostDoc/Foresee/Data/Road/"
+roaddir = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Road/"
 roadfile = roaddir + "Road_line.shp"
 
 # calibrated points files
-calibdir = "/home/willgoodwin/PostDoc/Foresee/Calibration/TestMC/"
+calibdir = "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/foresee_python_scripts_science_exp/Calibration/TestMC/"
 calibfile = calibdir + "Calibrated.csv"
 
 
@@ -112,47 +111,48 @@ calibrated = pd.read_csv(calibfile)
 
 #######################
 # Map calibrated points
-#ff.map_calibrated (demarr, calibrated, l, 12, 12, rundir + 'Map_calibrated_pixels.png')
+ff.map_calibrated (demarr, calibrated, l, 12, 12, rundir + 'Map_calibrated_pixels.png')
 
 
 ######################
 # Map the distribution in terms of failtimes
-#ff.plot_failtime (calibrated, 12, 12, rundir + 'Failtime_distribution.png')
+ff.plot_failtime (calibrated, 12, 12, rundir + 'Failtime_distribution.png')
 
 ######################
 # Map the distribution of parameters
-#ff.plot_parameters (calibrated, 7, 18, rundir + 'Failure_params.png')
+ff.plot_parameters (calibrated, 7, 18, rundir + 'Failure_params.png')
 
 
 ######################
-# Map the validation
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#depths = np.arange(0.2,3.1,0.1)
-#ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Map_validation.png')
+# Map the validation - this takes a while to run somehow
+rain = pd.read_csv("/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
+depths = np.arange(0.2,3.1,0.1)
+ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Map_validation.png')
 
 ######################
 # Look at some rain data
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#ff.plot_rain(rain, 15, 15, rundir + 'Rain.png')
+rain = pd.read_csv("/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
+ff.plot_rain(rain, 15, 15, rundir + 'Rain.png')
 
 ######################
 # Look at some rain data and failures
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#ff.plot_rain_failures(rain, calibrated, 15, 15, rundir + 'Rain_failures.png')
+rain = pd.read_csv("/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
+ff.plot_rain_failures(rain, calibrated, 15, 15, rundir + 'Rain_failures.png')
 
 
 ######################
 # Look at some rain data and failures
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#depths = np.arange(0.2,3.1,0.1)
-#ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Rain_failures_validation.png')
+rain = pd.read_csv("/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
+depths = np.arange(0.2,3.1,0.1)
+ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Rain_failures_validation.png')
 
 ######################
+'''
 # Try a PCA on calibratd points
 rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
 depths = np.arange(0.2,3.1,0.1)
 ff.plot_rain_parameters_correlation(rain, calibrated, 10, 10, rundir + 'pca_test.png')
-
+'''
 
 #########
 # What to do next?
@@ -175,7 +175,7 @@ ff.plot_rain_parameters_correlation(rain, calibrated, 10, 10, rundir + 'pca_test
 #########
 
 
-quit()
+#quit()
 
 ######################################################
 ######################################################
@@ -183,7 +183,7 @@ quit()
 ######################################################
 ######################################################
 
-
+'''
 
 # set up the conditions for calibration to happen
 distarr = np.zeros((demarr.shape), dtype = np.float)
@@ -230,10 +230,10 @@ while npoints < Num_cal:
 print (np.sum(final_selectarr))
 
 
+'''
 
 
-
-
+quit()
 ######################################################
 ######################################################
 # Start the calibration

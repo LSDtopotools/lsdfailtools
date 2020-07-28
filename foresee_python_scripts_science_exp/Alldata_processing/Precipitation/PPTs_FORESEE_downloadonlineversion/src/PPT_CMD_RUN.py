@@ -109,7 +109,7 @@ if arglist[3] == None:
 			input_dir_data = input_dir_data
 
 	except:
-		print ("ERRO! You did not choose a directory.")
+		print ("ERROR! You did not choose a directory.")
 		sys.exit(2)
 else:
 
@@ -176,7 +176,7 @@ except:
 
 ################################################################################
 ################################################################################
-"""Dwnload the files"""
+"""Download the files"""
 ################################################################################
 ################################################################################
 
@@ -223,6 +223,3 @@ fn.maps_to_timeseries(working_dir)
 
 
 # python Integration.py --ProdTP GPM_30min --StartDate 2018-02-01 --EndDate 2018-02-08 --ProcessDir /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data --SptSlc /home/willgoodwin/PostDoc/Foresee/Data/Topography/AoI.shp --OP
-
-
-	

@@ -5,7 +5,7 @@ Precipitation Processing Tools (PPTs) is an open source code developed by Viníc
 This tool is an adapted version of the PPTs tool described above (https://github.com/lapig-ufg/PPTs). It was modified from the original code by Guillaume Goodwin (University of Edinburgh - School of GeoSciences) to fit the purposes of landslide failure modelisation within the FORESEE project. It offers less flexibility than the original PPTs tool and focuses on downloading rainfall data from GPM instead of offering various data sources. It also contains an additional module to generate time-series of rainfall intensity in over a specified area of interest, again to fit the purposes of landslide modelling.
 
 # ACCESSING DATA
-Before you try to download the data, create an account in NASA EartData website (https://urs.earthdata.nasa.gov), make login, click in Applications>Authorized Apps> Approve More Applications and select NASA GESDISC DATA ARCHIVE.
+Before you try to download the data, create an account in NASA EarthData website (https://urs.earthdata.nasa.gov), make login, click in Applications>Authorized Apps> Approve More Applications and select NASA GESDISC DATA ARCHIVE.
 
 
 Requisites:
@@ -23,7 +23,7 @@ Recommendations:
    * Install Anaconda Python 3.6 or above (https://www.anaconda.com/download/) and the Gdal package (https://anaconda.org/conda-forge/gdal) and, for Windows users, add some system variables like:
      * PATH =  C:\ProgramData\Miniconda3; C:\ProgramData\Miniconda3\Library\bin; C:\ProgramData\Miniconda3\Scripts;
      * GDAL_DATA = C:\ProgramData\Miniconda3\Library\share\gdal
-   * Before you try to download the data, create an account in NASA EartData website (https://urs.earthdata.nasa.gov), make login, click in Applications>Authorized Apps> Approve More Applications and select ***NASA GESDISC DATA ARCHIVE***.
+   * Before you try to download the data, create an account in NASA EarthData website (https://urs.earthdata.nasa.gov), make login, click in Applications>Authorized Apps> Approve More Applications and select ***NASA GESDISC DATA ARCHIVE***.
 
 # HOW TO RUN
 
