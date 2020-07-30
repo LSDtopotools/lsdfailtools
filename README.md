@@ -19,6 +19,7 @@ note 5: At this point it tells me that osgeo is not installed. I have to install
 7 - When installing geopandas, there was a downgrade of gdal but everything seemed to be working.
 
 3 - Once this is all installed, we can start running the code.
+
 Scripts to run first:
     1.- Alldata_processing: process all the input data: Inclinometers, InSAR, Piezometers, Precipitation, Sentinel, Cosmo-SKYMed.
         COMBINED SENTINEL COSMO
@@ -62,37 +63,44 @@ Scripts to run first:
 
           Combine_sentinel.py: Takes the InSAR data from A, D, EW and retains a failure if all 3 datasets show failures. Finds the dates of the failures. Creates the All-failtime files.
 
+      2.-CALIBRATION (This is given the new code)
+          Data Needs: calibration_parameters.csv: Nruns, itermax, Num_cal, StartDate, EndDate, failinterval
+                      iverson_MC_parameters.csv: D_0, K_sat, Iz_over_K_steady, friction_angle, cohesion, weight_of_water, weight_of_soil, depth
+                      Ground Motion Failure data: for given time interval (.bil format)
+                      DEM: .bil file
+                      slope file: .bil file
+                      cut file: .bil file (need to check what this is)
+                      Road line file: .shp file
+                      Precipitation command run file: .py file for precipitation
+                      Piezometer: .csv file
+          Run_calibration.py: Select the pixels based on the closest points to the road and the number of pixels that we want. Run calibration with these points.
+      3.-VALIDATION
+          Data Needs (same as for calibration): calibration_parameters.csv
+                      Iverson_MC_parameters.csv
+                      Ground Motion Failure
+                      DEM file
+                      slope file
+                      cut file
+                      Road File
+                      Precipitation command run file: .py file for precipitation
+                      Piezometer: .csv file
+                      Calibrated points: .csv file
+          Run_validation.py: Loads rasters into arrays and reads calibration points and parameters. Reads also Iverson parameters. Performs and maps the validation.
+        4.-VISUALISATION:
+            Data Needs: InSAR failure and prefailure files in all directions.
+                        DEM file (.bil)
+                        Slope file (.bil)
+                        Read file (.shp)
+                        Calibration points file (.csv)
+                        Rainfall Intensity (.csv)
+           Final_outputs_visualisation.py: Maps calibrated points, failtime distribution, parameter distribution, validation map, rain data plot with associated failures, with and w/o validation data.
+           Tries PCA on calibration points to see the correlation between the rain and the calibrated parameters.
 
 
 
-3 - Leave the folder and go on the python scripts folder. This is the analysis folder where we can obtain the maps and input data.
-4 - In
-2- After these instructions are followed,
+
 
 TO DO:
 
 It would potentially be useful to have a file with the file paths so that people don't need to go into the code.
 Implement this: https://stackoverflow.com/questions/45507805/methods-to-avoid-hard-coding-file-paths-in-python
-
-
-```bash
-pip install foobar
-```
-
-## Usage
-
-```python
-import foobar
-
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
-```
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
