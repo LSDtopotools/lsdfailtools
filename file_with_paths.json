@@ -1,0 +1,11 @@
+{
+     "rundir" : "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/foresee_python_scripts_science_exp/Calibration/TestMC/",
+     "faildir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/",
+     "topodir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/",
+     "roaddir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Road/",
+     "raindir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/",
+     "PPT_dir" : "/home/willgoodwin/PostDoc/Foresee/lsdtopyscraper/lsdtopyscraper/precipitation/",
+     "piezo_path" : "/home/willgoodwin/PostDoc/Foresee/Data/Terrestrial/",
+     "calibdir" : "/home/willgoodwin/PostDoc/Foresee/Calib_Valid/Current_test/"
+
+}
