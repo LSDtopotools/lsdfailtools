@@ -6,6 +6,9 @@
      "raindir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/",
      "PPT_dir" : "/home/willgoodwin/PostDoc/Foresee/lsdtopyscraper/lsdtopyscraper/precipitation/",
      "piezo_path" : "/home/willgoodwin/PostDoc/Foresee/Data/Terrestrial/",
-     "calibdir" : "/home/willgoodwin/PostDoc/Foresee/Calib_Valid/Current_test/"
-
+     "calibdir" : "/home/willgoodwin/PostDoc/Foresee/Calib_Valid/Current_test/",
+     "sentinel_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Sentinel/",
+     "cosmo_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/",
+     "inclino_path" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Inclinometer/",
+     "out_dir_process_combo" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/GroundMotion/Failure/"
 }
