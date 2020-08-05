@@ -1,0 +1,15 @@
+{
+     "run_dir" : "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/foresee_python_scripts_science_exp/Calibration/TestMC/",
+     "fail_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/",
+     "topo_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/",
+     "road_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Road/",
+     "rain_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/",
+     "PPT_dir" : "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/bitbucket_foresee/foresee_python_scripts/Alldata_processing/Precipitation/PPTs_FORESEE_downloadonlineversion/src/",
+     "piezo_dir" : "/home/willgoodwin/PostDoc/Foresee/Data/Terrestrial/Piezometer/",
+     "calib_dir" : "/home/willgoodwin/PostDoc/Foresee/Calib_Valid/Current_test/",
+     "sentinel_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Sentinel/",
+     "interferometry_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/Failure/",
+     "inclino_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Inclinometer/",
+     "ground_motion_failure" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/GroundMotion/Failure/",
+     "rain_intensity_caliv_valid" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration_GG/"
+}
