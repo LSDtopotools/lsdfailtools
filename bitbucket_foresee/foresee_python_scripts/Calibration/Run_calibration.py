@@ -6,7 +6,9 @@
 ######################################################
 
 # Importing the model
-import lsdfailtools.iverson2000 as iverson
+import sys
+sys.path.insert(0,'../../lsdfailtools-master/lsdfailtools')# Importing the model
+import iverson2000 as iverson
 
 # I'll need that to process the outputs
 import os
