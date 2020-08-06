@@ -16,7 +16,7 @@ This is a file to make these pesky .csv files behave
 import os
 import json
 import numpy as np
-import pandas as bb
+import pandas as pd
 import geopandas as gpd
 import csv
 
@@ -55,10 +55,10 @@ ita_epsg = '32633' # for Italy
 ################################################################################
 
 # Load piezo locations
-Piezo_loc = bb.read_csv(piezo_dir+piezo_loc)
+Piezo_loc = pd.read_csv(piezo_loc)
 
 # Load piezo data
-Piezo_data = bb.read_csv(piezo_dir+piezo_data)
+Piezo_data = pd.read_csv(piezo_data)
 DF = fn.inclino_to_one_df(Piezo_loc, Piezo_data)
 fn.piezo_to_shp(DF, piezo_dir, 'test_')
 
