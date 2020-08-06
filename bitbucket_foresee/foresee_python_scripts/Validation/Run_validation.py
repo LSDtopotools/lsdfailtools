@@ -21,7 +21,9 @@ print ('GO!')
 # Importing modules
 ######################################################
 ######################################################
+import sys
 
+sys.path.insert(0,'../../../lsdfailtools-master/lsdfailtools')
 # Importing the model
 import lsdfailtools.iverson2000 as iverson
 
@@ -38,6 +40,9 @@ import json
 import os
 
 import Validation_functions as fn
+import sys
+sys.path.insert(0,'../Visualisation')
+
 import Figure_functions as ff
 
 
@@ -194,8 +199,9 @@ quit()
 ######################################################
 ######################################################
 
-
-
+# is this section needed for running the validation?? Is this not needed only
+# for calibration and not for validation?
+'''
 # set up the conditions for calibration to happen
 distarr = np.zeros((demarr.shape), dtype = np.float)
 selectarr = np.zeros((demarr.shape), dtype = np.float)
@@ -373,3 +379,4 @@ for i,j in product (range(demarr.shape[0]), range(demarr.shape[1])):
 	# 4. try further optimising by running MC in conjunction with GA stuff.
 
 	# 5. Figure out this failure threshold thingy. But for now just use 80 mm/yr.
+'''
