@@ -106,12 +106,12 @@ preEWVarr = np.zeros((topo_array.shape[0],topo_array.shape[1], N_bands ), dtype 
 # time your run
 runstart = datetime.datetime.now()
 
-'''
+
 # Start a plot for the lols
 fig=plt.figure(1, facecolor='White',figsize=[7, 7])
 ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 ax2 =  ax1.twinx()
-
+'''
 # Load rainfall data from 03/09/2016 until the end of 2018 for the lols
 # MR: the dates are different to the ones initialy provided. Need to check this for consistency.
 rain = bb.read_csv(FILE_PATHS["rain_intensity_caliv_valid"] + "2014-01-01_to_2019-12-31_Intensity.csv")
@@ -160,7 +160,7 @@ for th in range(len(threshold)):
 			break
 
 
-		"""
+
 		# 2.3 every time velocity > threshold, fill a band with the date of failure observation.
 
 
@@ -170,7 +170,7 @@ for th in range(len(threshold)):
 		failures = np.where(sq_magnitude_2D > threshold[th]**2)[0]
 
 
-		NOTE: Maybe this is not the best way to identify failures ....
+		#NOTE: Maybe this is not the best way to identify failures ....
 		# Why not try something with "instantaneous" acceleration?
 		# I guess it depends on you definition of failure ...
 		# It's always the same problem: the definition varies depending on your interests.
@@ -229,12 +229,12 @@ for th in range(len(threshold)):
 		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_failure_dir+"EWV_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, EWVarr[:,:,i])
 		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_failure_dir+"EWV_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, preEWVarr[:,:,i])
 
-	"""
 
-	ax1.set_xlim(left = datetime.datetime(2014, 1, 1), right = datetime.datetime(2019, 12, 31))
-	plt.show()
 
-	quit()
+	#ax1.set_xlim(left = datetime.datetime(2014, 1, 1), right = datetime.datetime(2019, 12, 31))
+	#plt.savefig(FILE_PATHS["interferometry_out_dir"]+"InSAR_EWV.png")
+quit()
+
 
 
 

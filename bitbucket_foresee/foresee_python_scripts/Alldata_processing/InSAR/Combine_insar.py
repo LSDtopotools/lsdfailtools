@@ -11,7 +11,7 @@ import Insar_functions as fn
 with open("../../../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
-fail_dir = FILE_PATHS["interferometry_dir"]
+fail_dir = FILE_PATHS["interferometry_out_dir"]
 topo_dir = FILE_PATHS["topo_dir"]
 topo_file = topo_dir + "eu_dem_AoI_epsg32633.bil"
 
@@ -23,16 +23,16 @@ for i in range(len(threshold)):
 
 	print ('threshold', threshold[i], 'mm/yr')
 
-	Aarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_directory+"A_failtime_1_threshold"+str(threshold[i])+"mmyr.bil")
-	preAarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_directory+"A_prefailtime_1_threshold"+str(threshold[i])+"mmyr.bil")
+	Aarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_dir+"A_failtime_1_threshold"+str(threshold[i])+"mmyr.bil")
+	preAarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_dir+"A_prefailtime_1_threshold"+str(threshold[i])+"mmyr.bil")
 	A_startdate = datetime.datetime(2016, 11, 4)
 
-	Darr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_directory+"A_failtime_1_threshold"+str(threshold[i])+"mmyr.bil")
-	preDarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_directory+"D_prefailtime_1_threshold"+str(threshold[i])+"mmyr.bil")
+	Darr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_dir+"A_failtime_1_threshold"+str(threshold[i])+"mmyr.bil")
+	preDarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_dir+"D_prefailtime_1_threshold"+str(threshold[i])+"mmyr.bil")
 	D_startdate = datetime.datetime(2016, 9, 3)
 
-	EWVarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_directory+"A_failtime_1_threshold"+str(threshold[i])+"mmyr.bil")
-	preEWVarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_directory+"EWV_prefailtime_1_threshold"+str(threshold[i])+"mmyr.bil")
+	EWVarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_dir+"A_failtime_1_threshold"+str(threshold[i])+"mmyr.bil")
+	preEWVarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fail_dir+"EWV_prefailtime_1_threshold"+str(threshold[i])+"mmyr.bil")
 	EWV_startdate = datetime.datetime(2016, 11, 4)
 
 	Combo_failarr = np.zeros(Aarr.shape, dtype = np.float)
@@ -89,8 +89,8 @@ for i in range(len(threshold)):
 
 
 	# save the files
-	fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fail_directory+"All_1st_failtime__threshold"+str(threshold[i])+"mmyr.bil", pixelWidth, Combo_failarr)
-	fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fail_directory+"All_1st_prefailtime__threshold"+str(threshold[i])+"mmyr.bil", pixelWidth, Combo_prefailarr)
+	fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fail_dir+"All_1st_failtime__threshold"+str(threshold[i])+"mmyr.bil", pixelWidth, Combo_failarr)
+	fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fail_dir+"All_1st_prefailtime__threshold"+str(threshold[i])+"mmyr.bil", pixelWidth, Combo_prefailarr)
 
 
 
