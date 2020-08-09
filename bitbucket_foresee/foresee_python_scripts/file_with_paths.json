@@ -8,7 +8,10 @@
      "piezo_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Piezometer/",
      "calib_dir" : "/home/willgoodwin/PostDoc/Foresee/Calib_Valid/Current_test/",
      "sentinel_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Sentinel/",
-     "interferometry_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/Failure/",
+     "sentinel_out_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_output_files/",
+     "interferometry_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/",
+     "interferometry_out_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/interferometry_output_files/",
+     "sentinel_interf_out_dir" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_interferometry_output_files/",
      "inclino_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Inclinometer/",
      "ground_motion_failure" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/GroundMotion/Failure/",
      "rain_intensity_caliv_valid" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration_GG/"
