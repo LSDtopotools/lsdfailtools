@@ -14,7 +14,7 @@ with open("../../../../file_with_paths.json") as file_with_paths :
 #fail_dir = FILE_PATHS["interferometry_dir"]
 # base_dir
 interferometry_dir = FILE_PATHS["interferometry_dir"]
-out_failure_dir = interferometry_dir + "Failure/"
+out_failure_dir = FILE_PATHS["interferometry_out_dir"] 
 
 ascending_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.shp"
 descending_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.shp"

@@ -38,7 +38,7 @@ with open("../../../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 interferometry_dir = FILE_PATHS["interferometry_dir"]
-out_failure_dir = interferometry_dir + "Failure/"
+out_failure_dir = FILE_PATHS["interferometry_out_dir"]
 
 
 ew_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
@@ -106,16 +106,16 @@ preEWVarr = np.zeros((topo_array.shape[0],topo_array.shape[1], N_bands ), dtype 
 # time your run
 runstart = datetime.datetime.now()
 
-
+'''
 # Start a plot for the lols
 fig=plt.figure(1, facecolor='White',figsize=[7, 7])
 ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 ax2 =  ax1.twinx()
 
 # Load rainfall data from 03/09/2016 until the end of 2018 for the lols
-# MR: the dates are different to the ones initialy provided. Need to check this for consistency. 
-rain = bb.read_csv(FILE_PATHS["rain_intensity_caliv_valid"] + "2016-09-03_to_2018-12-31_Intensity.csv")
-rainlist = [datetime.datetime(2016, 9, 3)]
+# MR: the dates are different to the ones initialy provided. Need to check this for consistency.
+rain = bb.read_csv(FILE_PATHS["rain_intensity_caliv_valid"] + "2014-01-01_to_2019-12-31_Intensity.csv")
+rainlist = [datetime.datetime(2014, 1, 1)]
 for i in range(1,len(rain)):
 	rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
 rain['time'] = rainlist
@@ -123,7 +123,7 @@ rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 
 #plot the rain
 ax1.plot(rain['time'], rain['rainfall_mm'], '-b', lw = 0.5)
-
+'''
 
 
 
@@ -231,7 +231,7 @@ for th in range(len(threshold)):
 
 	"""
 
-	ax1.set_xlim(left = datetime.datetime(2016, 9, 3), right = datetime.datetime(2019, 6, 3))
+	ax1.set_xlim(left = datetime.datetime(2014, 1, 1), right = datetime.datetime(2019, 12, 31))
 	plt.show()
 
 	quit()
