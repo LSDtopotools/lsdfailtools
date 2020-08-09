@@ -223,8 +223,8 @@ def get_coordinates(df):
 ######################################################################
 ######################################################################
 # Find common values of two lists
-def common(a,b): 
-    c = [value for value in a if value in b] 
+def common(a,b):
+    c = [value for value in a if value in b]
     return c
 
 ######################################################################
@@ -327,7 +327,7 @@ def SegmentedLinearReg( X, Y, breakpoints, nIterationMax = 10):
         Rk = [ramp( X - xk ) for xk in breakpoints ]
         Sk = [step( X - xk ) for xk in breakpoints ]
         A = np.array([ ones, X ] + Rk + Sk )
-        p =  lstsq(A.transpose(), Y, rcond=None)[0] 
+        p =  lstsq(A.transpose(), Y, rcond=None)[0]
 
         # Parameters identification:
         a, b = p[0:2]
@@ -335,7 +335,7 @@ def SegmentedLinearReg( X, Y, breakpoints, nIterationMax = 10):
         dk = p[ 2+len(breakpoints): ]
 
         # Estimation of the next break-points:
-        newBreakpoints = breakpoints - dk/ck 
+        newBreakpoints = breakpoints - dk/ck
 
         # Stop condition
         if np.max(np.abs(newBreakpoints - breakpoints)) < dt/5:
@@ -347,7 +347,7 @@ def SegmentedLinearReg( X, Y, breakpoints, nIterationMax = 10):
 
     # Compute the final segmented fit:
     Xsolution = np.insert( np.append( breakpoints, max(X) ), 0, min(X) )
-    ones =  np.ones_like(Xsolution) 
+    ones =  np.ones_like(Xsolution)
     Rk = [ c*ramp( Xsolution - x0 ) for x0, c in zip(breakpoints, ck) ]
 
     Ysolution = a*ones + b*Xsolution + np.sum( Rk, axis=0 )
@@ -438,9 +438,9 @@ def plot_disp_failure(all_movement, all_movement_dates, all_failures, rain, slop
         if len(failures) > 0:
             for f in failures:
                 ax11.scatter(movement_dates[f], 0, marker = 'o', facecolor = plt.cm.jet(255*source))
-        
 
-            
+
+
     if source == 0:
         ax1.set_xlim(left = startdate, right = enddate)
         ax1.set_xlabel('Time (yr)')
@@ -473,7 +473,7 @@ def plot_dva(all_movement, all_movement_dates, rain, slope, startdate, enddate,i
         movement_dates = all_movement_dates[source]
 
         for k in range(len(movement)):
-            
+
             #plot the rain
             axess[k].fill_between(rain['time'], 0, rain['rainfall_mm'], facecolor = 'k', lw = 0.1, alpha = 0.8)
 
@@ -482,7 +482,7 @@ def plot_dva(all_movement, all_movement_dates, rain, slope, startdate, enddate,i
             for l in range(len(movk)):
                 if len(movk[l]) > 0:
                     axes[k].plot(movement_dates[k], movk[l], '-', c = plt.cm.jet(255*source), lw = 0.8)
-            
+
             if source == 0:
                 axes[k].set_xlim(left = startdate, right = enddate)
                 axes[k].set_xlabel('Time (yr)')
@@ -520,7 +520,7 @@ def plot_dva_linfit(all_movement, all_movement_dates, fit, rain, slope, startdat
         movement_dates = all_movement_dates[source]
 
         for k in range(len(movement)):
-            
+
             #plot the rain
             axess[k].fill_between(rain['time'], 0, rain['rainfall_mm'], facecolor = 'k', lw = 0.1, alpha = 0.8)
 
@@ -529,7 +529,7 @@ def plot_dva_linfit(all_movement, all_movement_dates, fit, rain, slope, startdat
             for l in range(len(movk)):
                 if len(movk[l]) > 0:
                     axes[k].plot(movement_dates[k], movk[l], '-', c = plt.cm.jet(255*source), lw = 0.8)
-            
+
             if source == 0:
                 axes[k].set_xlim(left = startdate, right = enddate)
                 axes[k].set_xlabel('Time (yr)')
@@ -575,11 +575,11 @@ def plot_movement(s_av10, dates_s_av10, ewv_av10, dates_ewv_av10, rain, slope, s
     if len(s_av10) > 0:
         for k in range(len(s_av10)):
             ax1.plot(dates_s_av10, s_av10[k], '-', c = plt.cm.jet(0), lw = 0.8)
-    
+
     if len(ewv_av10) > 0:
         for k in range(len(ewv_av10)):
             ax1.plot(dates_ewv_av10, ewv_av10[k], '-+', c = plt.cm.jet(255), lw = 0.8)
-    
+
     ax1.set_xlim(left = startdate, right = enddate)
 
     ax1.set_xlabel('Time (yr)')
@@ -664,10 +664,10 @@ def plot_dva_failure(i, rain, dates, disp, av10_disp, inst_vel, inst_vel_av10, i
 
     ax1.plot(dates, disp, '--', c = plt.cm.jet(0), lw = 0.5)
     ax1.plot(dates[5:-5], av10_disp, c = plt.cm.jet(0), lw = 1)
-    
+
     ax2.plot(dates[1:], inst_vel/1000., '--', c = plt.cm.jet(0), lw = 0.5)
     ax2.plot(dates[6:-5], inst_vel_av10/1000., c = plt.cm.jet(0), lw = 1)
-    
+
     ax3.plot(dates[2:], inst_acc/(1000.), '--', c = plt.cm.jet(0), lw = 0.5)
     ax3.plot(dates[7:-5], inst_acc_av10/(1000.), c = plt.cm.jet(0), lw = 1)
 

@@ -37,7 +37,7 @@ import Combo_functions as fn
 with open("../../../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
-print "The base output directory is {}".format(FILE_PATHS["ground_motion_failure"])
+print("The base output directory is {}".format(FILE_PATHS["ground_motion_failure"]))
 
 
 
@@ -46,12 +46,13 @@ out_dir = FILE_PATHS["ground_motion_failure"]
 
 sentinel_dir = FILE_PATHS["sentinel_dir"]
 # INTERFEROMETRY DATA from CosmoSkyMed
-cosmo_dir = FILE_PATHS["interferometry_dir"]
+interferometry_dir = FILE_PATHS["interferometry_dir"]
+
 
 
 # The coordinates in thes files are in UTMZone33N: EPSG32633.
-ew_file = cosmo_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
-v_file = cosmo_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
+ew_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
+v_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
 
 # For some unknown reason the coordinates in this file are in UTMZone32N: EPSG32632
 sentinel_file_badproj = sentinel_dir + "FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2.shp"
@@ -99,7 +100,7 @@ S_intervals = S_dates[1:] - S_dates[:-1]
 S_intervals_yr = [ item.days/365 for item in S_intervals ]
 
 # Open the Cosmo-SkyMed files. They have the same dates
-print ('Opening Cosmo-SkyMed file')
+print ('Opening Cosmo-SkyMed (interferometry) file')
 EW = gpd.read_file(ew_file)
 V = gpd.read_file(v_file)
 EWV_coords = fn.get_coordinates(EW)
