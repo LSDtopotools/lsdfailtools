@@ -41,10 +41,9 @@ piezo_dir = FILE_PATHS["piezo_dir"]
 
 
 interferometry_dir = FILE_PATHS["interferometry_dir"]
+sentinel_out_dir = FILE_PATHS["sentinel_out_dir"]
 
 
-
--------
 sentinel_dir = FILE_PATHS["sentinel_dir"]
 
 # The coordinates in this file are in UTMZone32N: EPSG32632
@@ -97,7 +96,7 @@ pixelHeight = geotransform[5]
 ################################################################################
 ################################################################################
 # 0. Define a failure threshold among several options
-threshold = [150] # m/yr2
+threshold = [1000] # m/yr2
 N_bands = 3
 
 # 1. create 3 nul arrays (Aarr, Darr, and EWVarr) of the shape of topo_array and N_bands bands deep, containing float objects.
@@ -113,7 +112,7 @@ runstart = datetime.datetime.now()
 
 
 # Load rainfall data from 03/09/2016 until the end of 2018 for the lols
-rain = bb.read_csv("/home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv")
+rain = bb.read_csv(FILE_PATHS["rain_intensity_caliv_valid"] + "2014-01-01_to_2019-12-31_Intensity.csv")
 rainlist = [datetime.datetime(2014, 1, 1)]
 for i in range(1,len(rain)):
 	rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
@@ -231,8 +230,8 @@ for th in range(len(threshold)):
 	# 3. save the times of failure (depends on chosen number of bands)
 	for i in range(N_bands):
 		print ('saving band', i+1)
-		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), interferometry_dir+"Sentinel_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"myr2.bil", pixelWidth, Sarr[:,:,i])
-		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), interferometry_dir+"Sentinel_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"myr2.bil", pixelWidth, preSarr[:,:,i])
+		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), sentinel_out_dir+"Sentinel_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"myr2.bil", pixelWidth, Sarr[:,:,i])
+		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), sentinel_out_dir+"Sentinel_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"myr2.bil", pixelWidth, preSarr[:,:,i])
 
 
 
