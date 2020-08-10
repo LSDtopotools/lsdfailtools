@@ -40,8 +40,8 @@ import json
 import os
 
 import Validation_functions as fn
-import sys
-sys.path.insert(0,'../Visualisation')
+#import sys
+#sys.path.insert(0,'../Visualisation')
 
 import Figure_functions as ff
 
@@ -56,7 +56,7 @@ import Figure_functions as ff
 
 # Model directory
 
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 
@@ -144,7 +144,7 @@ depths  = np.arange(Iverson_MC_params.at[0,'depth'], Iverson_MC_params.at[1,'dep
 rainfile = rundir + StartDate + "_to_" + EndDate + "_Intensity.csv"
 rain = pd.read_csv(rainfile)
 
-if os.path.isfile(rundir+'Validated.csv') is False:
+if os.path.isfile(rundir+'Validated_MR.csv') is False:
 	fn.run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir)
 validated = pd.read_csv(rundir+'Validated.csv')
 
