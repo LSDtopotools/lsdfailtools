@@ -14,6 +14,7 @@ This is a file to make these pesky .csv files behave
 ################################################################################
 
 import os
+import json
 import numpy as np
 import pandas as bb
 import geopandas as gpd
