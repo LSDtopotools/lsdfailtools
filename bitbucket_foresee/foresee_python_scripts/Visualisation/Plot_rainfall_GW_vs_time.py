@@ -14,7 +14,7 @@ nodata_value = 999.
 # python PPT_CMD_RUN.py --ProdTP GPM_D --StartDate 2014-01-01 --EndDate 2019-12-31 --ProcessDir /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data --SptSlc /home/willgoodwin/PostDoc/Foresee/Data/Topography/eu_dem_v11_E40N20_AoI.bil --DirOut /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data/
 
 
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 
@@ -23,6 +23,7 @@ piezodata = bb.read_csv(piezofile)
 
 piezodata['DATE'] =  bb.to_datetime(piezodata['DATE'], format='%d/%m/%Y')
 
+fig_out_dir = FILE_PATHS["figures_dir"]
 
 
 
@@ -72,13 +73,12 @@ for i in range(1,max(piezodata['ID']+1)):
 	ax1.set_ylabel('Groundwater depth (m)')
 	ax2.set_ylabel('Daily rainfall (mm)')
 
-	plt.savefig('Figures/Piezo'+str(i)+'_GW_rainfall.png')
+	plt.savefig(fig_out_dir+str(i)+'_GW_rainfall_MR.png')
 
 quit()
 
 
 
-quit()
 
 
 
@@ -109,4 +109,4 @@ for a in range(len(cols)):
 
 
 plt.tight_layout(pad=0.7, w_pad=0.5, h_pad=1.2)
-plt.savefig(dir + 'Figure1.png')
+plt.savefig(fig_out_dir + 'Figure1.png')

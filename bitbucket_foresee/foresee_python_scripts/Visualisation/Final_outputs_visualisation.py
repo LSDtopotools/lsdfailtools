@@ -10,8 +10,14 @@ import pandas as pd
 import numpy as np
 import shapefile
 import itertools
+import json
 
-import functions as fn
+#MR: i´m assuming for now this is InSAR Insar_functions
+import sys
+sys.path.insert(0,'../Alldata_processing/InSAR')
+import Insar_functions as fn
+
+#import functions as fn
 import Figure_functions as ff
 
 
@@ -41,7 +47,7 @@ MCrun.run_MC_failure_test(df["duration_s"].values, df["intensity_mm_sec"].values
 Nodata_value = -9999.
 
 
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 
@@ -66,7 +72,7 @@ Num_cal = 200
 
 
 # failure data files
-faildir = FILE_PATHS["interferometry_dir"]
+faildir = FILE_PATHS["interferometry_out_dir"]
 failfile = faildir + "All_1st_failtime__threshold"+str(threshold)+"mmyr.bil"
 prefailfile = faildir + "All_1st_prefailtime__threshold"+str(threshold)+"mmyr.bil"
 
@@ -84,6 +90,8 @@ roadfile = roaddir + "Road_line.shp"
 calibdir = FILE_PATHS["run_dir"]
 calibfile = calibdir + "Calibrated.csv"
 
+rainfile = FILE_PATHS["rain_dir"]
+fig_out_dir = FILE_PATHS["figures_dir"]
 
 ######################################################
 ######################################################
@@ -113,46 +121,46 @@ calibrated = pd.read_csv(calibfile)
 
 #######################
 # Map calibrated points
-#ff.map_calibrated (demarr, calibrated, l, 12, 12, rundir + 'Map_calibrated_pixels.png')
+ff.map_calibrated (demarr, calibrated, l, 12, 12, fig_out_dir + 'Map_calibrated_pixels.png')
 
 
 ######################
 # Map the distribution in terms of failtimes
-#ff.plot_failtime (calibrated, 12, 12, rundir + 'Failtime_distribution.png')
+ff.plot_failtime (calibrated, 12, 12, fig_out_dir + 'Failtime_distribution.png')
 
 ######################
 # Map the distribution of parameters
-#ff.plot_parameters (calibrated, 7, 18, rundir + 'Failure_params.png')
+ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
 
 
 ######################
 # Map the validation
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#depths = np.arange(0.2,3.1,0.1)
-#ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Map_validation.png')
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+depths = np.arange(0.2,3.1,0.1)
+ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Map_validation.png')
 
 ######################
 # Look at some rain data
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#ff.plot_rain(rain, 15, 15, rundir + 'Rain.png')
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+ff.plot_rain(rain, 15, 15, fig_out_dir + 'Rain.png')
 
 ######################
 # Look at some rain data and failures
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#ff.plot_rain_failures(rain, calibrated, 15, 15, rundir + 'Rain_failures.png')
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+ff.plot_rain_failures(rain, calibrated, 15, 15, fig_out_dir + 'Rain_failures.png')
 
 
 ######################
 # Look at some rain data and failures
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#depths = np.arange(0.2,3.1,0.1)
-#ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Rain_failures_validation.png')
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+depths = np.arange(0.2,3.1,0.1)
+ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Rain_failures_validation.png')
 
 ######################
 # Try a PCA on calibratd points
-rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-depths = np.arange(0.2,3.1,0.1)
-ff.plot_rain_parameters_correlation(rain, calibrated, 10, 10, rundir + 'pca_test.png')
+#rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+#depths = np.arange(0.2,3.1,0.1)
+#ff.plot_rain_parameters_correlation(rain, calibrated, 10, 10, fig_out_dir + 'pca_test.png')
 
 
 #########

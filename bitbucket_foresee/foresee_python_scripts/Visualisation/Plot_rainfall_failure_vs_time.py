@@ -9,20 +9,22 @@ from itertools import product
 import matplotlib.pyplot as plt
 from osgeo import gdal, ogr, osr
 
-
+import sys
+sys.path.insert(0,'../Alldata_processing/InSAR')
 
 import Insar_functions as fn
 
 
 nodata_value = 999.
 
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 
 # Model directory
 rundir = FILE_PATHS["run_dir"]
 
+fig_out_dir = FILE_PATHS["figures_dir"]
 
 # Prepare rainfall data
 rainfile = FILE_PATHS["rain_dir"] + "2014-01-01_to_2019-12-31_Intensity.csv"
@@ -48,15 +50,15 @@ slopefile = FILE_PATHS["topo_dir"] + "eu_dem_AoI_epsg32633_SLOPE.bil"
 slope, post, geoinfo = fn.ENVI_raster_binary_to_2d_array(slopefile)
 
 # Prepare failure data
-faildir = FILE_PATHS["interferometry_dir"]
+faildir = FILE_PATHS["interferometry_out_dir"]
 failtypes = ["A", "D", "EWV"]
 failcolours = ['r', 'g', 'k']
+# MR: not sure what these start dates are??
 startdates = [datetime.datetime(2016,11,4), datetime.datetime(2016,9,3), datetime.datetime(2016,11,4)]
 
-#thresholds = [40, 60, 80, 100, 150, 200, 500, 1000]
-thresholds = [80, 100, 150, 200, 500, 1000]
-
-
+# thresholds = [40, 60, 80, 100, 150, 200, 500, 1000]
+# thresholds = [80, 100, 150, 200, 500, 1000]
+thresholds = [500]
 
 
 
@@ -123,14 +125,14 @@ for i in range(len(thresholds)):
 	ax1.set_ylabel('DEM slope (m/m)')
 	ax2.set_ylabel('Daily rainfall (mm)')
 
-	plt.savefig('Figures/'+failtypes[j]+'_Failtimes_threshold'+str(thresholds[i])+'_slope_rainfall.png')
+	plt.savefig(fig_out_dir+failtypes[j]+'_Failtimes_threshold'+str(thresholds[i])+'_slope_rainfall_MR.png')
 
 
 
 
 quit()
 
-
+# MR: not sure what the next bit dones - need to investigate 
 
 for a in range(len(cols)):
 
@@ -159,4 +161,4 @@ for a in range(len(cols)):
 
 
 plt.tight_layout(pad=0.7, w_pad=0.5, h_pad=1.2)
-plt.savefig(dir + 'Figure1.png')
+plt.savefig(fig_out_dir + 'Figure1_500.png')
