@@ -1,0 +1,4 @@
+lsdfailtools
+=========================
+
+.. automodule:: lsdfailtools
