@@ -33,6 +33,7 @@ Scripts to run first:
 1. Alldata_processing: process all the input data: Inclinometers, InSAR, Piezometers, Precipitation, Sentinel, Cosmo-SKYMed.
 
     1. COMBINED SENTINEL COSMO
+
         * `Combo_functions.py`: Obtains time series of ground motion data in line of sight directions. Calculates velocity and acceleration. Detects when the failure happens.
         Plots the rain along with the precipitation, cumulative displacement, velocity and acceleration for each of the pixels.
         Plots linear fit on the displacement axis for each pixel.
@@ -48,6 +49,7 @@ Scripts to run first:
     2. INCLINOMETERS
 
         Data needs:
+
             * Terrestrial data: inclinometer data and coordinates in .csv format.
             * Inclinometer data recorded: see README file in Inclinometers folder for more info.
 
@@ -57,6 +59,7 @@ Scripts to run first:
     3. PIEZOMETERS - measure ground water pressure
 
       Data needs:
+
         * Terrestrial data: piezometer data and coordinates in .csv format.
         * See piezometer README file for further info about piezometer data.
 
@@ -65,6 +68,7 @@ Scripts to run first:
     4. InSAR - shows the deformation of the soil column at ground level. Vertical and EW directions.
 
       Data needs:
+
         * Interferometry data.
         * Topography data - DEM.  
 
@@ -76,11 +80,13 @@ Scripts to run first:
     5. PRECIPITATION
 
       Data Needs:
+
         * Precipitation Data (has already been downloaded). If additional data needs to be downloaded, follow the README document on the Precipitation folder. This has the instructions on how to download the data.
 
     6. SENTINEL (this can possibly be deleted and use COMBINED SENTINEL COSMO)
 
       Data needs:
+
         * Sentinel timeseries shapefile
         * DEM file. These include velocity and acceleration.
         * Precipitation data as downloaded from the GPM website.
@@ -93,6 +99,7 @@ Scripts to run first:
   2. CALIBRATION
 
       Data Needs:
+
         * calibration_parameters.csv: Nruns, itermax, Num_cal, StartDate, EndDate, failinterval
         * iverson_MC_parameters.csv: D_0, K_sat, Iz_over_K_steady, friction_angle, cohesion, weight_of_water, weight_of_soil, depth
         * Ground Motion Failure data: for given time interval (.bil format)
@@ -108,12 +115,13 @@ Scripts to run first:
   3. VALIDATION
 
       Data Needs (same as for calibration):
+
         * calibration_parameters.csv
         * Iverson_MC_parameters.csv
         * Ground Motion Failure
         * DEM file
-        * slope file
-        * cut file
+        * Slope file
+        * Cut file
         * Road File
         * Precipitation command run file: .py file for precipitation
         * Piezometer: .csv file
@@ -124,6 +132,7 @@ Scripts to run first:
   4. VISUALISATION
 
       Data Needs:
+
         * InSAR failure and prefailure files in all directions.
         * DEM file (.bil)
         * Slope file (.bil)
