@@ -20,7 +20,7 @@ import pandas as bb
 import geopandas as gpd
 import functions as fn
 
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 ################################################################################

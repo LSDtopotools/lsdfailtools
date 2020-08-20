@@ -14,7 +14,7 @@ nodata_value = 999.
 # python PPT_CMD_RUN.py --ProdTP GPM_D --StartDate 2014-01-01 --EndDate 2019-12-31 --ProcessDir /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data --SptSlc /home/willgoodwin/PostDoc/Foresee/Data/Topography/eu_dem_v11_E40N20_AoI.bil --DirOut /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data/
 
 
-with open("../../../file_with_paths.json") as file_with_paths :
+with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 

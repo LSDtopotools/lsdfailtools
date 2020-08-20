@@ -34,7 +34,7 @@ import Insar_functions as fn
 # Set the path variables
 ################################################################################
 ################################################################################
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 interferometry_dir = FILE_PATHS["interferometry_dir"]

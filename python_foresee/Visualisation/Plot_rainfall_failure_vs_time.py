@@ -17,7 +17,7 @@ import Insar_functions as fn
 
 nodata_value = 999.
 
-with open("../../../file_with_paths.json") as file_with_paths :
+with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 
@@ -132,7 +132,7 @@ for i in range(len(thresholds)):
 
 quit()
 
-# MR: not sure what the next bit dones - need to investigate 
+# MR: not sure what the next bit dones - need to investigate
 
 for a in range(len(cols)):
 

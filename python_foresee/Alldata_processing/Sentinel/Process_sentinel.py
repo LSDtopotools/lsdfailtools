@@ -34,7 +34,7 @@ import Sentinel_functions as fn
 # Set the path variables
 ################################################################################
 ################################################################################
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 #piezo_dir = "/home/willgoodwin/PostDoc/Foresee/Data/Terrestrial/"
 piezo_dir = FILE_PATHS["piezo_dir"]

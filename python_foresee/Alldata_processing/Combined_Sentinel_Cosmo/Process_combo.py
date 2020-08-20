@@ -34,7 +34,7 @@ import Combo_functions as fn
 ################################################################################
 ################################################################################
 
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 print("The base output directory is {}".format(FILE_PATHS["ground_motion_failure"]))

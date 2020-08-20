@@ -23,7 +23,7 @@ print ('GO!')
 ######################################################
 import sys
 
-sys.path.insert(0,'../../../lsdfailtools-master/lsdfailtools')
+sys.path.insert(0,'../../lsdfailtools-master/lsdfailtools')
 # Importing the model
 import lsdfailtools.iverson2000 as iverson
 

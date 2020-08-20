@@ -47,7 +47,7 @@ MCrun.run_MC_failure_test(df["duration_s"].values, df["intensity_mm_sec"].values
 Nodata_value = -9999.
 
 
-with open("../../../file_with_paths.json") as file_with_paths :
+with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 

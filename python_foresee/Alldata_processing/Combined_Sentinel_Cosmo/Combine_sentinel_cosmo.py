@@ -12,7 +12,7 @@ sys.path.insert(0,'../InSAR')
 import Insar_functions as fn
 
 
-with open("../../../../file_with_paths.json") as file_with_paths :
+with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 print("The interferometry path is {}".format(FILE_PATHS["interferometry_dir"]))
