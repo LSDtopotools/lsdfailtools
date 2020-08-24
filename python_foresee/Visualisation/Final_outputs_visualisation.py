@@ -10,8 +10,14 @@ import pandas as pd
 import numpy as np
 import shapefile
 import itertools
+import json
 
-import functions as fn
+#MR: i´m assuming for now this is InSAR Insar_functions
+import sys
+sys.path.insert(0,'../Alldata_processing/InSAR')
+import Insar_functions as fn
+ #import functions as fn
+
 import Figure_functions as ff
 
 
@@ -40,8 +46,12 @@ MCrun.run_MC_failure_test(df["duration_s"].values, df["intensity_mm_sec"].values
 
 Nodata_value = -9999.
 
+with open("../../file_with_paths.json") as file_with_paths :
+    FILE_PATHS = json.load(file_with_paths)
+
+
 # Model directory
-rundir = "/home/willgoodwin/PostDoc/Foresee/Calibration/TestMC/"
+rundir = FILE_PATHS["run_dir"]
 
 # Number of MC runs
 Nruns = 25
@@ -60,23 +70,26 @@ Num_cal = 200
 
 
 # failure data files
-faildir = "/home/willgoodwin/PostDoc/Foresee/Data/Interferometry/Failure/"
+faildir = FILE_PATHS["interferometry_out_dir"]
 failfile = faildir + "All_1st_failtime__threshold"+str(threshold)+"mmyr.bil"
 prefailfile = faildir + "All_1st_prefailtime__threshold"+str(threshold)+"mmyr.bil"
 
 # topography files
-topodir = "/home/willgoodwin/PostDoc/Foresee/Data/Topography/"
+topodir = FILE_PATHS["topo_dir"]
 demfile = topodir + "eu_dem_AoI_epsg32633.bil"
 slopefile = topodir + "eu_dem_AoI_epsg32633_SLOPE.bil"
 
 # road files
-roaddir = "/home/willgoodwin/PostDoc/Foresee/Data/Road/"
+roaddir = FILE_PATHS["road_dir"]
 roadfile = roaddir + "Road_line.shp"
 
 # calibrated points files
-calibdir = "/home/willgoodwin/PostDoc/Foresee/Calibration/TestMC/"
+# need to check if this is the right directory
+calibdir = FILE_PATHS["run_dir"]
 calibfile = calibdir + "Calibrated.csv"
 
+rainfile = FILE_PATHS["rain_dir"]
+fig_out_dir = FILE_PATHS["figures_dir"]
 
 ######################################################
 ######################################################
@@ -106,41 +119,36 @@ calibrated = pd.read_csv(calibfile)
 
 #######################
 # Map calibrated points
-#ff.map_calibrated (demarr, calibrated, l, 12, 12, rundir + 'Map_calibrated_pixels.png')
-
+ff.map_calibrated (demarr, calibrated, l, 12, 12, fig_out_dir + 'Map_calibrated_pixels.png')
 
 ######################
 # Map the distribution in terms of failtimes
-#ff.plot_failtime (calibrated, 12, 12, rundir + 'Failtime_distribution.png')
-
+ ff.plot_failtime (calibrated, 12, 12, fig_out_dir + 'Failtime_distribution.png')
 ######################
 # Map the distribution of parameters
-#ff.plot_parameters (calibrated, 7, 18, rundir + 'Failure_params.png')
-
+ ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
 
 ######################
 # Map the validation
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#depths = np.arange(0.2,3.1,0.1)
-#ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Map_validation.png')
+ rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 
+depths = np.arange(0.2,3.1,0.1)
+ ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Map_validation.png')
 ######################
 # Look at some rain data
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#ff.plot_rain(rain, 15, 15, rundir + 'Rain.png')
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+ff.plot_rain(rain, 15, 15, fig_out_dir + 'Rain.png')
 
 ######################
 # Look at some rain data and failures
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#ff.plot_rain_failures(rain, calibrated, 15, 15, rundir + 'Rain_failures.png')
-
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+ff.plot_rain_failures(rain, calibrated, 15, 15, fig_out_dir + 'Rain_failures.png')
 
 ######################
 # Look at some rain data and failures
-#rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
-#depths = np.arange(0.2,3.1,0.1)
-#ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, rundir + 'Rain_failures_validation.png')
-
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+depths = np.arange(0.2,3.1,0.1)
+ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Rain_failures_validation.png')
 ######################
 # Try a PCA on calibratd points
 rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
@@ -214,7 +222,7 @@ while npoints < Num_cal:
 	print ('iteration:', iterations)
 	for i,j in product (range(demarr.shape[0]), range(demarr.shape[1])):
 		die_roll = np.random.rand()
-		
+
 		if selectarr[i,j] > die_roll and final_selectarr[i,j] != 1  and failarr[i,j]-prefailarr[i,j] > 2*24*3600 and failarr[i,j]-prefailarr[i,j] < 100*24*3600 and npoints < Num_cal:
 			final_selectarr[i,j] = 1
 			npoints += 1
@@ -250,7 +258,7 @@ start = datetime.now()
 # Run through the pixels
 for i,j in product (range(demarr.shape[0]), range(demarr.shape[1])):
 
-	#  Define the 
+	#  Define the
 	Z = demarr[i,j]
 	S = slopearr[i,j]
 	F = failarr[i,j]
@@ -260,7 +268,7 @@ for i,j in product (range(demarr.shape[0]), range(demarr.shape[1])):
 	if final_selectarr[i,j] == 1:
 		die_roll = np.random.rand()
 		print ('Calibrating pixel of coordinates:', i, j)
-		
+
 		# This is the interval of time in which the observed failure occurred
 		failinterval = F-P
 		print ('Observed failure interval:', failinterval/(24*3600), 'days')
@@ -309,14 +317,14 @@ for i,j in product (range(demarr.shape[0]), range(demarr.shape[1])):
 					print ('initiating storage of calibrated locations')
 					storage_df = work_df.copy(deep = True)
 					storage_df_exists = 1
-					
+
 				else:
 					print ('adding a location to storage')
 					storage_df = storage_df.append(work_df, ignore_index = True)
 
 				print (storage_df[['row', 'col', 'time_of_failure', 'insar_failtime', 'insar_prefailtime']])
 				break
-				
+
 			n+=1
 			print ()
 
@@ -335,19 +343,19 @@ for i,j in product (range(demarr.shape[0]), range(demarr.shape[1])):
 
 			quit()
 
-	
-
-
-
-
-		
 
 
 
 
 
 
-		
+
+
+
+
+
+
+
 
 
 
@@ -355,4 +363,4 @@ for i,j in product (range(demarr.shape[0]), range(demarr.shape[1])):
 
 	# 4. try further optimising by running MC in conjunction with GA stuff.
 
-	# 5. Figure out this failure threshold thingy. But for now just use 80 mm/yr. 
+	# 5. Figure out this failure threshold thingy. But for now just use 80 mm/yr.

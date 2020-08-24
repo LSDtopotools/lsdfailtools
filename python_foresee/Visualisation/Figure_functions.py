@@ -8,7 +8,11 @@ import numpy as np
 import shapefile
 import itertools
 
-import functions as fn
+mport sys
+sys.path.insert(0,'../Alldata_processing/InSAR')
+
+import Insar_functions as fn
+#import functions as fn
 
 # Importing the model
 import lsdfailtools.iverson2000 as iverson
@@ -62,7 +66,7 @@ def plot_failtime (calibrated, fig_height, fig_width, fig_name):
 	ax1.set_xlabel('time (days)')
 
 	late_failtimes = sorted(list(set(list(calibrated['insar_failtime']))))
-	
+
 	for i in range(len(late_failtimes)):
 		df = calibrated[calibrated['insar_failtime'] == late_failtimes[i]]
 		df['time_of_failure'] = df['time_of_failure']/(24*3600)
@@ -99,7 +103,7 @@ def plot_parameters (calibrated, fig_height, fig_width, fig_name):
 		shist, sbins = np.histogram(calibrated['S'], bins  = 7)
 
 		for s in range(len(sbins)-1):
-			sdf = calibrated[calibrated['S'] >= sbins[s]]	
+			sdf = calibrated[calibrated['S'] >= sbins[s]]
 			sdf = sdf[sdf['S'] < sbins[s+1]]
 
 			phist, pbins = np.histogram(sdf[paramlist[i]], bins = 10, density = True)
@@ -109,7 +113,7 @@ def plot_parameters (calibrated, fig_height, fig_width, fig_name):
 		shist, sbins = np.histogram(calibrated['Z'], bins  = 7)
 
 		for s in range(len(sbins)-1):
-			sdf = calibrated[calibrated['Z'] >= sbins[s]]	
+			sdf = calibrated[calibrated['Z'] >= sbins[s]]
 			sdf = sdf[sdf['Z'] < sbins[s+1]]
 
 			phist, pbins = np.histogram(sdf[paramlist[i]], bins = 10, density = True)
@@ -155,7 +159,7 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 			greater = sbins[np.where(sbins >= S)[0][0]]
 
 			#find the points that have been calibrated in this range
-			sdf = calibrated[calibrated['S'] >= lesser]	
+			sdf = calibrated[calibrated['S'] >= lesser]
 			sdf = sdf[sdf['S'] < greater]
 
 			# If there are indeed points in this category
@@ -217,7 +221,7 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 	unique, counts = np.unique(confusion, return_counts=True)
 	print(dict(zip(unique, counts)))
 
-	quit()
+	#quit()
 
 
 
@@ -333,7 +337,7 @@ def plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr
 			greater = sbins[np.where(sbins >= S)[0][0]]
 
 			#find the points that have been calibrated in this range
-			sdf = calibrated[calibrated['S'] >= lesser]	
+			sdf = calibrated[calibrated['S'] >= lesser]
 			sdf = sdf[sdf['S'] < greater]
 
 			# If there are indeed points in this category
@@ -509,9 +513,9 @@ def plot_sensitivity(rain, calibrated, fig_height, fig_width, fig_name):
 	axis.bar(cols, Xe)
 	axis.set_yscale('log')
 	axis.set_ylabel('Percentage explained variance')
-	
 
-	
+
+
 	plt.savefig(fig_name)
 
 
@@ -576,7 +580,7 @@ def plot_rain_parameters_correlation(rain, calibrated, fig_height, fig_width, fi
 
 
 	plt.show()
-	quit() 
+	quit()
 
 
 
@@ -629,10 +633,3 @@ def plot_rain_parameters_correlation(rain, calibrated, fig_height, fig_width, fi
 	plt.savefig(fig_name)
 
 	quit()
-
-
-
-
-
-
-
