@@ -46,7 +46,7 @@ MCrun.run_MC_failure_test(df["duration_s"].values, df["intensity_mm_sec"].values
 
 Nodata_value = -9999.
 
-with open("../../file_with_paths.json") as file_with_paths :
+with open("../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 
@@ -116,24 +116,25 @@ l = mlines.Line2D(roadline[:,0], roadline[:,1])
 # read calibrated points
 calibrated = pd.read_csv(calibfile)
 
-
+'''
 #######################
 # Map calibrated points
 ff.map_calibrated (demarr, calibrated, l, 12, 12, fig_out_dir + 'Map_calibrated_pixels.png')
 
 ######################
 # Map the distribution in terms of failtimes
- ff.plot_failtime (calibrated, 12, 12, fig_out_dir + 'Failtime_distribution.png')
+ff.plot_failtime (calibrated, 12, 12, fig_out_dir + 'Failtime_distribution.png')
 ######################
 # Map the distribution of parameters
- ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
-
+ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
+'''
 ######################
 # Map the validation
- rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 
 depths = np.arange(0.2,3.1,0.1)
- ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Map_validation.png')
+ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Map_validation.png')
+'''
 ######################
 # Look at some rain data
 rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
@@ -150,11 +151,12 @@ rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 depths = np.arange(0.2,3.1,0.1)
 ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Rain_failures_validation.png')
 ######################
+
 # Try a PCA on calibratd points
-rain = pd.read_csv(rundir+"Rainfall_Intensity.csv")
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 depths = np.arange(0.2,3.1,0.1)
 ff.plot_rain_parameters_correlation(rain, calibrated, 10, 10, rundir + 'pca_test.png')
-
+'''
 
 #########
 # What to do next?

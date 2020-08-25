@@ -1,6 +1,7 @@
 # I'll need that to process the outputs
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
 from itertools import product
 import  datetime
 import pandas as pd
@@ -8,7 +9,8 @@ import numpy as np
 import shapefile
 import itertools
 
-mport sys
+
+import sys
 sys.path.insert(0,'../Alldata_processing/InSAR')
 
 import Insar_functions as fn
@@ -145,7 +147,7 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 	sbins = np.arange(0,np.amax(slopearr), 0.05)
 
 	#for i,j in product(range(slopearr.shape[0]), range(slopearr.shape[1])):
-	for i,j in product(range(400,500,1), range(800,900,1)):
+	for i,j in product(range(400,410,1), range(800,810,1)):
 
 		if failarr[i,j] > 0.:
 			print (i,j)
@@ -208,13 +210,27 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
 
 
-	# do not show the calibrated points
+	# show the calibrated points
 	for i in range(len(calibrated)):
-		confusion[calibrated['row'].iloc[i], calibrated['row'].iloc[i]] = 0
+		confusion[calibrated['row'].iloc[i], calibrated['row'].iloc[i]] = 4
 
 
 	Cmask = np.ma.masked_where(confusion <= 0, confusion)
+	# MR: the error could be that this is Map1 as well instead of Map2
 	Map2 = ax1.imshow(Cmask, interpolation='None', cmap=plt.cm.jet_r, vmin = np.amin(Cmask), vmax = np.amax(Cmask), alpha = 1.)
+
+	unique_values = np.unique(Cmask.ravel())
+	unique_values_categories = ["Calibrated", "Pre failure", "At failure", "Post failure" ]
+	unique_values_dict = dict(zip(unique_values_categories, unique_values))
+
+	# get the colors of the values, accordiang to the colormap used by imshow
+	colors = [Map2.cmap(Map2.norm(value)) for value in unique_values]
+	# create a patch (proxy artist) for every color
+	#MR: need to make a dictionary to relate the values and the timing of the failure
+	patches = [mpatches.Patch(color=colors[i], label="{l}".format(l = unique_values_dict.keys())) for i in range(len(unique_values)) ]
+	#put those patches as legend-handles into the legend
+	plt.legend(handles=patches, bbox_to_anchor=(1.05,1), loc=2, borderaxespad=0.)
+
 
 
 	# print the proportions of each
@@ -225,7 +241,7 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 
 
 
-	plt.show()
+	#plt.show()
 
 
 	plt.tight_layout()
