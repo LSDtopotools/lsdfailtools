@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 from itertools import product
+from itertools import islice
+from collections import OrderedDict
 import  datetime
 import pandas as pd
 import numpy as np
@@ -132,10 +134,10 @@ def plot_parameters (calibrated, fig_height, fig_width, fig_name):
 # A figure to map validation results
 ######################################################
 ######################################################
-def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, fig_height, fig_width, fig_name):
+def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, road, fig_height, fig_width, fig_name):
 
 	confusion = 0*np.copy(slopearr)
-
+	print(np.shape(slopearr))
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 
@@ -146,8 +148,8 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 	#shist, sbins = np.histogram(calibrated['S'], bins  = 10)
 	sbins = np.arange(0,np.amax(slopearr), 0.05)
 
-	#for i,j in product(range(slopearr.shape[0]), range(slopearr.shape[1])):
-	for i,j in product(range(400,410,1), range(800,810,1)):
+	for i,j in product(range(slopearr.shape[0]), range(slopearr.shape[1])):
+	#for i,j in product(range(400,410,1), range(800,810,1)):
 
 		if failarr[i,j] > 0.:
 			print (i,j)
@@ -190,11 +192,11 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 				failures = mymodel.cppmodel.output_failure_times
 				failures = failures[failures > 1.][0]
 
-				error = 5 * 24*3600
+				error = 25 * 24*3600
 
 				if failures <= failarr[i,j] + error and failures >= prefailarr[i,j] - error:
 					confusion[i,j] = 3 # success
-					confusion[i-2:i+2,j-2:j+2] = 3 # success
+					confusion[i-2:i+2,j-2:j+2] = 3 # success - MR: why is there a margin here??
 				elif failures < prefailarr[i,j] - error:
 					confusion[i,j] = 2 # too soon
 					confusion[i-2:i+2,j-2:j+2] = 2 # too soon
@@ -210,31 +212,42 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
 
 
-	# show the calibrated points
+	calib_arr = 0* demarr
 	for i in range(len(calibrated)):
-		confusion[calibrated['row'].iloc[i], calibrated['row'].iloc[i]] = 4
+		x = calibrated['col'].iloc[i]
+		y = calibrated['row'].iloc[i]
+		calib_arr[y-2:y+2,x-2:x+2] = 4
 
+	new_arr_test = np.where(confusion <= 0, calib_arr, confusion)
+	Cmask = np.ma.masked_where(new_arr_test <= 0, new_arr_test)
+	unique_values = [1.0, 2.0, 3.0, 4.0]
 
-	Cmask = np.ma.masked_where(confusion <= 0, confusion)
+	Map2 = ax1.imshow(Cmask, interpolation='None', cmap=plt.cm.Set1,vmin = np.amin(unique_values), vmax = np.amax(unique_values), alpha = 1.)
+
 	# MR: the error could be that this is Map1 as well instead of Map2
-	Map2 = ax1.imshow(Cmask, interpolation='None', cmap=plt.cm.jet_r, vmin = np.amin(Cmask), vmax = np.amax(Cmask), alpha = 1.)
+	#Map2 = ax1.imshow(Cmask, interpolation='None', cmap=plt.cm.jet_r, vmin = np.amin(Cmask), vmax = np.amax(Cmask), alpha = 1.)
+	#ax1.add_line(road)
+	#Map2 = ax1.imshow(Cmask, interpolation='none')
+	#unique_values = np.unique(new_arr_test.ravel())
+	print(unique_values)
+	float_list_values = list(map(float, unique_values))
 
-	unique_values = np.unique(Cmask.ravel())
-	unique_values_categories = ["Calibrated", "Pre failure", "At failure", "Post failure" ]
-	unique_values_dict = dict(zip(unique_values_categories, unique_values))
+	unique_values_categories = [ "Post failure", "Pre failure", "At failure", "Calibrated" ]
 
+	unique_values_dict = OrderedDict(zip(unique_values_categories, unique_values))
+	print(unique_values_dict)
 	# get the colors of the values, accordiang to the colormap used by imshow
 	colors = [Map2.cmap(Map2.norm(value)) for value in unique_values]
 	# create a patch (proxy artist) for every color
 	#MR: need to make a dictionary to relate the values and the timing of the failure
-	patches = [mpatches.Patch(color=colors[i], label="{l}".format(l = unique_values_dict.keys())) for i in range(len(unique_values)) ]
+	patches = [mpatches.Patch(color=colors[i], label="{l}".format(l = list(unique_values_dict.keys())[i])) for i in range(len(unique_values)) ]
 	#put those patches as legend-handles into the legend
 	plt.legend(handles=patches, bbox_to_anchor=(1.05,1), loc=2, borderaxespad=0.)
 
 
 
 	# print the proportions of each
-	unique, counts = np.unique(confusion, return_counts=True)
+	unique, counts = np.unique(new_arr_test, return_counts=True)
 	print(dict(zip(unique, counts)))
 
 	#quit()

@@ -21,23 +21,6 @@ import Insar_functions as fn
 import Figure_functions as ff
 
 
-
-######################################################
-######################################################
-# This is an example of how the MC suff runs
-######################################################
-######################################################
-
-
-# set the parameters for the MC runs
-"""MCrun = iverson.MonteCarlo_Iverson( alpha_min = 0.1, D_0_min = 1e-6,K_sat_min = 1e-8, d_min = 0.5, Iz_over_K_steady_min = 0.1, friction_angle_min = 0.2, cohesion_min = 5000, weight_of_water_min = 9800, weight_of_soil_min = 15000,
-      alpha_max = 0.11, D_0_max = 1e-4,K_sat_max = 1e-6, d_max = 3,Iz_over_K_steady_max = 0.8, friction_angle_max = 0.5, cohesion_max = 20000, weight_of_water_max = 9801, weight_of_soil_max = 25000, depths = depths)
-
-# Now run it
-MCrun.run_MC_failure_test(df["duration_s"].values, df["intensity_mm_sec"].values,
-                          n_process = 2, output_name = "test_MC.csv", n_iterations = 10, replace = True)"""
-
-
 ######################################################
 ######################################################
 # set up stuff
@@ -51,7 +34,7 @@ with open("../file_with_paths.json") as file_with_paths :
 
 
 # Model directory
-rundir = FILE_PATHS["run_dir"]
+rundir = FILE_PATHS["rain_intensity_caliv_valid"]
 
 # Number of MC runs
 Nruns = 25
@@ -85,8 +68,8 @@ roadfile = roaddir + "Road_line.shp"
 
 # calibrated points files
 # need to check if this is the right directory
-calibdir = FILE_PATHS["run_dir"]
-calibfile = calibdir + "Calibrated.csv"
+calibdir = FILE_PATHS["rain_intensity_caliv_valid"]
+calibfile = calibdir + "Calibrated_all.csv"
 
 rainfile = FILE_PATHS["rain_dir"]
 fig_out_dir = FILE_PATHS["figures_dir"]
@@ -133,7 +116,7 @@ ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
 rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 
 depths = np.arange(0.2,3.1,0.1)
-ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Map_validation.png')
+ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, roadfile, 15, 15, fig_out_dir + 'Map_validation_test.png')
 '''
 ######################
 # Look at some rain data
