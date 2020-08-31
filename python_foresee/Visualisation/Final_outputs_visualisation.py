@@ -27,8 +27,6 @@ import Figure_functions as ff
 ######################################################
 ######################################################
 
-Nodata_value = -9999.
-
 with open("../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
@@ -36,20 +34,13 @@ with open("../file_with_paths.json") as file_with_paths :
 # Model directory
 rundir = FILE_PATHS["rain_intensity_caliv_valid"]
 
-# Number of MC runs
-Nruns = 25
-
-# Number of while loopies
-itermax = 50
-
 # Setting the depth resolution vector
 depths = np.arange(0.2,3.1,0.1)
 
 #failure threshold
 threshold = 80 # mm/yr
 
-# Number of points to be calibrated
-Num_cal = 200
+
 
 
 # failure data files
@@ -73,6 +64,9 @@ calibfile = calibdir + "Calibrated_all.csv"
 
 rainfile = FILE_PATHS["rain_dir"]
 fig_out_dir = FILE_PATHS["figures_dir"]
+
+validdir = FILE_PATHS["rain_intensity_caliv_valid"]
+validfile = validdir +"Validated.csv"
 
 ######################################################
 ######################################################
@@ -98,6 +92,8 @@ l = mlines.Line2D(roadline[:,0], roadline[:,1])
 
 # read calibrated points
 calibrated = pd.read_csv(calibfile)
+validated = pd.read_csv(validfile)
+rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 
 '''
 #######################
@@ -113,10 +109,12 @@ ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
 '''
 ######################
 # Map the validation
-rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+
 
 depths = np.arange(0.2,3.1,0.1)
-ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, roadfile, 15, 15, fig_out_dir + 'Map_validation_test.png')
+#ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, roadfile, 15, 15, fig_out_dir + 'Map_validation_test.png')
+ff.map_validation_updated(rain, depths, calibrated, validated, road, demarr, slopearr, failarr, 25, 15, 15, fig_out_dir + 'Map_validation_test_updated.png')
+
 '''
 ######################
 # Look at some rain data
@@ -160,6 +158,3 @@ ff.plot_rain_parameters_correlation(rain, calibrated, 10, 10, rundir + 'pca_test
 # Essentially: make useful tools and functions
 
 #########
-
-
-quit()

@@ -137,7 +137,6 @@ def plot_parameters (calibrated, fig_height, fig_width, fig_name):
 def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, road, fig_height, fig_width, fig_name):
 
 	confusion = 0*np.copy(slopearr)
-	print(np.shape(slopearr))
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 
@@ -259,6 +258,59 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 
 	plt.tight_layout()
 	plt.savefig(fig_name)
+
+
+
+#def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, road, fig_height, fig_width, fig_name):
+
+
+def map_validation_updated(rain, depths, calibrated, validated, road, demarr, slopearr, failarr, failinterval, fig_height, fig_width, fig_name):
+	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
+
+	failinterval = failinterval * 3600*24
+	calib_arr = 0* demarr
+	#for i in range(400, 420, 1):
+	for i in range(len(calibrated)):
+		x = calibrated['col'].iloc[i]
+		y = calibrated['row'].iloc[i]
+		calib_arr[y-2:y+2,x-2:x+2] = 1
+
+
+	valid_arr = 0* demarr
+	#for i in range(400, 420, 1):
+	for i in range(len(validated)):
+		x = int(validated['col'].iloc[i])
+		y = int(validated['row'].iloc[i])
+		if x >=2 and y >= 2 and x <= len(demarr[0]) - 2 and y <= len(demarr) -2:
+
+			if validated['time_of_failure'].iloc[i] <= validated['observed_failtime'].iloc[i] + failinterval and validated['time_of_failure'].iloc[i] >= validated['observed_failtime'].iloc[i] - failinterval :
+				valid_arr[y-2:y+2,x-2:x+2] = 4 #success
+			elif validated['time_of_failure'].iloc[i] > validated['observed_failtime'].iloc[i] + failinterval:
+				valid_arr[y-2:y+2,x-2:x+2] = 3 # too late
+			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
+				valid_arr[y-2:y+2,x-2:x+2] = 2 # too soon
+
+
+	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
+	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
+
+	#ax1.add_line(road)
+
+
+	valid_mask = np.ma.masked_where(valid_arr <= 0, valid_arr)
+	Map2 = ax1.imshow(valid_mask, interpolation='None', cmap=plt.cm.jet_r, vmin = 1, vmax = 3, alpha = 1.)
+
+
+	calib_mask = np.ma.masked_where(calib_arr == 0., calib_arr)
+	Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.cool,
+	    vmin = 0, vmax = 1, alpha = 1.)
+
+
+
+	plt.tight_layout()
+	plt.savefig(fig_name)
+
 
 
 ######################################################
