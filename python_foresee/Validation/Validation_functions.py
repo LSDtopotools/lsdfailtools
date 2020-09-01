@@ -24,6 +24,7 @@ import pandas as pd
 import numpy as np
 import lsdfailtools.iverson2000 as iverson
 from itertools import product
+import matplotlib.lines as mlines
 
 
 
@@ -200,7 +201,28 @@ def ENVI_raster_binary_from_2d_array(envidata, file_out, post, image_array):
 
 
 
+################################################################################
+################################################################################
+def calc_dist2road(dimensions, roadline, geotransform):
 
+    print ('Calculating distance to road')
+
+    # set up the conditions for calibration to happen
+    distarr = np.zeros((dimensions), dtype = np.float)
+
+    # now convert it to pixel coordinates
+    roadline[:,0] = (roadline[:,0] - geotransform[0]) / geotransform[1] # X_coord
+    roadline[:,1] = (roadline[:,1] - geotransform[3]) / geotransform[5] # Y_coord
+    roadline = roadline.astype('int')
+    l = mlines.Line2D(roadline[:,0], roadline[:,1])
+
+
+    # then calculate a matrix of distances to it!
+    for i,j in product(range(dimensions[0]), range(dimensions[1])):
+            distarr[i,j] = min((j-roadline[:,0])**2 + (i-roadline[:,1])**2)
+    distarr[distarr <= 0.] = 1
+
+    return distarr
 
 
 
@@ -244,7 +266,7 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
             greater = sbins[np.where(sbins >= S)[0][0]]
 
             #find the points that have been calibrated in this range
-            sdf = calibrated[calibrated['S'] >= lesser] 
+            sdf = calibrated[calibrated['S'] >= lesser]
             sdf = sdf[sdf['S'] < greater]
 
             # If there are indeed points in this category
@@ -255,7 +277,8 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
                 where = np.where(np.asarray(dist) == min(np.asarray(dist)))[0]
 
                 select_df = sdf.iloc[where]
-                mean_df = select_df.mean(axis = 0)
+                #mean_df = select_df.mean(axis = 0)
+				mean_df = select_df.iloc[0]
 
                 mymodel = iverson.iverson_model(alpha = S,
                     D_0 = mean_df['D_0'],
@@ -264,15 +287,19 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
                     Iz_over_K_steady = mean_df['Iz_over_K_steady'],
                     friction_angle = mean_df['friction_angle'],
                     cohesion = mean_df['cohesion'],
-                    weight_of_water = 9800,
+                    weight_of_water = mean_df['weight_of_water'],
                     weight_of_soil = mean_df['weight_of_soil'],
                     depths = depths)
 
-                mymodel.run(rain.duration_s.values, rain.intensity_mm_sec.values)
+                mymodel.run(rain['duration_s'].values, rain['intensity_mm_sec'].values)
 
 
                 failures = mymodel.cppmodel.output_failure_times
-                failures = failures[failures > 1.][0]
+                failures_b = mymodel.cppmodel.output_failure_bool
+	                if len(failures) > 0 and len(failures_b[failures_b ==True]) > 1:
+	                    failures = failures[failures_b ==True][0]
+	                else:
+	                    failures = 0
 
                 valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures,'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
 
@@ -280,7 +307,7 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
 
 
 
-              
+
 
 
 
@@ -350,7 +377,7 @@ def process_days(arglist, zero_list, zero_dir, fst_dir, backslh):
 	if zero_list.endswith('.nc4') > -1 and zero_list.find('.xml') == -1 and zero_list.find('.aux') == -1 and zero_list.find('.tfw') == -1:
 			extract_subdata = '%s%s%s' % (zero_dir, backslh, zero_list)
 			outfile = '%s%s%s_precipitationCal.bil' % (fst_dir,backslh, zero_list[:-4])
-			
+
 			process_nc4(outfile,extract_subdata,arglist)
 			extract_subdata = outfile = None
 
@@ -389,7 +416,7 @@ def assess_fitness (results, F, P, Nruns):
 
         # calculate the time differences
         notlater = F - failtimes
-        notsooner = failtimes - P        
+        notsooner = failtimes - P
 
         # Which failtimes are within observed times?
         inbounds_ID = np.where(np.logical_and(notlater > 0, notsooner>0))[0]
@@ -494,7 +521,7 @@ def MC_loop (rain, S, depths, Nruns, rundir, work_df):
     # Now run it
     MCrun.run_MC_failure_test(rain["duration_s"].values, rain["intensity_mm_sec"].values,
                       n_process = 2, output_name = "test_MC_close.csv", n_iterations = N1, replace = True)
-    
+
     # now open the MC test filexx
     results_close = pd.read_csv(rundir+"test_MC_close.csv")
 
@@ -505,7 +532,7 @@ def MC_loop (rain, S, depths, Nruns, rundir, work_df):
     # Now run it
     MCrun.run_MC_failure_test(rain["duration_s"].values, rain["intensity_mm_sec"].values,
                       n_process = 2, output_name = "test_MC_far.csv", n_iterations = N2, replace = True)
-    
+
     # now open the MC test filexx
     results_far = pd.read_csv(rundir+"test_MC_far.csv")
     results = results_close.append(results_far, ignore_index = True)
