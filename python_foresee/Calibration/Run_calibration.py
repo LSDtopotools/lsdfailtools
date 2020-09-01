@@ -160,9 +160,6 @@ fn.calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW_d_in
 # PICK UP HERE!
 
 # Things to do to improve this thing:
-# 1.
-
-
 
 # 3. What do you do about GW depth? data shows it to be anywhere between 0.2m and 10m ...
 
@@ -192,42 +189,3 @@ Map2 = ax1.imshow(select_mask, interpolation='None', cmap=plt.cm.jet, vmin = 0, 
 
 print ('figure saved')
 plt.savefig(rundir+ 'selected_points_for_calibration.jpg')"""
-
-
-
-######################################################
-######################################################
-# This is an example of how the MC works
-######################################################
-######################################################
-
-
-# set the parameters for the MC runs
-"""MCrun = iverson.MonteCarlo_Iverson( alpha_min = 0.1, D_0_min = 1e-6,K_sat_min = 1e-8, d_min = 0.5, Iz_over_K_steady_min = 0.1, friction_angle_min = 0.2, cohesion_min = 5000, weight_of_water_min = 9800, weight_of_soil_min = 15000,
-      alpha_max = 0.11, D_0_max = 1e-4,K_sat_max = 1e-6, d_max = 3,Iz_over_K_steady_max = 0.8, friction_angle_max = 0.5, cohesion_max = 20000, weight_of_water_max = 9801, weight_of_soil_max = 25000, depths = depths)
-
-# Now run it
-MCrun.run_MC_failure_test(df["duration_s"].values, df["intensity_mm_sec"].values,
-                          n_process = 2, output_name = "test_MC.csv", n_iterations = 10, replace = True)"""
-
-
-
-
-# here's how a single run works
-
-#mymodel = iverson.iverson_model(alpha = 0.51, D_0 = 5e-6,K_sat = 5e-8, d = 2,Iz_over_K_steady = 0.2, friction_angle = 0.38, cohesion = 12000, weight_of_water = 9800, weight_of_soil = 19000, depths = depths)
-#mymodel.run(df.duration_s.values, df.intensity_mm_sec.values)
-
-# and here are the outputs
-#mymodel.cppmodel.output_times
-#mymodel.cppmodel.output_depthsFS
-#mymodel.cppmodel.output_minFS
-#mymodel.cppmodel.output_PsiFS
-#mymodel.cppmodel.output_durationFS
-#mymodel.cppmodel.output_intensityFS
-#mymodel.cppmodel.output_failure_times
-#mymodel.cppmodel.output_failure_mindepths
-#mymodel.cppmodel.output_failure_maxdepths
-#mymodel.cppmodel.output_Psi_timedepth
-#mymodel.cppmodel.output_FS_timedepth
-#mymodel.cppmodel.output_failure_bool

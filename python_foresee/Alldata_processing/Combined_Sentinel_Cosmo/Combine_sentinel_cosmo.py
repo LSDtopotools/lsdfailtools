@@ -102,31 +102,10 @@ for i in range(len(threshold)):
 
 
 
-quit()
-
-
 
 #############################################################################
 #############################################################################
 #############################################################################
-
-
-# Define dates
-cols = EW.columns.values
-datecols = np.array([item for item in cols if item.startswith('D20')])
-dates = np.array([ datetime.datetime.strptime(item, 'D%Y%m%d') for item in datecols ])
-intervals = dates[1:] - dates[:-1]
-intervals_yr = [ item.days/365 for item in intervals ]
-velocity_dates = dates[1:]
-
-# Load the topography file
-topo_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(topo_file)
-
-originX = geotransform[0]
-originY = geotransform[3]
-pixelWidth = geotransform[1]
-pixelHeight = geotransform[5]
-
 
 
 # The approach will be:
@@ -156,89 +135,3 @@ pixelHeight = geotransform[5]
 #########################################################################################
 #########################################################################################
 #########################################################################################
-
-# 0. Define a failure threshold for velocity. e.g.: 500 mm/yr
-threshold = [40, 60, 80, 100, 150, 200, 500, 1000] # mm/yr
-N_bands = 3
-
-# 1. create 3 nul arrays (Aarr, Darr, and EWVarr) of the shape of topo_array and N_bands bands deep, containing float objects.
-EWV_startdate = datetime.datetime.strptime(datecols[0], 'D%Y%m%d')
-EWVarr = np.zeros((topo_array.shape[0],topo_array.shape[1], N_bands ), dtype = np.float)
-preEWVarr = np.zeros((topo_array.shape[0],topo_array.shape[1], N_bands ), dtype = np.float)
-
-
-
-runstart = datetime.datetime.now()
-
-for th in range(len(threshold)):
-	print("failure threshold velocity:", threshold[th], 'mm/yr')
-
-
-	# 2. loop through the points in EW or V
-	for i in range(len(EW)):
-		ew = EW.iloc[i]
-		v = V.iloc[i]
-
-		# 2.1 assign the point to a pixel
-		p = ew['geometry']
-		x_id = int( (p.x - originX)/pixelWidth )
-		y_id = int( (p.y - originY)/pixelHeight )
-
-		# 2.2 calculate the 2D displacement velocity timeseries in the EW-V plane for that point
-		disp_ew = np.array(ew[datecols])
-		disp_v = np.array(v[datecols])
-
-		inst_vel_ew = (disp_ew[1:] - disp_ew[:-1]) / intervals_yr
-		inst_vel_v = (disp_v[1:] - disp_v[:-1]) / intervals_yr
-
-		sq_magnitude_2D = inst_vel_ew**2 + inst_vel_v**2
-
-		# 2.3 every time velocity > threshold, fill a band with the date of failure observation.
-		failures = np.where(sq_magnitude_2D > threshold[th]**2)[0]
-		if len(failures) > 0:
-			# NB: consecutive indices count as one failure
-			consec_fail =  failures[:-1] - failures [1:]
-			to_keep = [0] + list((np.where(consec_fail != -1)[0] + 1))
-			failures = failures[to_keep]
-			prefailures = failures-1
-
-			# NB: assign time to failures
-			faildates = velocity_dates[failures]
-			failtimes = faildates - EWV_startdate
-
-			prefaildates = velocity_dates[prefailures]
-			prefailtimes = prefaildates - EWV_startdate
-
-
-			for k in range(len(failtimes)): failtimes[k] = failtimes[k].total_seconds()
-			for k in range(len(prefailtimes)): prefailtimes[k] = prefailtimes[k].total_seconds()
-
-			# fill the array "bands"
-			# cells are filled if:
-			# - they are not filled (0)
-			# - there is an existing failure but it is later than the one we just found
-			# - there is a non-failing point (-1)
-			for k in range(len(failtimes[:N_bands])):
-				if EWVarr[y_id, x_id, k] <= 0:
-					EWVarr[y_id, x_id, k] = failtimes[k]
-					preEWVarr[y_id, x_id, k] = prefailtimes[k]
-				else:
-					EWVarr[y_id, x_id, k] = min(failtimes[k], EWVarr[y_id, x_id, k])
-					preEWVarr[y_id, x_id, k] = min(prefailtimes[k], preEWVarr[y_id, x_id, k])
-
-		# 2.4 if there are no failures, mark the date as -1
-		else:
-			EWVarr[y_id, x_id, :] = -1
-			preEWVarr[y_id, x_id, :] = -1
-
-
-	# 3. save the times of failure (depends on chosen number of bands)
-	for i in range(N_bands):
-		print ('saving band', i+1)
-		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"EWV_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, EWVarr[:,:,i])
-		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_directory+"EWV_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, preEWVarr[:,:,i])
-
-
-
-
-quit()
