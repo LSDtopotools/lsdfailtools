@@ -1,4 +1,5 @@
 # I'll need that to process the outputs
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from itertools import product
@@ -62,7 +63,7 @@ def plot_failtime_abandonedplot (calibrated, fig_height, fig_width, fig_name):
 	ax1.set_xlabel('time (days)')
 
 	late_failtimes = sorted(list(set(list(calibrated['observed_failtime']))))
-	
+
 	for i in range(len(late_failtimes)):
 		df = calibrated[calibrated['observed_failtime'] == late_failtimes[i]]
 		df['time_of_failure'] = df['time_of_failure']/(24*3600)
@@ -85,9 +86,9 @@ def plot_failtime (calibrated, fig_height, fig_width, fig_name):
 
 	ax1.set_xlabel('Observed failure time (days)')
 	ax1.set_ylabel('Calibrated failure time (days)')
-	
+
 	for i in range(len(calibrated)):
-		
+
 		O = calibrated['time_of_failure'].iloc[i]/(24*3600)
 		C = calibrated['observed_failtime'].iloc[i]/(24*3600)
 
@@ -125,7 +126,7 @@ def plot_parameters (calibrated, fig_height, fig_width, fig_name):
 		shist, sbins = np.histogram(calibrated['S'], bins  = 7)
 
 		for s in range(len(sbins)-1):
-			sdf = calibrated[calibrated['S'] >= sbins[s]]	
+			sdf = calibrated[calibrated['S'] >= sbins[s]]
 			sdf = sdf[sdf['S'] < sbins[s+1]]
 
 			phist, pbins = np.histogram(sdf[paramlist[i]], bins = 10, density = True)
@@ -135,7 +136,7 @@ def plot_parameters (calibrated, fig_height, fig_width, fig_name):
 		shist, sbins = np.histogram(calibrated['Z'], bins  = 7)
 
 		for s in range(len(sbins)-1):
-			sdf = calibrated[calibrated['Z'] >= sbins[s]]	
+			sdf = calibrated[calibrated['Z'] >= sbins[s]]
 			sdf = sdf[sdf['Z'] < sbins[s+1]]
 
 			phist, pbins = np.histogram(sdf[paramlist[i]], bins = 10, density = True)
@@ -177,21 +178,27 @@ def map_validation(rain, depths, calibrated, validated, road, demarr, slopearr, 
 			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
 				valid_arr[y-2:y+2,x-2:x+2] = 1
 
+			valid_arr[y-2:y+2,x-2:x+2] = abs(validated['time_of_failure'].iloc[i] - validated['observed_failtime'].iloc[i]) /(24*3600)
 
 	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
 	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
 
-	ax1.add_line(road)
+	R = ax1.add_line(road)
 
 
 	valid_mask = np.ma.masked_where(valid_arr <= 0, valid_arr)
-	Map2 = ax1.imshow(valid_mask, interpolation='None', cmap=plt.cm.jet_r, vmin = 1, vmax = 3, alpha = 1.)
+	Map2 = ax1.imshow(valid_mask, interpolation='None', cmap=plt.cm.jet, vmin = 0, vmax = np.amax(valid_mask), alpha = 1.)
 
 
 	calib_mask = np.ma.masked_where(calib_arr == 0., calib_arr)
 	Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.cool,
 	    vmin = 0, vmax = 1, alpha = 1.)
 
+	norm = mpl.colors.Normalize(vmin=0, vmax=np.amax(valid_mask))
+	cmap = plt.cm.jet
+	cax = fig.add_axes([0.95, 0.2, 0.02, 0.6])
+	cb = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, spacing='proportional')
+	cb.set_label('Difference between modelled and observed failure times (days)')
 
 
 	plt.tight_layout()
@@ -204,27 +211,32 @@ def map_validation(rain, depths, calibrated, validated, road, demarr, slopearr, 
 # A figure to map calibrated points
 ######################################################
 ######################################################
-def plot_failtime_calib_valid (calibrated, validated, fig_height, fig_width, fig_name):
+def plot_failtime_calib_valid (calibrated, validated, rain, fig_height, fig_width, fig_name):
 
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
+	ax11 = ax1.twinx()
+	ax12 = ax1.twiny()
 
 	ax1.set_xlabel('Observed failure time (days)')
 	ax1.set_ylabel('Modelled failure time (days) (red = calibrated; blue = validation)')
-	
+
+	#ax11.fill_between(rain['time_s']/(3600*24), 0, rain['rainfall_mm'], facecolor = 'k', lw = 0.1, alpha = 0.5)
+	ax12.fill_between(rain['rainfall_mm'], 0, rain['time_s']/(3600*24), facecolor = 'k', lw = 0.1, alpha = 0.5)
+
 	for i in range(len(calibrated)):
-		
+
 		O = calibrated['time_of_failure'].iloc[i]/(24*3600)
 		C = calibrated['observed_failtime'].iloc[i]/(24*3600)
 
-		ax1.scatter(C,O, marker = 'o', facecolor = 'r', lw = 0.5, alpha = 0.7)
+		ax1.scatter(C,O, marker = 'o', facecolor = 'r', lw = 0.0, alpha = 0.7)
 
 	for i in range(len(validated)):
-		
+
 		O = validated['time_of_failure'].iloc[i]/(24*3600)
 		C = validated['observed_failtime'].iloc[i]/(24*3600)
 
-		ax1.scatter(C,O, marker = '+', facecolor = 'b', lw = 0.5, alpha = 0.7)
+		ax1.scatter(C,O, marker = '+', facecolor = 'b', lw = 2, alpha = 0.7)
 
 	ax1.plot([0,max(calibrated['time_of_failure'])/(24*3600)], [0,max(calibrated['time_of_failure'])/(24*3600)], '-k', lw = 2)
 
@@ -337,7 +349,7 @@ def plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr
 			greater = sbins[np.where(sbins >= S)[0][0]]
 
 			#find the points that have been calibrated in this range
-			sdf = calibrated[calibrated['S'] >= lesser]	
+			sdf = calibrated[calibrated['S'] >= lesser]
 			sdf = sdf[sdf['S'] < greater]
 
 			# If there are indeed points in this category
@@ -513,9 +525,9 @@ def plot_sensitivity(rain, calibrated, fig_height, fig_width, fig_name):
 	axis.bar(cols, Xe)
 	axis.set_yscale('log')
 	axis.set_ylabel('Percentage explained variance')
-	
 
-	
+
+
 	plt.savefig(fig_name)
 
 
@@ -580,7 +592,7 @@ def plot_rain_parameters_correlation(rain, calibrated, fig_height, fig_width, fi
 
 
 	plt.show()
-	quit() 
+	quit()
 
 
 
@@ -633,10 +645,3 @@ def plot_rain_parameters_correlation(rain, calibrated, fig_height, fig_width, fi
 	plt.savefig(fig_name)
 
 	quit()
-
-
-
-
-
-
-

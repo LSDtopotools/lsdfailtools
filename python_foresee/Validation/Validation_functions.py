@@ -252,6 +252,7 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
     valid_df= pd.DataFrame(columns=['alpha', 'D_0', 'K_sat', 'd','Iz_over_K_steady','friction_angle','cohesion','weight_of_water','weight_of_soil','time_of_failure','S','Z','row','col','observed_failtime'])
 
     for i,j in product(range(slopearr.shape[0]), range(slopearr.shape[1])):
+    #for i,j in product(range(0,20,1), range(500,820,1)):
         #for i,j in product(range(500,600,1), range(800,900,1)):
 
         if failarr[i,j] > 0.:
@@ -277,8 +278,8 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
                 where = np.where(np.asarray(dist) == min(np.asarray(dist)))[0]
 
                 select_df = sdf.iloc[where]
+                mean_df = select_df.iloc[0]
                 #mean_df = select_df.mean(axis = 0)
-				mean_df = select_df.iloc[0]
 
                 mymodel = iverson.iverson_model(alpha = S,
                     D_0 = mean_df['D_0'],
@@ -296,14 +297,14 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
 
                 failures = mymodel.cppmodel.output_failure_times
                 failures_b = mymodel.cppmodel.output_failure_bool
-	                if len(failures) > 0 and len(failures_b[failures_b ==True]) > 1:
-	                    failures = failures[failures_b ==True][0]
-	                else:
-	                    failures = 0
+                if len(failures) > 0 and len(failures_b[failures_b ==True]) > 1:
+                    failures = failures[failures_b ==True][0]
+                else:
+                    failures = 0
 
                 valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures,'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
 
-    valid_df.to_csv(rundir + 'Validated.csv', index=False)
+    valid_df.to_csv(rundir + 'Validated_updated.csv', index=False)
 
 
 
