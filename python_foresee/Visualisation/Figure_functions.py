@@ -1,6 +1,7 @@
 # I'll need that to process the outputs
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+
 import matplotlib.patches as mpatches
 from itertools import product
 from itertools import islice
@@ -69,10 +70,10 @@ def plot_failtime (calibrated, fig_height, fig_width, fig_name):
 
 	ax1.set_xlabel('time (days)')
 
-	late_failtimes = sorted(list(set(list(calibrated['insar_failtime']))))
+	late_failtimes = sorted(list(set(list(calibrated['observed_failtime']))))
 
 	for i in range(len(late_failtimes)):
-		df = calibrated[calibrated['insar_failtime'] == late_failtimes[i]]
+		df = calibrated[calibrated['observed_failtime'] == late_failtimes[i]]
 		df['time_of_failure'] = df['time_of_failure']/(24*3600)
 
 		ax1.hist(df['time_of_failure'], bins = 20, color = plt.cm.jet(i/len(late_failtimes)), lw = 0, density = True, alpha = 0.7)
@@ -261,24 +262,21 @@ def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefaila
 
 
 
-#def map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, road, fig_height, fig_width, fig_name):
 
 
 def map_validation_updated(rain, depths, calibrated, validated, road, demarr, slopearr, failarr, failinterval, fig_height, fig_width, fig_name):
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 
-	failinterval = failinterval * 3600*24
 	calib_arr = 0* demarr
-	#for i in range(400, 420, 1):
 	for i in range(len(calibrated)):
 		x = calibrated['col'].iloc[i]
 		y = calibrated['row'].iloc[i]
 		calib_arr[y-2:y+2,x-2:x+2] = 1
+		print(calib_arr[i,j])
 
 
 	valid_arr = 0* demarr
-	#for i in range(400, 420, 1):
 	for i in range(len(validated)):
 		x = int(validated['col'].iloc[i])
 		y = int(validated['row'].iloc[i])
@@ -290,28 +288,145 @@ def map_validation_updated(rain, depths, calibrated, validated, road, demarr, sl
 				valid_arr[y-2:y+2,x-2:x+2] = 3 # too late
 			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
 				valid_arr[y-2:y+2,x-2:x+2] = 2 # too soon
+			#valid_arr[y-2:y+2,x-2:x+2] = abs(validated['time_of_failure'].iloc[i] - validated['observed_failtime'].iloc[i]) /(24*3600)
 
 
 	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
 	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
 
+	R = ax1.add_line(road)
+
+	calib_valid = np.where(valid_arr < 1, calib_arr, valid_arr)
+
+	calib_valid_mask = np.ma.masked_where(calib_valid <= 0, calib_valid)
+	#print(calib_valid_mask)
+	#Map2 = ax1.imshow(valid_mask, interpolation='None', cmap=plt.cm.jet_r, vmin = 1, vmax = 4, alpha = 1.)
+
+	#calib_valid = np.where(valid_arr == 0, calib_arr, valid_arr)
+
+	#calib_valid_mask = np.ma.masked_where(calib_valid <= 0., calib_valid)
+	#Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.cool, alpha = 1.)
+
+	#calib_valid = np.where(valid_arr <= 0, calib_arr, valid_arr)
+	#calib_valid_mask = np.ma.masked_where(calib_valid <= 0, calib_valid)
+	####
+
+	unique_values = [1.0, 2.0, 3.0, 4.0]
+	print(np.amin(calib_valid_mask))
+	print(np.amax(calib_valid_mask))
+
+	Map2 = ax1.imshow(calib_valid_mask, interpolation='None', cmap=plt.cm.jet_r, vmin = np.amin(calib_valid_mask) , vmax=  np.amax(calib_valid_mask), alpha = 1.)
+
+	# MR: the error could be that this is Map1 as well instead of Map2
+	#Map2 = ax1.imshow(Cmask, interpolation='None', cmap=plt.cm.jet_r, vmin = np.amin(Cmask), vmax = np.amax(Cmask), alpha = 1.)
 	#ax1.add_line(road)
+	#Map2 = ax1.imshow(Cmask, interpolation='none')
+	#unique_values = np.unique(new_arr_test.ravel())
+
+	print(unique_values)
+	float_list_values = list(map(float, unique_values))
+
+	#unique_values_categories = [ "Post failure", "Pre failure", "At failure", "Calibrated" ]
+	unique_values_categories = [ "Calibrated", "Pre failure", "Post failure", "At failure" ]
+
+	unique_values_dict = OrderedDict(zip(unique_values_categories, unique_values))
+	print(unique_values_dict)
+	# get the colors of the values, accordiang to the colormap used by imshow
+	colors = [Map2.cmap(Map2.norm(value)) for value in unique_values]
+	# create a patch (proxy artist) for every color
+	#MR: need to make a dictionary to relate the values and the timing of the failure
+	patches = [mpatches.Patch(color=colors[i], label="{l}".format(l = list(unique_values_dict.keys())[i])) for i in range(len(unique_values)) ]
+	#put those patches as legend-handles into the legend
+	plt.legend(handles=patches, bbox_to_anchor=(1.05,1), loc=2, borderaxespad=0.)
 
 
-	valid_mask = np.ma.masked_where(valid_arr <= 0, valid_arr)
-	Map2 = ax1.imshow(valid_mask, interpolation='None', cmap=plt.cm.jet_r, vmin = 1, vmax = 3, alpha = 1.)
 
-
-	calib_mask = np.ma.masked_where(calib_arr == 0., calib_arr)
-	Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.cool,
-	    vmin = 0, vmax = 1, alpha = 1.)
-
+	# print the proportions of each
+	unique, counts = np.unique(calib_valid_mask, return_counts=True)
+	print(unique, counts)
 
 
 	plt.tight_layout()
 	plt.savefig(fig_name)
 
+def map_validation_arrays(rain, depths, calibrated, validated, road, demarr, slopearr, failarr, failinterval, fig_height, fig_width, fig_name):
+	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 
+	calib_arr = 0* demarr
+	for i in range(len(calibrated)):
+		x = calibrated['col'].iloc[i]
+		y = calibrated['row'].iloc[i]
+		calib_arr[y-2:y+2,x-2:x+2] = 1
+
+	valid_arr = 0* demarr
+	at_failure = 0*demarr
+	pre_failure = 0 * demarr
+	post_failure = 0 * demarr
+	for i in range(len(validated)):
+		x = int(validated['col'].iloc[i])
+		y = int(validated['row'].iloc[i])
+		if x >=2 and y >= 2 and x <= len(demarr[0]) - 2 and y <= len(demarr) -2:
+
+			if validated['time_of_failure'].iloc[i] <= validated['observed_failtime'].iloc[i] + failinterval and validated['time_of_failure'].iloc[i] >= validated['observed_failtime'].iloc[i] - failinterval :
+				at_failure[y-2:y+2,x-2:x+2] = 4 #success
+			elif validated['time_of_failure'].iloc[i] > validated['observed_failtime'].iloc[i] + failinterval:
+				post_failure[y-2:y+2,x-2:x+2] = 3 # too late
+			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
+				pre_failure[y-2:y+2,x-2:x+2] = 2 # too soon
+			#valid_arr[y-2:y+2,x-2:x+2] = abs(validated['time_of_failure'].iloc[i] - validated['observed_failtime'].iloc[i]) /(24*3600)
+
+
+	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
+	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
+
+	R = ax1.add_line(road)
+	at_failure_mask = np.ma.masked_where(at_failure <= 0, at_failure)
+	pre_failure_mask = np.ma.masked_where(pre_failure <= 0, pre_failure)
+	post_failure_mask = np.ma.masked_where(post_failure <= 0, post_failure)
+	calib_arr_mask = np.ma.masked_where(calib_arr <= 0, calib_arr)
+
+	Map4 = ax1.imshow(post_failure_mask, interpolation='None', cmap=plt.cm.winter, alpha = 1.) # dark blue
+	Map3 = ax1.imshow(pre_failure_mask, interpolation='None', cmap=plt.cm.cool, alpha = 1.) # light blue
+
+	Map2 = ax1.imshow(at_failure_mask, interpolation='None', cmap=plt.cm.cool_r, alpha = 1.) # pink
+	Map5 = ax1.imshow(calib_arr_mask, interpolation='None', cmap=plt.cm.autumn_r, alpha = 1.) # yellow
+
+	unique_values = [1.0, 2.0, 3.0, 4.0]
+
+	float_list_values = list(map(float, unique_values))
+
+	#unique_values_categories = [ "Post failure", "Pre failure", "At failure", "Calibrated" ]
+	unique_values_categories = [ "Calibrated", "Before recorded failure", "After recorded failure", "At recorded failure" ]
+
+	unique_values_dict = OrderedDict(zip(unique_values_categories, unique_values))
+	print(unique_values_dict)
+	# get the colors of the values, accordiang to the colormap used by imshow
+	colors = ['yellow', 'cyan', 'blue', 'fuchsia']
+	# create a patch (proxy artist) for every color
+	#MR: need to make a dictionary to relate the values and the timing of the failure
+	patches = [mpatches.Patch(color=colors[i], label="{l}".format(l = list(unique_values_dict.keys())[i])) for i in range(len(unique_values)) ]
+	#put those patches as legend-handles into the legend
+	plt.legend(handles=patches, fontsize = 12, bbox_to_anchor=(0, 0, 0.5, 0.5), loc='lower left', title='Timings of predicted failure')#, borderaxespad=0.5)
+	plt.tick_params(
+    axis='both',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    bottom=False,      # ticks along the bottom edge are off
+    top=False,
+	left=False,        # ticks along the top edge are off
+    labelbottom=False,
+	labelleft=False) # labels along the bottom edge are off
+	plt.title("Distribution of predicted failures", fontsize = 26, pad = 10.)
+
+	# print the proportions of each
+	#unique, counts = np.unique(calib_valid_mask, return_counts=True)
+	#print(unique, counts)
+
+
+
+
+	plt.tight_layout()
+	plt.savefig(fig_name)
 
 ######################################################
 ######################################################

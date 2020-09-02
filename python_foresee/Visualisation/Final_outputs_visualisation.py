@@ -66,7 +66,10 @@ rainfile = FILE_PATHS["rain_dir"]
 fig_out_dir = FILE_PATHS["figures_dir"]
 
 validdir = FILE_PATHS["rain_intensity_caliv_valid"]
-validfile = validdir +"Validated.csv"
+validfile = validdir +"Validated_updated.csv"
+
+Cal_params_dir = FILE_PATHS["rain_intensity_caliv_valid"]
+Cal_params_file = Cal_params_dir+"Calibration_parameters.csv"
 
 ######################################################
 ######################################################
@@ -88,12 +91,16 @@ roadline = np.array(road.shapes()[0].points)
 roadline[:,0] = (roadline[:,0] - geotransform[0]) / geotransform[1] # X_coord
 roadline[:,1] = (roadline[:,1] - geotransform[3]) / geotransform[5] # Y_coord
 roadline = roadline.astype('int')
-l = mlines.Line2D(roadline[:,0], roadline[:,1])
+line = mlines.Line2D(roadline[:,0], roadline[:,1], linewidth = 1., color='black')
 
 # read calibrated points
 calibrated = pd.read_csv(calibfile)
+Cal_params = pd.read_csv(Cal_params_file)
 validated = pd.read_csv(validfile)
 rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+
+failinterval = Cal_params.at[0,'failinterval'] * 24 * 3600
+
 
 '''
 #######################
@@ -113,7 +120,8 @@ ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
 
 depths = np.arange(0.2,3.1,0.1)
 #ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, roadfile, 15, 15, fig_out_dir + 'Map_validation_test.png')
-ff.map_validation_updated(rain, depths, calibrated, validated, road, demarr, slopearr, failarr, 25, 15, 15, fig_out_dir + 'Map_validation_test_updated.png')
+#failinterval = Cal_params_file.at[0,'failinterval'] * 24 * 3600 --> it is 25 in the file, but need to fix this bug to read directly from here
+ff.map_validation_arrays(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_test_updated.png')
 
 '''
 ######################
