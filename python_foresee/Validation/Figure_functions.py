@@ -74,31 +74,6 @@ def plot_failtime_abandonedplot (calibrated, fig_height, fig_width, fig_name):
 	plt.savefig(fig_name)
 
 
-######################################################
-######################################################
-# A figure to map calibrated points
-######################################################
-######################################################
-def plot_failtime (calibrated, fig_height, fig_width, fig_name):
-
-	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
-	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
-
-	ax1.set_xlabel('Observed failure time (days)')
-	ax1.set_ylabel('Calibrated failure time (days)')
-
-	for i in range(len(calibrated)):
-
-		O = calibrated['time_of_failure'].iloc[i]/(24*3600)
-		C = calibrated['observed_failtime'].iloc[i]/(24*3600)
-
-		ax1.scatter(O,C, marker = '+', facecolor = 'r', lw = 0.5, alpha = 0.7)
-
-	ax1.plot([0,max(calibrated['time_of_failure'])/(24*3600)], [0,max(calibrated['time_of_failure'])/(24*3600)], '-k', lw = 2)
-
-	plt.tight_layout()
-	plt.savefig(fig_name)
-
 
 ######################################################
 ######################################################
