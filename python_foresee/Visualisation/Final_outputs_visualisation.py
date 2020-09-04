@@ -102,45 +102,46 @@ rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 failinterval = Cal_params.at[0,'failinterval'] * 24 * 3600
 
 
-'''
+
 #######################
 # Map calibrated points
-ff.map_calibrated (demarr, calibrated, l, 12, 12, fig_out_dir + 'Map_calibrated_pixels.png')
+#ff.map_calibrated (demarr, calibrated, line, 10, 15, fig_out_dir + 'Map_calibrated_pixels.png')
 
 ######################
 # Map the distribution in terms of failtimes
-ff.plot_failtime (calibrated, 12, 12, fig_out_dir + 'Failtime_distribution.png')
+#ff.plot_failtime (calibrated, 12, 12, fig_out_dir + 'Failtime_distribution.png')
 ######################
+
 # Map the distribution of parameters
-ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
-'''
+#ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
+
 ######################
 # Map the validation
 
 
 depths = np.arange(0.2,3.1,0.1)
 #ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, roadfile, 15, 15, fig_out_dir + 'Map_validation_test.png')
-#failinterval = Cal_params_file.at[0,'failinterval'] * 24 * 3600 --> it is 25 in the file, but need to fix this bug to read directly from here
-ff.map_validation_arrays(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_test_updated.png')
+#ff.map_validation_arrays(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_test_updated.png')
+ff.map_validation_colorbar(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_with_colorbar_2.png')
 
-'''
 ######################
 # Look at some rain data
-rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
-ff.plot_rain(rain, 15, 15, fig_out_dir + 'Rain.png')
+#rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+#ff.plot_rain(rain, 15, 15, fig_out_dir + 'Rain.png')
 
 ######################
 # Look at some rain data and failures
-rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
-ff.plot_rain_failures(rain, calibrated, 15, 15, fig_out_dir + 'Rain_failures.png')
+#rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+#ff.plot_rain_failures(rain, calibrated, 15, 15, fig_out_dir + 'Rain_failures.png')
 
 ######################
 # Look at some rain data and failures
-rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
-depths = np.arange(0.2,3.1,0.1)
-ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Rain_failures_validation.png')
+# deprecated graph
+#rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
+#depths = np.arange(0.2,3.1,0.1)
+#ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Rain_failures_validation.png')
 ######################
-
+'''
 # Try a PCA on calibratd points
 rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 depths = np.arange(0.2,3.1,0.1)

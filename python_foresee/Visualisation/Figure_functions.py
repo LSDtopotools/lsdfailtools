@@ -1,6 +1,10 @@
 # I'll need that to process the outputs
+import matplotlib as mpl
+mpl.use('Agg')
+
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+from matplotlib.colors import DivergingNorm
 
 import matplotlib.patches as mpatches
 from itertools import product
@@ -11,7 +15,6 @@ import pandas as pd
 import numpy as np
 import shapefile
 import itertools
-
 
 import sys
 sys.path.insert(0,'../Alldata_processing/InSAR')
@@ -49,9 +52,17 @@ def map_calibrated (demarr, calibrated, road, fig_height, fig_width, fig_name):
 		calib_arr[y-2:y+2,x-2:x+2] = 1
 
 	calib_mask = np.ma.masked_where(calib_arr == 0., calib_arr)
-	Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.jet,
+	Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.autumn,
 	    vmin = 0, vmax = 1, alpha = 1.)
-
+	plt.title("Calibrated Failure Points", fontsize = 26, pad = 10.)
+	plt.tick_params(
+    axis='both',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    bottom=False,      # ticks along the bottom edge are off
+    top=False,
+	left=False,        # ticks along the top edge are off
+    labelbottom=False,
+	labelleft=False) # labels along the bottom edge are off
 	plt.tight_layout()
 	plt.savefig(fig_name)
 
@@ -60,7 +71,7 @@ def map_calibrated (demarr, calibrated, road, fig_height, fig_width, fig_name):
 
 ######################################################
 ######################################################
-# A figure to map calibrated points
+# A figure to plot the distribution of  calibrated points
 ######################################################
 ######################################################
 def plot_failtime (calibrated, fig_height, fig_width, fig_name):
@@ -84,7 +95,7 @@ def plot_failtime (calibrated, fig_height, fig_width, fig_name):
 
 ######################################################
 ######################################################
-# A figure to map calibrated points
+# A figure to plot how the moedel parameters change with slope and elevation
 ######################################################
 ######################################################
 def plot_parameters (calibrated, fig_height, fig_width, fig_name):
@@ -428,6 +439,87 @@ def map_validation_arrays(rain, depths, calibrated, validated, road, demarr, slo
 	plt.tight_layout()
 	plt.savefig(fig_name)
 
+
+
+
+def map_validation_colorbar(rain, depths, calibrated, validated, road, demarr, slopearr, failarr, failinterval, fig_height, fig_width, fig_name):
+
+	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
+
+	calib_arr = 0* demarr
+	for i in range(len(calibrated)):
+		x = calibrated['col'].iloc[i]
+		y = calibrated['row'].iloc[i]
+		calib_arr[y-2:y+2,x-2:x+2] = 1
+
+
+	valid_arr = 0* demarr
+	for i in range(len(validated)):
+		x = int(validated['col'].iloc[i])
+		y = int(validated['row'].iloc[i])
+		if x >=2 and y >= 2 and x <= len(demarr[0]) - 2 and y <= len(demarr) -2:
+
+			if validated['time_of_failure'].iloc[i] <= validated['observed_failtime'].iloc[i] + failinterval and validated['time_of_failure'].iloc[i] >= validated['observed_failtime'].iloc[i] - failinterval :
+				valid_arr[y-2:y+2,x-2:x+2] = 4
+			elif validated['time_of_failure'].iloc[i] > validated['observed_failtime'].iloc[i] + failinterval:
+				valid_arr[y-2:y+2,x-2:x+2] = 2
+			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
+				valid_arr[y-2:y+2,x-2:x+2] = 1
+			# if time_of_failure - observed_failtime < 0 : modelled failure detected before observed failure
+			# if time_of_failure - observed_failtime > 0 : modelled failure detected after observed failure
+			valid_arr[y-2:y+2,x-2:x+2] = (validated['time_of_failure'].iloc[i] - validated['observed_failtime'].iloc[i]) /(24*3600)
+
+	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
+	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
+
+	R = ax1.add_line(road)
+
+
+	valid_mask = np.ma.masked_where(valid_arr == -0, valid_arr)
+	Map2 = ax1.imshow(valid_mask, interpolation='None', norm=DivergingNorm(0), cmap=plt.cm.flag, vmin = np.amin(valid_mask), vmax = np.amax(valid_mask), alpha = 1.)
+
+
+	calib_mask = np.ma.masked_where(calib_arr == 0., calib_arr)
+	Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.cool, vmin = 0, vmax = 1, alpha = 1.)
+
+
+
+	unique_values = [1.0]
+
+	float_list_values = list(map(float, unique_values))
+
+	#unique_values_categories = [ "Post failure", "Pre failure", "At failure", "Calibrated" ]
+	unique_values_categories = [ "Calibrated"]
+
+	unique_values_dict = OrderedDict(zip(unique_values_categories, unique_values))
+	print(unique_values_dict)
+	# get the colors of the values, accordiang to the colormap used by imshow
+	colors = ['fuchsia']
+	# create a patch (proxy artist) for every color
+	#MR: need to make a dictionary to relate the values and the timing of the failure
+	patches = [mpatches.Patch(color=colors[i], label="{l}".format(l = list(unique_values_dict.keys())[i])) for i in range(len(unique_values)) ]
+	#put those patches as legend-handles into the legend
+	plt.legend(handles=patches, fontsize = 12, bbox_to_anchor=(0, 0, 0.5, 0.5), loc='lower left')#, borderaxespad=0.5)
+	plt.tick_params(
+    axis='both',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    bottom=False,      # ticks along the bottom edge are off
+    top=False,
+	left=False,        # ticks along the top edge are off
+    labelbottom=False,
+	labelleft=False) # labels along the bottom edge are off
+	plt.title('Difference between modelled and observed failure times (days)', fontsize = 26, pad = 10.)
+	print(np.amin(valid_mask), np.amax(valid_mask))
+	norm = mpl.colors.Normalize(vmin=np.amin(valid_mask), vmax=np.amax(valid_mask))
+	cmap = plt.cm.flag
+	cax = fig.add_axes([0.93, 0.2, 0.02, 0.6])
+	cb = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, spacing='proportional')
+
+	#3lt.tight_layout()
+	plt.savefig(fig_name)
+
+
 ######################################################
 ######################################################
 # A figure to map validation results
@@ -439,7 +531,7 @@ def plot_rain(rain, fig_height, fig_width, fig_name):
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 
-	rainlist = [datetime.datetime(2016, 9, 3)]
+	rainlist = [datetime.datetime(2014, 1, 1)]
 	for i in range(1,len(rain)):
 		rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
 
@@ -454,7 +546,7 @@ def plot_rain(rain, fig_height, fig_width, fig_name):
 
 ######################################################
 ######################################################
-# A figure to map validation results
+# A figure to plot precipitation and when the failures happens
 ######################################################
 ######################################################
 
@@ -464,7 +556,7 @@ def plot_rain_failures(rain, calibrated, fig_height, fig_width, fig_name):
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 	ax2 =  ax1.twinx()
 
-	rainlist = [datetime.datetime(2016, 9, 3)]
+	rainlist = [datetime.datetime(2014, 1, 1)]
 	for i in range(1,len(rain)):
 		rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
 
@@ -474,11 +566,12 @@ def plot_rain_failures(rain, calibrated, fig_height, fig_width, fig_name):
 	ax1.plot(rain['time'], rain['rainfall_mm'])
 
 	for i in range(len(calibrated)):
-		time = datetime.datetime(2016, 9, 3) + datetime.timedelta(0,int(calibrated['time_of_failure'].iloc[i]))
+		time = datetime.datetime(2014, 1, 1) + datetime.timedelta(0,int(calibrated['time_of_failure'].iloc[i]))
 		ax2.scatter(time, calibrated['S'].iloc[i])
 
-	ax1.set_xlim(left = datetime.datetime(2016, 9, 3), right = datetime.datetime(2017, 12, 3))
-
+	ax1.set_xlim(left = datetime.datetime(2014, 1, 1), right = datetime.datetime(2018, 12, 31))
+	ax1.set_xlabel("Year", fontsize = 20, labelpad = 10)
+	ax1.set_ylabel("Precipitation (mm/day)", fontsize = 20, labelpad = 10 )
 
 	plt.tight_layout()
 	plt.savefig(fig_name)
@@ -497,7 +590,7 @@ def plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr
 
 
 	# plot the rain
-	rainlist = [datetime.datetime(2016, 9, 3)]
+	rainlist = [datetime.datetime(2014, 1, 1)]
 	for i in range(1,len(rain)):
 		rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
 	rain['time'] = rainlist
