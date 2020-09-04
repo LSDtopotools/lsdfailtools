@@ -92,6 +92,55 @@ def plot_failtime (calibrated, fig_height, fig_width, fig_name):
 	plt.tight_layout()
 	plt.savefig(fig_name)
 
+def plot_failtime_calib_valid(calibrated, validated, rain, fig_height, fig_width, fig_name):
+
+	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
+	#ax11 = ax1.twinx()
+	ax12 = ax1.twiny()
+
+
+	#ax11.fill_between(rain['time_s']/(3600*24), 0, rain['rainfall_mm'], facecolor = 'k', lw = 0.1, alpha = 0.5)
+	plot_colour = ['k', 'r', 'b']
+	# plot rainfall data
+	rainfall = ax12.fill_between(rain['rainfall_mm'], 0, rain['time_s']/(3600*24), facecolor = plot_colour[0], lw = 0.1, alpha = 0.5, label = "Rainfall")
+
+
+
+	for i in range(len(validated)):
+
+		O = validated['time_of_failure'].iloc[i]/(24*3600)
+		C = validated['observed_failtime'].iloc[i]/(24*3600)
+
+		valid = ax1.scatter(C,O, marker = '+', facecolor = plot_colour[2], lw = 2, alpha = 0.7, label = "Validation")
+	for i in range(len(calibrated)):
+
+		O = calibrated['time_of_failure'].iloc[i]/(24*3600)
+		C = calibrated['observed_failtime'].iloc[i]/(24*3600)
+
+		calib = ax1.scatter(C,O, marker = 'o', facecolor = plot_colour[1], lw = 0.0, alpha = 0.7, label = "Calibration")
+
+	# plots the x = y black time around which the calibration points sit.
+	ax1.plot([0,max(calibrated['time_of_failure'])/(24*3600)], [0,max(calibrated['time_of_failure'])/(24*3600)], '-k', lw = 2)
+
+	ax1.set_xlabel('Observed failure time (days)', fontsize = 16, labelpad = 10. )
+	ax1.set_ylabel('Modelled failure time (days)', fontsize = 16, labelpad = 10.)
+	ax12.set_xlabel('Rainfall (mm/day)', fontsize = 16, labelpad = 10.)
+	ax1.set_ylim([-20,max(rain['time_s']/(3600*24))+20])
+	ax1.set_xlim([0,max(validated['observed_failtime']/(3600*24))+20])
+	ax12.set_xlim([0,max(rain['rainfall_mm'])+5])
+	ax1.tick_params(axis='x', labelsize=16)
+	ax1.tick_params(axis='y', labelsize=16)
+	ax12.tick_params(axis='x', labelsize=16)
+	plt.legend((rainfall, calib, valid),
+           ("Rainfall", "Calibration", "Validation"),
+           scatterpoints=1,
+           loc='upper right',
+           ncol=1,
+           fontsize=14)
+	#plt.legend(prop={'size': 14})
+	#plt.tight_layout()
+	plt.savefig(fig_name)
 
 ######################################################
 ######################################################

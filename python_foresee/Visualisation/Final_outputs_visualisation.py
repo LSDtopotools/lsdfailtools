@@ -93,15 +93,28 @@ roadline[:,1] = (roadline[:,1] - geotransform[3]) / geotransform[5] # Y_coord
 roadline = roadline.astype('int')
 line = mlines.Line2D(roadline[:,0], roadline[:,1], linewidth = 1., color='black')
 
+
+
 # read calibrated points
 calibrated = pd.read_csv(calibfile)
 Cal_params = pd.read_csv(Cal_params_file)
 validated = pd.read_csv(validfile)
-rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
 
 failinterval = Cal_params.at[0,'failinterval'] * 24 * 3600
 
+# start  and end dates of rain data as defined on the Calibration_parameters file.
+StartDate = Cal_params.at[0,'StartDate']
+EndDate = Cal_params.at[0,'EndDate']
 
+
+rainfile = rundir + StartDate + "_to_" + EndDate + "_Intensity.csv"
+rain = pd.read_csv(rainfile)
+
+rainlist = [0]
+for i in range(1,len(rain)):
+	rainlist.append(rainlist[-1]+ int(rain['duration_s'].iloc[i]))
+rain['time_s'] = rainlist
+rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 
 #######################
 # Map calibrated points
@@ -109,7 +122,8 @@ failinterval = Cal_params.at[0,'failinterval'] * 24 * 3600
 
 ######################
 # Map the distribution in terms of failtimes
-#ff.plot_failtime (calibrated, 12, 12, fig_out_dir + 'Failtime_distribution.png')
+ff.plot_failtime_calib_valid(calibrated, validated, rain, 12, 12, fig_out_dir + 'Failtime_distribution.png')
+
 ######################
 
 # Map the distribution of parameters
@@ -119,10 +133,10 @@ failinterval = Cal_params.at[0,'failinterval'] * 24 * 3600
 # Map the validation
 
 
-depths = np.arange(0.2,3.1,0.1)
+#depths = np.arange(0.2,3.1,0.1)
 #ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, roadfile, 15, 15, fig_out_dir + 'Map_validation_test.png')
 #ff.map_validation_arrays(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_test_updated.png')
-ff.map_validation_colorbar(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_with_colorbar_2.png')
+#ff.map_validation_colorbar(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_with_colorbar_2.png')
 
 ######################
 # Look at some rain data
