@@ -1,0 +1,11 @@
+foresee_python_scripts_science_exp/
+
+lsdfailtools-master/
+
+plot_iverson_lsdtt/
+
+bitbucket_foresee/lsdfailtools/
+
+bitbucket_foresee/foresee_python_scripts/lsdfailtools/
+
+*.pyc
