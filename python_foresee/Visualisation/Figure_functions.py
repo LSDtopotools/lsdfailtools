@@ -1,6 +1,7 @@
 # I'll need that to process the outputs
 import matplotlib as mpl
-mpl.use('Agg')
+#only use this backend if using PuTTy
+#mpl.use('Agg')
 
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
@@ -10,6 +11,7 @@ import matplotlib.patches as mpatches
 from itertools import product
 from itertools import islice
 from collections import OrderedDict
+import seaborn as sns
 import  datetime
 import pandas as pd
 import numpy as np
@@ -766,6 +768,69 @@ def cool_violin_1D(position, data, step, axis, quantiles = [10,25,50,75,90], ker
 	axis.fill_betweenx(datarange[lower:upper], position-density[lower:upper], position+density[lower:upper], lw = 0, facecolor = colour, alpha = 0.5)
 
 
+
+
+def density_plot(validated, fig_width, fig_height):
+	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
+	ax2 =  ax1.twinx()
+
+	observed_failtime_list = []
+	modelled_failtime_list = []
+	for i in range(len(validated)):
+		observed_failtime = validated['observed_failtime'].iloc[i]/(24*3600)
+		observed_failtime_list.append(observed_failtime)
+
+		modelled_failtime = validated['time_of_failure'].iloc[i]/(24*3600) # this is the time since 2014 start date
+		modelled_failtime_list.append(modelled_failtime)
+
+
+	df_failures = pd.DataFrame()
+	df_failures['observed_failures'] = observed_failtime_list
+	df_failures['modelled_failures'] = modelled_failtime_list
+	#ax1 = sns.histplot(modelled_failtime_list, binwidth=50, kde=True, label='Modelled failures')#, x = "Observed failure time (days)"
+
+	#fig, ax = plt.subplots()
+	for a in [df_failures['observed_failures'], df_failures['modelled_failures']]:
+		ax1= sns.histplot(df_failures['observed_failures'], bins=range(1, int(max(modelled_failtime_list)), 50), ax=ax1, kde=False, color = 'tab:blue', alpha=0.5)
+		ax1= sns.histplot(df_failures['modelled_failures'], bins=range(1, int(max(modelled_failtime_list)), 50), ax=ax1, kde=False, color = 'tab:orange', alpha=0.5)
+
+	ax1.set_xlim([0, max(modelled_failtime_list)])
+	ax2 = sns.kdeplot(data = df_failures, x = 'observed_failures', label = 'Observed Failures')
+	ax2 = sns.kdeplot(data = df_failures, x = 'modelled_failures', label = 'Modelled Failures')
+
+	ax2.set_ylabel('Probability density function', fontsize = 16, labelpad = 10.)
+	#ax1.set_ylim([-20,max(rain['time_s']/(3600*24))+20])
+	#ax1.set_xlim([0,max(validated['observed_failtime']/(3600*24))+20])
+	#ax12.set_ylim([0,max(rain['rainfall_mm'])+5])
+	#ax1.tick_params(axis='x', labelsize=16)
+	#ax1.tick_params(axis='y', labelsize=16)
+	#ax12.tick_params(axis='x', labelsize=16)
+	# plt.xlabel('Modelled failure time (days)') # might be good to convert this into a date axis rather than absolute values
+	# plt.savefig("modelled_pdf")
+	# ax1.clear()
+	#ax2 = sns.histplot(observed_failtime_list, binwidth=50,kde = True, label='Observed failures')#, x = "Observed failure time (days)"
+	ax1.set_xlabel('Failure Time (days)', fontsize = 16, labelpad = 10.)
+	ax1.set_ylabel('Number of failure events', fontsize = 16, labelpad = 10.)
+	plt.xlabel('Failure time (days)') # might be good to convert this into a date axis rather than absolute values
+	plt.legend()
+	plt.legend(loc='upper right',ncol=1,fontsize=14)
+	plt.tight_layout()
+	plt.savefig("observed_vs_modelled_pdf_update")
+
+
+	#sns.histplot(df_failures, legend = True)
+	# sns.distplot(df_failures['observed_failures'], label='Observed failures')
+	# sns.distplot(df_failures['modelled_failures'], label='Modelled failures')
+	# plt.xlabel('Failure time (days)')
+	# plt.ylabel('Number of failures')
+	# plt.legend()
+	# plt.savefig("modelled_vs_observed_failtimes")
+
+
+
+
+#modelled_failtime = validated['time_of_failure'].iloc[i]/(24*3600)
 
 ##############################################
 ##############################################
