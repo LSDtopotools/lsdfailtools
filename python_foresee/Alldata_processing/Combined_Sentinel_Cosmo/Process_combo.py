@@ -20,7 +20,7 @@ import json
 import datetime
 import itertools
 import numpy as np
-import pandas as bb
+import pandas as pd
 import geopandas as gpd
 from scipy import stats
 import matplotlib.pyplot as plt
@@ -35,7 +35,7 @@ import Combo_functions as fn
 ################################################################################
 
 with open("../../file_with_paths.json") as file_with_paths :
-    FILE_PATHS = json.load(file_with_paths)
+	FILE_PATHS = json.load(file_with_paths)
 
 print("The base output directory is {}".format(FILE_PATHS["ground_motion_failure"]))
 
@@ -43,6 +43,7 @@ print("The base output directory is {}".format(FILE_PATHS["ground_motion_failure
 
 #base_dir = "/home/willgoodwin/PostDoc/Foresee/Data/"
 out_dir = FILE_PATHS["ground_motion_failure"]
+out_dir_csv = FILE_PATHS["ground_motion_csv"]
 
 sentinel_dir = FILE_PATHS["sentinel_dir"]
 # INTERFEROMETRY DATA from CosmoSkyMed
@@ -121,7 +122,7 @@ pixelWidth = geotransform[1]
 pixelHeight = geotransform[5]
 
 # Load rainfall data
-rain = bb.read_csv(rain_file)
+rain = pd.read_csv(rain_file)
 rainlist = [datetime.datetime(2014, 1, 1)]
 for i in range(1,len(rain)):
 	rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
@@ -147,13 +148,19 @@ EWV_enddate = datetime.datetime.strptime(EWV_datecols[-1], 'D%Y%m%d')
 startdate = min(S_startdate, EWV_startdate)
 enddate = min(S_enddate, EWV_enddate)
 
-
+plot_rainfall_ground_motion = False
+make_csv_ground_motion = True
 
 # Run through the pixels
 counter = 0
 
 # create a failures array
 fail_arr = np.zeros((N_bands, slope_array.shape[0], slope_array.shape[1]), dtype = np.float)
+
+# create dataframe to hold ground motion, time and slope data for each pixel
+#add DEM data
+
+#for i,j in itertools.product(range(5), range(691)):
 
 for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shape[1])):
 	slope = slope_array[i,j]
@@ -221,9 +228,11 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 				#		fail_arr[:,i,j] = -1 # -1 means the pixel was looked at but we found no failure
 
 
+			if plot_rainfall_ground_motion == True:
+				fn.plot_disp_failure(movement, movement_dates, all_failures, rain, slope, startdate, enddate,i,j, out_dir, datasource)
 
-
-			fn.plot_disp_failure(movement, movement_dates, all_failures, rain, slope, startdate, enddate,i,j, out_dir, datasource)
+			elif make_csv_ground_motion == True:
+				fn.save_disp_failure_csv( movement, movement_dates,slope, i,j, out_dir_csv, datasource)
 
 
 
@@ -235,8 +244,10 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 
 			print (fail_arr[:,i,j])
 
-
-
+# only include the following quit statement if we want to just produce the file
+# with the ground motion data for each of the pixels (ie the data that would be
+# plotted on the graphs)
+quit()
 #  save the times of failure (depends on chosen number of bands)
 for i in range(N_bands):
 	print ('saving band', i+1)

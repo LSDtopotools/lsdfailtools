@@ -22,6 +22,7 @@ from osgeo.gdalconst import *
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import geopandas as gpd
 from numpy.linalg import lstsq
 from scipy import stats
@@ -449,6 +450,31 @@ def plot_disp_failure(all_movement, all_movement_dates, all_failures, rain, slop
     ax1.set_ylabel('Cumulative Displacement (mm)')
 
     plt.savefig(out_dir+'GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.png')
+
+######################################################################
+# saves the ground motion timeseries for each pixel 
+######################################################################
+def save_disp_failure_csv(all_movement, all_movement_dates, slope, i,j, out_dir_csv, datasource):
+	ground_motion_df= pd.DataFrame(columns=['ground_motion','time_of_motion','slope','row','col'])
+
+	for source in range(len(datasource)):
+		movement = all_movement[source]
+		movement = movement.squeeze()
+		movement_dates = all_movement_dates[source]
+		# don't include failures for now
+		#failures = all_failures[source]
+		#failures = failures.squeeze()
+		for k in range(len(movement)):
+			ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
+		ground_motion_df.to_csv(out_dir_csv + 'Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
+
+
+
+
+
+
+
+
 
 ######################################################################
 ######################################################################
