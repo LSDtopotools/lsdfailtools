@@ -15,6 +15,7 @@
      "reprojected_out_dir" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/reprojected_output_files/",
      "inclino_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Inclinometer/",
      "ground_motion_failure" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/GroundMotion/Failure/",
+     "ground_motion_csv" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/ground_motion_csv/",
      "rain_intensity_caliv_valid" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration_GG/",
      "figures_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/figures_output_marina/",
      "time_series_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/time_series_analysis/"
