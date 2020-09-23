@@ -7,6 +7,7 @@
 import os
 import re
 import json
+import glob
 import datetime
 import itertools
 import numpy as np
@@ -145,3 +146,16 @@ def make_pxl_csv(ground_motion_dir):
              continue
 
     pxl_values_file = pxl_df.to_csv(ground_motion_dir + "pixel_values.csv")
+
+
+def concatenate_csv_files(working_dir):
+    os.chdir(working_dir)
+    # taken from https://www.freecodecamp.org/news/how-to-combine-multiple-csv-files-with-8-lines-of-code-265183e0854/
+    extension = 'csv'
+    print('Obtaining files')
+    all_filenames = [i for i in glob.glob('*_failure.{}'.format(extension))]
+    #combine all files in the list
+    print('Combining files')
+    combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames])
+    #export to csv
+    combined_csv.to_csv(working_dir + "combined_failure_pixels.csv", index=False, encoding='utf-8-sig')
