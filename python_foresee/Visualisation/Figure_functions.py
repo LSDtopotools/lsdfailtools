@@ -827,6 +827,111 @@ def density_plot(validated, fig_width, fig_height):
 	# plt.legend()
 	# plt.savefig("modelled_vs_observed_failtimes")
 
+def time_interval (row):
+	if row['modelled_failures']<=150 :
+		return 150
+	if (row['modelled_failures']>150)&(row['modelled_failures']<=300):
+		return 300
+	if (row['modelled_failures']>300)&(row['modelled_failures']<=450):
+		return 450
+	if (row['modelled_failures']>450)&(row['modelled_failures']<=600):
+		return 600
+	if (row['modelled_failures']>600)&(row['modelled_failures']<=750):
+		return 750
+	if (row['modelled_failures']>750)&(row['modelled_failures']<=900):
+		return 900
+	if (row['modelled_failures']>900)&(row['modelled_failures']<=1050):
+		return 1050
+	if (row['modelled_failures']>1050)&(row['modelled_failures']<=1200):
+		return 1200
+	if (row['modelled_failures']>1200)&(row['modelled_failures']<=1350):
+		return 1350
+	if (row['modelled_failures']>1350)&(row['modelled_failures']<=1500):
+		return 1500
+	if row['modelled_failures']>1500 :
+		return 1700
+
+	# df_failures['intervals1'] = np.where(df_failures['modelled_failures']<=150, '150', '0')
+	# df_failures['intervals2'] = np.where((df_failures['modelled_failures']>150)&(df_failures['modelled_failures']<=300), '300', '0')
+	# df_failures['intervals3'] = np.where((df_failures['modelled_failures']>300)&(df_failures['modelled_failures']<=450), '450', '0')
+	# df_failures['intervals4'] = np.where((df_failures['modelled_failures']>450)&(df_failures['modelled_failures']<=600), '600', '0')
+	# df_failures['intervals5'] = np.where((df_failures['modelled_failures']>600)&(df_failures['modelled_failures']<=750), '750', '0')
+	# df_failures['intervals6'] = np.where((df_failures['modelled_failures']>600), '1000', '0')
+
+def time_split_violin_plot(validated, fig_width, fig_height):
+	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	ax =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
+
+	observed_failtime_list = []
+	modelled_failtime_list = []
+	for i in range(len(validated)):
+		observed_failtime = validated['observed_failtime'].iloc[i]/(24*3600)
+		observed_failtime_list.append(observed_failtime)
+
+		modelled_failtime = validated['time_of_failure'].iloc[i]/(24*3600) # this is the time since 2014 start date
+		modelled_failtime_list.append(modelled_failtime)
+
+
+	df_failures = pd.DataFrame()
+	df_failures['observed_failures'] = observed_failtime_list
+	df_failures['modelled_failures'] = modelled_failtime_list
+	print(df_failures.head(5))
+
+	df_failures['time_interval'] = df_failures.apply (lambda row: time_interval(row), axis=1)
+
+	print(df_failures.head(5))
+
+	ax = sns.violinplot(x="time_interval", y="observed_failures", data=df_failures)
+
+
+	plt.xlabel('Model Failure time (days)') # might be good to convert this into a date axis rather than absolute values
+
+	plt.tight_layout()
+	plt.savefig("observed_vs_modelled_violin_plot")
+
+
+def time_split_violin_plot_new(validated, fig_width, fig_height):
+	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	ax =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
+
+	observed_failtime_list = []
+	modelled_failtime_list = []
+	all_failtime_list = np.arange(4802)
+	all_failtime_list_types = []
+
+	for i in range(len(validated)):
+		observed_failtime = validated['observed_failtime'].iloc[i]/(24*3600)
+		observed_failtime_list.append(observed_failtime)
+
+		modelled_failtime = validated['time_of_failure'].iloc[i]/(24*3600) # this is the time since 2014 start date
+		modelled_failtime_list.append(modelled_failtime)
+
+	for i in range(len(all_failtime_list)):
+		if i is in observed_failtime_list:
+			all_failtime_list_types.append("Obs")
+		if i is in modelled_failtime_list:
+			all_failtime_list_types.append("Mod")
+
+
+	df_failures = pd.DataFrame()
+	df_failures['observed_failures'] = observed_failtime_list
+	df_failures['modelled_failures'] = modelled_failtime_list
+	df_failures["times"] = 0
+	df.loc[(df['observed_failures'] > 0) & (df['observed_failures'] <= 10), 'times'] = 'xxx'
+	print(df_failures.head(5))
+
+	df_failures['time_interval'] = df_failures.apply (lambda row: time_interval(row), axis=1)
+
+	print(df_failures.head(5))
+
+	ax = sns.violinplot(x="time_interval", y="observed_failures", data=df_failures)
+
+
+	plt.xlabel('Model Failure time (days)') # might be good to convert this into a date axis rather than absolute values
+
+	plt.tight_layout()
+	plt.savefig("observed_vs_modelled_violin_plot_new")
+
 
 
 

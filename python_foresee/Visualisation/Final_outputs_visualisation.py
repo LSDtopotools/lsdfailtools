@@ -155,8 +155,8 @@ rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 #depths = np.arange(0.2,3.1,0.1)
 #ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Rain_failures_validation.png')
 ######################
-ff.density_plot(validated,10,10)
-
+#ff.density_plot(validated,10,10)
+ff.time_split_violin_plot(validated, 10,10)
 '''
 # Try a PCA on calibratd points
 rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
