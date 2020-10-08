@@ -133,9 +133,9 @@ rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 # Map the validation
 
 
-#depths = np.arange(0.2,3.1,0.1)
+depths = np.arange(0.2,3.1,0.1)
 #ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, roadfile, 15, 15, fig_out_dir + 'Map_validation_test.png')
-#ff.map_validation_arrays(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_test_updated.png')
+ff.map_validation_arrays_zoom(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15,'zoom_Map_validation_test_updated.png')
 #ff.map_validation_colorbar(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_with_colorbar_2.png')
 
 ######################
@@ -156,7 +156,7 @@ rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 #ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Rain_failures_validation.png')
 ######################
 #ff.density_plot(validated,10,10)
-ff.time_split_violin_plot(validated, 10,10)
+#ff.time_split_violin_plot(validated, 10,10)
 '''
 # Try a PCA on calibratd points
 rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
