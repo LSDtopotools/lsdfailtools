@@ -142,9 +142,10 @@ rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 S_startdate = datetime.datetime.strptime(S_datecols[0], 'D%Y%m%d')
 S_enddate = datetime.datetime.strptime(S_datecols[-1], 'D%Y%m%d')
 
+print(S_startdate)
 EWV_startdate = datetime.datetime.strptime(EWV_datecols[0], 'D%Y%m%d')
 EWV_enddate = datetime.datetime.strptime(EWV_datecols[-1], 'D%Y%m%d')
-
+print(EWV_startdate)
 startdate = min(S_startdate, EWV_startdate)
 enddate = min(S_enddate, EWV_enddate)
 
@@ -160,10 +161,12 @@ fail_arr = np.zeros((N_bands, slope_array.shape[0], slope_array.shape[1]), dtype
 # create dataframe to hold ground motion, time and slope data for each pixel
 #add DEM data
 
-#for i,j in itertools.product(range(5), range(691)):
+for i,j in itertools.product(range(983,slope_array.shape[0],1), range(0,slope_array.shape[1],1)):
+#for i,j in itertools.product(range(4,5,1), range(690,691,1)):
 
-for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shape[1])):
+#for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shape[1])):
 	slope = slope_array[i,j]
+	print("slope: {}".format(slope))
 	if slope >= 0:
 		xbox = [originX + j*pixelWidth, originX + (j+1)*pixelWidth]
 		ybox = [originY + i*pixelHeight, originY + (i+1)*pixelHeight]
@@ -192,7 +195,10 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 			all_failures = []
 
 			for (arr, dates, intervals) in [(s, S_dates, S_intervals_yr), (ewv, EWV_dates, EWV_intervals_yr)]:
-
+				# print('movement: {}'.format(movement))
+				# print('movement_dates:{}'.format(movement_dates))
+				# print('datasource:{}'.format(datasource))
+				# print('all_failures:{}'.format(all_failures))
 				if datacounter == 0:
 					datasource.append("Sentinel")
 				elif datacounter == 1:
@@ -209,7 +215,10 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 				movement_dates.append(dates_av10)
 
 				datacounter += 1
-
+				# print('movement: {}'.format(movement))
+				# print('movement_dates:{}'.format(movement_dates))
+				# print('datasource:{}'.format(datasource))
+				# print('all_failures:{}'.format(all_failures))
 				# order the failure indices in the  pixel
 				if len(failure_indices) > 0:
 					ordered_failures = sorted(failure_indices)
@@ -227,12 +236,15 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 				# 	if fail_arr[:,i,j].all() <= 0:
 				#		fail_arr[:,i,j] = -1 # -1 means the pixel was looked at but we found no failure
 
-
+			# print('movement: {}'.format(movement))
+			# print('movement_dates:{}'.format(movement_dates))
+			# print('datasource:{}'.format(datasource))
+			# print('all_failures:{}'.format(all_failures))
 			if plot_rainfall_ground_motion == True:
 				fn.plot_disp_failure(movement, movement_dates, all_failures, rain, slope, startdate, enddate,i,j, out_dir, datasource)
 
 			elif make_csv_ground_motion == True:
-				fn.save_disp_failure_csv( movement, movement_dates,slope, i,j, out_dir_csv, datasource)
+				fn.save_disp_failure_csv_test( movement, movement_dates,slope, i,j, out_dir_csv, datasource)
 
 
 
@@ -242,7 +254,7 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 			#if counter >= 200:
 			#	break
 
-			print (fail_arr[:,i,j])
+			#print (fail_arr[:,i,j])
 
 # only include the following quit statement if we want to just produce the file
 # with the ground motion data for each of the pixels (ie the data that would be

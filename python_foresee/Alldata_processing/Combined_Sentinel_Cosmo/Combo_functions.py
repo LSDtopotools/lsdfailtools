@@ -51,26 +51,26 @@ from scipy import stats
 
 def parseArguments():
 
-	parser = argparse.ArgumentParser(prog='Precipitation Processing Tool')
+    parser = argparse.ArgumentParser(prog='Precipitation Processing Tool')
 
-	parser.add_argument('--ProdTP', choices= ['GPM_M','GPM_D','GPM_30min'], default='GPM_30min', dest='ProdTP',  help='GPM_M: GPM Monthly (IMERGM v6);\n GPM_D: GPM Daily (IMERGDF v6); \n GPM_30min: GPM Half-hourly (IMERGHHE v6)\n')
+    parser.add_argument('--ProdTP', choices= ['GPM_M','GPM_D','GPM_30min'], default='GPM_30min', dest='ProdTP',  help='GPM_M: GPM Monthly (IMERGM v6);\n GPM_D: GPM Daily (IMERGDF v6); \n GPM_30min: GPM Half-hourly (IMERGHHE v6)\n')
 
-	StartDF = '01-06-2000'
-	parser.add_argument('--StartDate',dest='StartDate', help='Insert the start date',default=StartDF,type=str)
+    StartDF = '01-06-2000'
+    parser.add_argument('--StartDate',dest='StartDate', help='Insert the start date',default=StartDF,type=str)
 
-	EndDF = str((datetime.datetime.now()).strftime('%Y-%m-%d'))
-	parser.add_argument('--EndDate',dest='EndDate', help='Insert the end date',default=EndDF,type=str)
+    EndDF = str((datetime.datetime.now()).strftime('%Y-%m-%d'))
+    parser.add_argument('--EndDate',dest='EndDate', help='Insert the end date',default=EndDF,type=str)
 
-	parser.add_argument('--ProcessDir',dest='ProcessDir', help='Insert the processing directory path',type=str)
+    parser.add_argument('--ProcessDir',dest='ProcessDir', help='Insert the processing directory path',type=str)
 
-	parser.add_argument('--SptSlc',dest='SptSlc', nargs="?", help='Insert the slice feature path',type=str)
+    parser.add_argument('--SptSlc',dest='SptSlc', nargs="?", help='Insert the slice feature path',type=str)
 
-	parser.add_argument('--OP', dest='OP',action="store_true", help='Call this argument if you only want to process the data. Make sure you have a directory with a raw files subfolder.')
+    parser.add_argument('--OP', dest='OP',action="store_true", help='Call this argument if you only want to process the data. Make sure you have a directory with a raw files subfolder.')
 
-	parser.add_argument('--DirOut', dest='DirOut', help='This is the output directory for the final timeseries file. Defaults to current working directory.', default = os.getcwd(),type=str)
+    parser.add_argument('--DirOut', dest='DirOut', help='This is the output directory for the final timeseries file. Defaults to current working directory.', default = os.getcwd(),type=str)
 
-	args = parser.parse_args();
-	return args
+    args = parser.parse_args();
+    return args
 
 
 ################################################################################
@@ -415,7 +415,7 @@ def find_failure_indices(arr_av10, dates_av10, startdate, enddate, datacounter):
 
 ######################################################################
 ######################################################################
-def plot_disp_failure(all_movement, all_movement_dates, all_failures, rain, slope, startdate, enddate,i,j, out_dir, datasource):
+def plot_disp_failure(all_movement, all_movement_dates, all_failures, rain, slope, startdate, enddate,i,j, out_dir_csv, datasource):
 
     fig=plt.figure(1, facecolor='White',figsize=[7, 7])
     ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
@@ -426,15 +426,21 @@ def plot_disp_failure(all_movement, all_movement_dates, all_failures, rain, slop
 
     #plot the rain
     ax11.fill_between(rain['time'], 0, rain['rainfall_mm'], facecolor = 'k', lw = 0.1, alpha = 0.8)
-
+    print(np.shape(all_movement))
+    print(np.shape(all_failures))
     for source in range(len(datasource)):
         movement = all_movement[source]
         movement_dates = all_movement_dates[source]
         failures = all_failures[source]
-
+        print("source: {}".format(source))
         for k in range(len(movement)):
+            print(k)
             if len(movement[k]) > 0:
+                # red is cosmo sky med and blue is sentinel
                 ax1.plot(movement_dates, movement[k], '-', c = plt.cm.jet(255*source), lw = 0.8)
+                print(movement_dates)
+                print(movement[k])
+                print(i,j)
 
         if len(failures) > 0:
             for f in failures:
@@ -449,28 +455,46 @@ def plot_disp_failure(all_movement, all_movement_dates, all_failures, rain, slop
 
     ax1.set_ylabel('Cumulative Displacement (mm)')
 
-    plt.savefig(out_dir+'GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.png')
+    plt.savefig(out_dir_csv+'TESTGroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.png')
 
 ######################################################################
-# saves the ground motion timeseries for each pixel 
+# saves the ground motion timeseries for each pixel
 ######################################################################
 def save_disp_failure_csv(all_movement, all_movement_dates, slope, i,j, out_dir_csv, datasource):
-	ground_motion_df= pd.DataFrame(columns=['ground_motion','time_of_motion','slope','row','col'])
+    ground_motion_df= pd.DataFrame(columns=['ground_motion','time_of_motion','slope','row','col'])
 
-	for source in range(len(datasource)):
-		movement = all_movement[source]
-		movement = movement.squeeze()
-		movement_dates = all_movement_dates[source]
-		# don't include failures for now
-		#failures = all_failures[source]
-		#failures = failures.squeeze()
-		for k in range(len(movement)):
-			ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
-		ground_motion_df.to_csv(out_dir_csv + 'Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
+    for source in range(len(datasource)):
+        movement = all_movement[source]
+        movement = movement.squeeze()
+        movement_dates = all_movement_dates[source]
+        # don't include failures for now
+        #failures = all_failures[source]
+        #failures = failures.squeeze()
+        for k in range(len(movement)):
+            ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
+            ground_motion_df.to_csv(out_dir_csv + 'TEST_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
 
+def save_disp_failure_csv_test(all_movement, all_movement_dates, slope, i,j, out_dir_csv, datasource):
+    ground_motion_df= pd.DataFrame(columns=['ground_motion','time_of_motion','slope','row','col'])
 
-
-
+    for source in range(len(datasource)):
+        movement = all_movement[source]
+        #movement = movement.squeeze()
+        movement_dates = all_movement_dates[source]
+        # don't include failures for now
+        #failures = all_failures[source]
+        #failures = failures.squeeze()
+        for k in range(len(movement)):
+            movement = np.array(movement)
+            movement_dates = np.array(movement_dates)
+            movement_dates = movement_dates.squeeze()
+            if len(movement[k]) > 0:
+                for m in range(np.shape(movement)[1]):
+                    ground_motion_df = ground_motion_df.append({'ground_motion':movement[k,m], 'time_of_motion':movement_dates[m],'slope':slope,'row':i,'col':j, 'datasource':source}, ignore_index=True)
+                    ground_motion_df.to_csv(out_dir_csv + 'Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
+        #else:
+            #ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
+            #ground_motion_df.to_csv(out_dir_csv + 'TEST_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
 
 
 
@@ -627,44 +651,44 @@ def plot_movement(s_av10, dates_s_av10, ewv_av10, dates_ewv_av10, rain, slope, s
 ######################################################################
 
 def maps_to_timeseries(working_dir, arglist, output_dir):
-	# List the .bil files
-	files = sorted(os.listdir(working_dir)); bilfiles = []
-	for i in range(len(files)):
-		ending = files[i][-4:]
-		if ending == '.bil':
-			bilfiles.append(files[i])
+    # List the .bil files
+    files = sorted(os.listdir(working_dir)); bilfiles = []
+    for i in range(len(files)):
+        ending = files[i][-4:]
+    if ending == '.bil':
+        bilfiles.append(files[i])
 
 
-	#Timelist = []
-	#CumTimelist = []
-	#Intlist = []
-	Full_list = []
-	for i in range(len(bilfiles)):
+    #Timelist = []
+    #CumTimelist = []
+    #Intlist = []
+    Full_list = []
+    for i in range(len(bilfiles)):
 
-		print (arglist)
+        print (arglist)
 
-		if arglist[0] == 'GPM_D':
-			timer = datetime.datetime.strptime(bilfiles[i], '3B-DAY_%Y%m%d_S%H%M%S_V06_precipitationCal.bil')
-		elif arglist[0] == 'GPM_30min':
-			timer = datetime.datetime.strptime(bilfiles[i], '3B-HHR-E_%Y%m%d_S%H%M%S_V06B_precipitationCal.bil')
+        if arglist[0] == 'GPM_D':
+            timer = datetime.datetime.strptime(bilfiles[i], '3B-DAY_%Y%m%d_S%H%M%S_V06_precipitationCal.bil')
+        elif arglist[0] == 'GPM_30min':
+            timer = datetime.datetime.strptime(bilfiles[i], '3B-HHR-E_%Y%m%d_S%H%M%S_V06B_precipitationCal.bil')
 
 
 
-		# Add to the rainfall list
-		Rainarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(working_dir + bilfiles[i])
-		Rain = numpy.mean(Rainarr)
-		Intensity = Rain/(30*60) # Intensity of rainfall during the period (mm/sec)
-		#Intlist.append(Intensity)
+    # Add to the rainfall list
+    Rainarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(working_dir + bilfiles[i])
+    Rain = numpy.mean(Rainarr)
+    Intensity = Rain/(30*60) # Intensity of rainfall during the period (mm/sec)
+    #Intlist.append(Intensity)
 
-		# Save it all together
-		Full_list.append([30*60, Intensity])
+    # Save it all together
+    Full_list.append([30*60, Intensity])
 
-	# Now save the stuff
-	with open(output_dir+'/'+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv", "w", newline="") as f:
-	    writer = csv.writer(f)
-	    writer.writerow(['duration_s','intensity_mm_sec'])
-	    writer.writerows(Full_list)
-	print ('saved file:', output_dir+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv")
+    # Now save the stuff
+    with open(output_dir+'/'+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(['duration_s','intensity_mm_sec'])
+        writer.writerows(Full_list)
+    print ('saved file:', output_dir+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv")
 
 
 
