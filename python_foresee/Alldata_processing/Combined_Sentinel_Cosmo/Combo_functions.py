@@ -474,8 +474,8 @@ def save_disp_failure_csv(all_movement, all_movement_dates, slope, i,j, out_dir_
             ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
             ground_motion_df.to_csv(out_dir_csv + 'TEST_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
 
-def save_disp_failure_csv_test(all_movement, all_movement_dates, slope, i,j, out_dir_csv, datasource):
-    ground_motion_df= pd.DataFrame(columns=['ground_motion','time_of_motion','slope','row','col'])
+def save_disp_failure_csv_updated(all_movement, all_movement_dates, slope, curvature, aspect, i,j, out_dir_csv, datasource):
+    ground_motion_df= pd.DataFrame(columns=['ground_motion','time_of_motion','slope','curvature','aspect','row','col'])
 
     for source in range(len(datasource)):
         movement = all_movement[source]
@@ -490,12 +490,12 @@ def save_disp_failure_csv_test(all_movement, all_movement_dates, slope, i,j, out
             movement_dates = movement_dates.squeeze()
             if len(movement[k]) > 0:
                 for m in range(np.shape(movement)[1]):
-                    ground_motion_df = ground_motion_df.append({'ground_motion':movement[k,m], 'time_of_motion':movement_dates[m],'slope':slope,'row':i,'col':j, 'datasource':source}, ignore_index=True)
-                    ground_motion_df.to_csv(out_dir_csv + 'Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
+
+                    ground_motion_df = ground_motion_df.append({'ground_motion':movement[k,m], 'time_of_motion':movement_dates[m],'slope':slope, 'curvature':curvature, 'aspect':aspect,'row':i,'col':j, 'datasource':source}, ignore_index=True)
+                    ground_motion_df.to_csv(out_dir_csv + '10mDEM_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
         #else:
             #ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
             #ground_motion_df.to_csv(out_dir_csv + 'TEST_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
-
 
 
 

@@ -65,7 +65,11 @@ if not os.path.isfile(sentinel_file):
 
 # The coordinates in thes files are in UTMZone33N: EPSG32633.
 topo_dir = FILE_PATHS["topo_dir"]
-slope_file = topo_dir+"eu_dem_AoI_epsg32633_SLOPE.bil"
+# new 10m DEM data
+slopefile = topo_dir + "10m_DEM_tinitaly/w45510_s10_SLOPE_AoI_32633.bil"
+
+curvaturefile = topo_dir + "10m_DEM_tinitaly/w45510_s10_CURV_AoI_32633.bil"
+aspectfile = topo_dir + "10m_DEM_tinitaly/w45510_s10_ASPECT_AoI_32633.bil"
 
 # Line of Sight (LoS) and axis vectors are given in (Easting, Northing, Vertical)
 Sentinel_LoS = np.array([0.632024, 0.117139, -0.766044])
@@ -114,7 +118,9 @@ EWV_intervals = EWV_dates[1:] - EWV_dates[:-1]
 EWV_intervals_yr = [ item.days/365 for item in EWV_intervals ]
 
 # Load the topographic slope file
-slope_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(slope_file)
+slope_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(slopefile)
+curv_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(curvaturefile)
+aspect_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(aspectfile)
 
 originX = geotransform[0]
 originY = geotransform[3]
@@ -157,16 +163,17 @@ counter = 0
 
 # create a failures array
 fail_arr = np.zeros((N_bands, slope_array.shape[0], slope_array.shape[1]), dtype = np.float)
-
+print(np.shape(fail_arr))
 # create dataframe to hold ground motion, time and slope data for each pixel
 #add DEM data
 
-for i,j in itertools.product(range(983,slope_array.shape[0],1), range(0,slope_array.shape[1],1)):
+#for i,j in itertools.product(range(1486,slope_array.shape[0],1), range(0,slope_array.shape[1],1)):
 #for i,j in itertools.product(range(4,5,1), range(690,691,1)):
 
-#for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shape[1])):
+for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shape[1])):
 	slope = slope_array[i,j]
-	print("slope: {}".format(slope))
+	curvature = curv_array[i,j]
+	aspect = aspect_array[i,j]
 	if slope >= 0:
 		xbox = [originX + j*pixelWidth, originX + (j+1)*pixelWidth]
 		ybox = [originY + i*pixelHeight, originY + (i+1)*pixelHeight]
@@ -178,6 +185,7 @@ for i,j in itertools.product(range(983,slope_array.shape[0],1), range(0,slope_ar
 		if len(Sentinel_inside) > 0 or len(EWV_inside) > 0:
 
 			print('We have a candidate')
+			print(i,j)
 			counter += 1
 
 			# Cumulative displacement seen by Sentinel
@@ -241,10 +249,11 @@ for i,j in itertools.product(range(983,slope_array.shape[0],1), range(0,slope_ar
 			# print('datasource:{}'.format(datasource))
 			# print('all_failures:{}'.format(all_failures))
 			if plot_rainfall_ground_motion == True:
+				# this plots don't include curvature or aspect
 				fn.plot_disp_failure(movement, movement_dates, all_failures, rain, slope, startdate, enddate,i,j, out_dir, datasource)
 
 			elif make_csv_ground_motion == True:
-				fn.save_disp_failure_csv_test( movement, movement_dates,slope, i,j, out_dir_csv, datasource)
+				fn.save_disp_failure_csv_updated(movement, movement_dates, slope, curvature, aspect, i,j, out_dir_csv, datasource)
 
 
 
