@@ -134,7 +134,7 @@ def make_pxl_csv(ground_motion_dir):
 
     for file in os.listdir(directory):
          filename = os.fsdecode(file)
-         if filename.endswith(".csv"):
+         if filename.startswith("10mDEM") and filename.endswith(".csv"):
              pixel_values = regex_pxl_values.findall(filename)
              for item in pixel_values:
                  # split string by _
@@ -145,7 +145,7 @@ def make_pxl_csv(ground_motion_dir):
          else:
              continue
 
-    pxl_values_file = pxl_df.to_csv(ground_motion_dir + "pixel_values.csv")
+    pxl_values_file = pxl_df.to_csv(ground_motion_dir + "10mDEM_pixel_values.csv")
 
 
 def concatenate_csv_files(working_dir):
@@ -153,9 +153,9 @@ def concatenate_csv_files(working_dir):
     # taken from https://www.freecodecamp.org/news/how-to-combine-multiple-csv-files-with-8-lines-of-code-265183e0854/
     extension = 'csv'
     print('Obtaining files')
-    all_filenames = [i for i in glob.glob('*_failure.{}'.format(extension))]
+    all_filenames = [i for i in glob.glob('10mDEM*_failure.{}'.format(extension))]
     #combine all files in the list
     print('Combining files')
     combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames])
     #export to csv
-    combined_csv.to_csv(working_dir + "combined_failure_pixels.csv", index=False, encoding='utf-8-sig')
+    combined_csv.to_csv(working_dir + "10mDEM_combined_failure_pixels.csv", index=False, encoding='utf-8-sig')
