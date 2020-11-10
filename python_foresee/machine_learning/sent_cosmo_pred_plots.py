@@ -11,11 +11,14 @@ import gdal
 import datetime
 import itertools
 import shapefile
+import seaborn as sns
 import numpy as np
 import pandas as pd
 import geopandas as gpd
 from scipy import stats
+import matplotlib.colors as colors
 from itertools import product
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import functions_ground_motion as fgm
@@ -163,7 +166,7 @@ print(np.shape(data_array_empty_cosmo))
 def df_to_numpy(input_dataframe, pixel_indices, data_array_to_fill, time_axis):
 	pixel_count = 0
 	for i in range (len(pixel_indices)):
-	#for i in range (2):
+	#for i in range (100):
 		# the x coord of the pixel
 		x = input_dataframe.iloc[pixel_indices[i],1]
 		#print("x{}".format(x))
@@ -180,7 +183,8 @@ def df_to_numpy(input_dataframe, pixel_indices, data_array_to_fill, time_axis):
 
 			t = input_dataframe.iloc[j+((time_axis)*i),0]
 			print("x,y,t vals: {},{},{}".format(x,y,t))
-			data_array_to_fill[x,y,j] = input_dataframe.iloc[j+((time_axis)*i),10]
+			#calib_arr[y-2:y+2,x-2:x+2]
+			data_array_to_fill[x-4:x+4,y-4:y+4,j] = input_dataframe.iloc[j+((time_axis)*i),10]
 			print("data array value:{}".format(data_array_to_fill[x,y,j]))
 		pixel_count += 1
 	return data_array_to_fill
@@ -189,40 +193,70 @@ def df_to_numpy(input_dataframe, pixel_indices, data_array_to_fill, time_axis):
 #data_array_sentinel = df_to_numpy(input_data_sentinel, pixel_indices_sentinel,data_array_empty_sentinel, time_axis_sentinel)
 #print(np.shape(data_array_sentinel))
 #print(data_array_sentinel[2580,2684,:])
-for i in range(len(pixel_indices_cosmo)-1):
-	px = pixel_indices_cosmo[i+1]-pixel_indices_cosmo[i]
-	if px != 22:
-		print(px)
 
 
 data_array_cosmo = df_to_numpy(input_data_cosmo, pixel_indices_cosmo,data_array_empty_cosmo, time_axis_cosmo)
-print(np.shape(data_array_cosmo))
-print(data_array_cosmo[1775,2448,:])
-print(input_data_cosmo[824500:824510])
+#print(np.shape(data_array_cosmo))
+#print(data_array_cosmo[1775,2448,:])
+#print(input_data_cosmo[824500:824510])
 #data_array.to_csv("data_array.csv")
 
+'''
+x = []
+y = []
+gm = []
+for i in range(np.shape(data_array_cosmo)[0]):
+	for j in range(np.shape(data_array_cosmo)[1]):
+		if data_array_cosmo[i,j,0]!=0:
+			x.append(j)
+			y.append(i)
+			gm.append(data_array_cosmo[i,j,0])
+#gm = np.arange(data_array_cosmo.min(), data_array_cosmo.max())
+#plt.scatter(x, y, c=colour, s = 2 )
+#x, y = np.meshgrid(x,y)
+cm = plt.cm.get_cmap('RdYlBu')
 
-def map_points (demarr, points, road, fig_height, fig_width, fig_name):
+sc = plt.scatter(x,y,c=gm, s =0.5,  norm=colors.SymLogNorm(linthresh=0.03, linscale=0.03,vmin=min(gm), vmax=max(gm), base=10),cmap='Dark2')
+plt.colorbar(sc, extend='both')
+
+plt.savefig("fig")
+'''
+
+
+
+def map_points (demarr, points_arr, road, fig_height, fig_width, fig_name):
 
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 
 
 	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
-	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
+	ax1.Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
 
 	ax1.add_line(road)
 
-	points_arr = 0* demarr
-	for i in range(len(points)):
-		x = points['cols'].iloc[i]
-		y = points['rows'].iloc[i]
-		points_arr[y,x] = points['ground_motion']
-
 	calib_mask = np.ma.masked_where(points_arr == 0., points_arr)
-	Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.autumn,
-	    vmin = 0, vmax = 1, alpha = 1.)
-	plt.title("points Failure Points", fontsize = 26, pad = 10.)
+
+
+	#extent = [xmin,xmax,ymin,ymax]
+
+	#ax1.set_aspect(aspect='auto')
+	#Map1 = plt.scatter(points_arr[:,0], points_arr[:,1])
+	#x = []
+	#y = []
+	#for i in range(np.shape(points_arr)[0]):
+		#for j in range(np.shape(points_arr)[1]):
+			#if points_arr[i,j,1]!=0:
+				#x.append(j)
+				#y.append(i)
+	plt.title("Failure Points", fontsize = 26, pad = 10.)
+
+	norm = mpl.colors.Normalize(vmin=np.amin(calib_mask), vmax=np.amax(calib_mask))
+	cm = plt.cm.get_cmap('cool')
+	cax = fig.add_axes([0.93, 0.2, 0.02, 0.6])
+	cb = mpl.colorbar.ColorbarBase(cax, cmap=cm, norm=norm, spacing='proportional')
+
+	Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=cm, alpha = 1., )
 	plt.tick_params(
     axis='both',          # changes apply to the x-axis
     which='both',      # both major and minor ticks are affected
@@ -231,7 +265,11 @@ def map_points (demarr, points, road, fig_height, fig_width, fig_name):
 	left=False,        # ticks along the top edge are off
     labelbottom=False,
 	labelleft=False) # labels along the bottom edge are off
-	plt.tight_layout()
-	plt.savefig(fig_name)
 
-map_points(demarr, y_pred_gm, line, 10, 10, out_dir + 'test_predicted_gm_map_ml')
+
+	plt.savefig(fig_name)
+	plt.clf()
+
+
+map_points(demarr, data_array_cosmo[:,:,0], line, 10, 10, out_dir + 'test_predicted_gm_map_ml_cosmo_increased_px_size_CB')
+#map_points(demarr, data_array_sentinel[:,:,0], line, 10, 10, out_dir + 'test_predicted_gm_map_ml_sentinel_increased_px_size_CB')
