@@ -3,7 +3,10 @@
 FORESEE is a Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure.
 
 ## Installation ##
-1. Follow documentation indications from `plot_iverson_lsdtt`.This will indicate how to run the MonteCarlo model and how to get the output files. Only follow up to step 2.3.1.
+1. Create and actiavte a conda environment:
+`conda create -n <ENV_NAME>`
+`conda activate <ENV_NAME`
+
 2. Go to the lsdfailtools-master and follow the documentation from the README file there. This is in charge of creating and installing the cpp-python interface. This will create a wheel which can be installed via pip.
 Note: you will need to install gcc version 5+ if you have an older version:
 `conda install -c omgarcia gcc-6`
@@ -26,7 +29,7 @@ Note #2: before building the wheel, you need to may need to install xtensor:
 
 (When installing geopandas, there is a downgrade of gdal but everything should still be working).
 
-3. Once this is all installed, we can start running the code.
+4. Once this is all installed, we can start running the code.
 
 Scripts to run first:
 
