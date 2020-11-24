@@ -49,7 +49,7 @@ conda install -c conda-forge xtensor xtensor-python
 
 Scripts to run first:
 
-**Alldata_processing**: process all the input data: Inclinometers, InSAR, Piezometers, Precipitation, Sentinel, Cosmo-SKYMed.
+**ALLDATA_PROCESSING**: process all the input data: Inclinometers, InSAR, Piezometers, Precipitation, Sentinel, Cosmo-SKYMed.
 
 1. COMBINED SENTINEL COSMO
 
@@ -107,48 +107,48 @@ Scripts to run first:
 
 * `Combine_sentinel.py`: Takes the InSAR data from A, D, EW and retains a failure if all 3 datasets show failures. Finds the dates of the failures. Creates the All-failtime files.
 
-2. CALIBRATION
+**CALIBRATION**
 
-      Data Needs:
+  Data Needs:
 
-    * calibration_parameters.csv: Nruns, itermax, Num_cal, StartDate, EndDate, failinterval
-    * iverson_MC_parameters.csv: D_0, K_sat, Iz_over_K_steady, friction_angle, cohesion, weight_of_water, weight_of_soil, depth
-    * Ground Motion Failure data: for given time interval (.bil format)
-    * DEM: .bil file
-    * slope file: .bil file
-    * cut file: .bil file (need to check what this is)
-    * Road line file: .shp file
-    * Precipitation command run file: .py file for precipitation
-    * Piezometer: .csv file
+* calibration_parameters.csv: Nruns, itermax, Num_cal, StartDate, EndDate, failinterval
+* iverson_MC_parameters.csv: D_0, K_sat, Iz_over_K_steady, friction_angle, cohesion, weight_of_water, weight_of_soil, depth
+* Ground Motion Failure data: for given time interval (.bil format)
+* DEM: .bil file
+* slope file: .bil file
+* cut file: .bil file (need to check what this is)
+* Road line file: .shp file
+* Precipitation command run file: .py file for precipitation
+* Piezometer: .csv file
 
-* `Run_calibration.py`: Select the pixels based on the closest points to the road and the number of pixels that we want. Run calibration with these points.
+`Run_calibration.py`: Select the pixels based on the closest points to the road and the number of pixels that we want. Run calibration with these points.
 
-3. VALIDATION
+**VALIDATION**
 
-      Data Needs (same as for calibration):
+  Data Needs (same as for calibration):
 
-    * calibration_parameters.csv
-    * Iverson_MC_parameters.csv
-    * Ground Motion Failure
-    * DEM file
-    * Slope file
-    * Cut file
-    * Road File
-    * Precipitation command run file: .py file for precipitation
-    * Piezometer: .csv file
-    * Calibrated points: .csv file
+* calibration_parameters.csv
+* Iverson_MC_parameters.csv
+* Ground Motion Failure
+* DEM file
+* Slope file
+* Cut file
+* Road File
+* Precipitation command run file: .py file for precipitation
+* Piezometer: .csv file
+* Calibrated points: .csv file
 
-* `Run_validation.py`: Loads rasters into arrays and reads calibration points and parameters. Reads also Iverson parameters. Performs and maps the validation.
+`Run_validation.py`: Loads rasters into arrays and reads calibration points and parameters. Reads also Iverson parameters. Performs and maps the validation.
 
-4. VISUALISATION
+**VISUALISATION**
 
-      Data Needs:
+Data Needs:
 
-    * InSAR failure and prefailure files in all directions.
-    * DEM file (.bil)
-    * Slope file (.bil)
-    * Read file (.shp)
-    * Calibration points file (.csv)
-    * Rainfall Intensity (.csv)
+* InSAR failure and prefailure files in all directions.
+* DEM file (.bil)
+* Slope file (.bil)
+* Read file (.shp)
+* Calibration points file (.csv)
+* Rainfall Intensity (.csv)
 
-* `Final_outputs_visualisation.py`: Maps calibrated points, failtime distribution, parameter distribution, validation map, rain data plot with associated failures, with and w/o validation data. Tries PCA on calibration points to see the correlation between the rain and the calibrated parameters.
+`Final_outputs_visualisation.py`: Maps calibrated points, failtime distribution, parameter distribution, validation map, rain data plot with associated failures, with and w/o validation data. Tries PCA on calibration points to see the correlation between the rain and the calibrated parameters.
