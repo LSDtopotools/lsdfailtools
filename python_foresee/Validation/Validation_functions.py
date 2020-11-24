@@ -249,7 +249,7 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
     #shist, sbins = np.histogram(calibrated['S'], bins  = 10)
     sbins = np.arange(0,np.amax(slopearr), 0.05)
 
-    valid_df= pd.DataFrame(columns=['alpha', 'D_0', 'K_sat', 'd','Iz_over_K_steady','friction_angle','cohesion','weight_of_water','weight_of_soil','time_of_failure','S','Z','row','col','observed_failtime'])
+    valid_df= pd.DataFrame(columns=['alpha', 'D_0', 'K_sat', 'd','Iz_over_K_steady','friction_angle','cohesion','weight_of_water','weight_of_soil','time_of_failure','factor_of_safety', 'min_depth','S','Z','row','col','observed_failtime'])
 
     for i,j in product(range(slopearr.shape[0]), range(slopearr.shape[1])):
     #for i,j in product(range(0,20,1), range(500,820,1)):
@@ -297,14 +297,17 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
 
                 failures = mymodel.cppmodel.output_failure_times
                 failures_b = mymodel.cppmodel.output_failure_bool
+				FoS = mymodel.cpp.model.output_depthsFS
+			    min_depth = mymodel.cpp.output_failure_mindepths
+
                 if len(failures) > 0 and len(failures_b[failures_b ==True]) > 1:
                     failures = failures[failures_b ==True][0]
                 else:
                     failures = 0
 
-                valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures,'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
+                valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures, 'factor_of_safety':FoS, 'min_depth':min_depth,'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
 
-    valid_df.to_csv(rundir + 'Validated_updated.csv', index=False)
+    valid_df.to_csv(rundir + 'Validated_updated_FoS_depth.csv', index=False)
 
 
 

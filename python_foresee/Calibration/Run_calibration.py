@@ -7,7 +7,7 @@
 
 # Importing the model
 import sys
-sys.path.insert(0,'../../lsdfailtools-master/lsdfailtools')# Importing the model
+sys.path.insert(0,'../../lsdfailtools/lsdfailtools')# Importing the model
 import iverson2000 as iverson
 
 # I'll need that to process the outputs
@@ -15,7 +15,6 @@ import os
 import json
 from datetime import datetime
 import pandas as pd
-import geopandas as gpd
 import numpy as np
 import shapefile
 import itertools
@@ -32,7 +31,7 @@ import Calibration_functions as fn
 ################################################################################
 ################################################################################
 
-with open("../../../file_with_paths.json") as file_with_paths :
+with open("../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 

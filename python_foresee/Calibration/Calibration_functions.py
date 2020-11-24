@@ -191,7 +191,7 @@ def GW_depth_ini(Piezo_data, Start):
             print ( StartDate[3:5] )
             indices.append(i)
 
-    GW = np.asarray( GW_depth[['LIV1', 'LIV2', 'LIV3', 'LIV4'] ].iloc[indices] ) 
+    GW = np.asarray( GW_depth[['LIV1', 'LIV2', 'LIV3', 'LIV4'] ].iloc[indices] )
     GW_mean = np.mean(GW[~np.isnan(GW)])
 
     return GW_mean
@@ -205,7 +205,7 @@ def select_pixels(distarr, failarr, Num_cal):
     # this bit can definitely be improved on!
 
     print ('Selecting pixels for calibration')
-   
+
     # this is too strict for Sentinel points, which are further than most of those we had with InSAr
     selectarr = (100 - distarr**(1/2) ) / 5000
 
@@ -292,7 +292,7 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW, Ca
                     Z = demarr[i,j]
                     S = slopearr[i,j]
                     F = failarr[i,j]
-                    
+
 
                     # if this is the first pixel to be calibrated
                     if work_df_exists == 0:
@@ -330,22 +330,22 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW, Ca
                         # Append that dataframe to the existing one
                         work_df = work_df.append(temp_df, ignore_index = True)
 
-                        
 
-                        Diff = np.asarray(work_df['time_of_failure'] - work_df['observed_failtime']) / (24*3600) 
+
+                        Diff = np.asarray(work_df['time_of_failure'] - work_df['observed_failtime']) / (24*3600)
                         Pos = Diff[Diff>=0]
                         Neg = Diff[Diff<0]
 
-                        if len(Pos) > 0: 
+                        if len(Pos) > 0:
                             print ('Mean pos:', np.mean(Pos), 'best pos', np.amin(Pos))
                         if len(Neg) > 0:
                             print ('Mean neg:', np.mean(Neg), 'best neg', np.amax(Neg))
 
-                        inbounds_ID = np.where(np.logical_and(Diff <= failinterval/(24*3600), Diff >= -failinterval/(24*3600)))[0] 
+                        inbounds_ID = np.where(np.logical_and(Diff <= failinterval/(24*3600), Diff >= -failinterval/(24*3600)))[0]
 
                         print (inbounds_ID)
 
-                        # if there is more than one successful run 
+                        # if there is more than one successful run
                         if len(inbounds_ID) >= 1:
                             print ('Attempt number', n, ': we have a successful calibration!')
                             # keep the successful runs
@@ -355,14 +355,14 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW, Ca
                             if storage_df_exists == 0:
                                 print ('initiating storage of succesfully calibrated pixels')
                                 storage_df = work_df.copy(deep = True)
-                                storage_df_exists = 1        
+                                storage_df_exists = 1
                             else:
                                 print ('adding a calibrated pixel to storage')
                                 storage_df = storage_df.append(work_df, ignore_index = True)
 
                             # we can stop here, the pixel is calibrated
                             break
-                            
+
                         n+=1
 
                         if n == itermax:
@@ -374,10 +374,10 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW, Ca
                     # once we have calibrated all the desired pixels (or we have run out of pixels to calibrate because we've skipped some ... ).
                     # This IF statement is not super useful, it just stops the script from running through pixels not selected for calibration.
 
-                     
+
 
                     # Save all these pixels to a .csv file
-                    storage_df.to_csv(rundir + 'Calibrated.csv')
+                    storage_df.to_csv(rundir + 'Calibrated_FoS_depth.csv')
 
                     print ('Calibrated', npoints, 'pixels in ', datetime.datetime.now()-start)
                     print ()
@@ -400,7 +400,7 @@ def assess_fitness (results, F, failinterval, Nruns):
 
         # calculate the time differences
         notlater = failtimes + failinterval
-        notsooner = failtimes - failinterval        
+        notsooner = failtimes - failinterval
 
         # Which failtimes are within observed times?
         inbounds_ID = np.where(np.logical_and(notlater >= 0, notsooner>=0))[0]
@@ -508,12 +508,12 @@ def MC_loop (rain, GW, S, Nruns, P, rundir, work_df):
     # Now run it
     MCrun.run_MC_failure_test(rain["duration_s"].values, rain["intensity_mm_sec"].values,
                       n_process = 2, output_name = rundir+"test_MC_close.csv", n_iterations = N1, replace = True)
-    
+
     # now open the MC test filexx
     results_close = pd.read_csv(rundir+"test_MC_close.csv")
 
 
-    
+
 
     # set the parameters for initial the MC runs
     MCrun = iverson.MonteCarlo_Iverson( alpha_min = S, D_0_min = P.at[0,'D_0'], K_sat_min = P.at[0,'K_sat'], d_min = GW, Iz_over_K_steady_min = P.at[0,'Iz_over_K_steady'], friction_angle_min = P.at[0,'friction_angle'], cohesion_min = P.at[0,'cohesion'], weight_of_water_min = P.at[0,'weight_of_water'], weight_of_soil_min = P.at[0,'weight_of_soil'],
@@ -522,7 +522,7 @@ def MC_loop (rain, GW, S, Nruns, P, rundir, work_df):
     # Now run it
     MCrun.run_MC_failure_test(rain["duration_s"].values, rain["intensity_mm_sec"].values,
                       n_process = 2, output_name = rundir+"test_MC_far.csv", n_iterations = N2, replace = True)
-    
+
     # now open the MC test filexx
     results_far = pd.read_csv(rundir+"test_MC_far.csv")
     results = results_close.append(results_far, ignore_index = True)

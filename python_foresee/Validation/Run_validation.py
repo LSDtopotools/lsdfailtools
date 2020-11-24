@@ -23,7 +23,7 @@ print ('GO!')
 ######################################################
 import sys
 
-sys.path.insert(0,'../../lsdfailtools-master/lsdfailtools')
+sys.path.insert(0,'../../lsdfailtools/lsdfailtools')
 # Importing the model
 import lsdfailtools.iverson2000 as iverson
 
@@ -99,7 +99,7 @@ piezo_data_file = piezo_path + "data_piezometer.csv"
 
 # calibrated points files
 calibdir = FILE_PATHS["rain_intensity_caliv_valid"]
-calibfile = calibdir + "Calibrated_all.csv"
+calibfile = calibdir + "Calibrated_FoS_depth.csv"
 
 
 ######################################################
