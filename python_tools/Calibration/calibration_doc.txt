@@ -1,0 +1,9 @@
+What does the calibration consist on?
+
+We take the parameters files, which has the details of the n_iterations
+We also define the MC parameters
+
+We use the failure data files
+Use DEM files 
+Use road files
+Use the rain and the piezometer data
