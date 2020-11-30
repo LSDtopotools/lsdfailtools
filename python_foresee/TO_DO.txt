@@ -1,0 +1,21 @@
+FORESEE - TO DO: 
+20/08/2020
+- clear up git history on the LSDfailtools account --> DONE
+- edit README file on LSDfailtools account --> DONE 
+- update .gitignore document --> DONE
+- delete and check duplicate file_with_paths.json --> DONE
+- check to_do docucument by Guillaume
+- change dates formatting in the code to be customisable
+- check what the print statements mean in the calibration process
+- think of a way to speed up calibration-could this be parallelised? (currently takes 48hrs to do the full calibration)
+- remove bits of commented code at the end of the different scripts
+- check how sentinel_combo is different from the All_ files created by interferometry scripts
+- sentinel interferometry script seems to have nothing to do with the sentinel files, it only deals with the interferometry files. 
+- check what the sentinel files and the interferometry files actually contain exactly
+- check thresholds in the sentinel scripts - it only takes 1 threshold. Why? 
+- remove unnecessary plotting parts in the InSAR processing
+- prefailarr has disappeared from the calibration and validation files. Why do we not need that now?
+- check what function files are the same 
+- make a transferable anaconda file with all the packages to install
+- create a requirements.txt file specifying all dependencies and versions
+
