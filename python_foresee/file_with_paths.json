@@ -1,0 +1,22 @@
+{
+     "run_dir" : "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/foresee_python_scripts_science_exp/Calibration/TestMC/",
+     "fail_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Data_Marina_tests/InSAR_data_failure/",
+     "topo_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/",
+     "road_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Road/",
+     "rain_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/",
+     "PPT_dir" : "/exports/csce/datastore/geos/users/s1440040/FORESEE/FORESEE_dev/bitbucket_foresee/foresee_python_scripts/Alldata_processing/Precipitation/PPTs_FORESEE_downloadonlineversion/src/",
+     "piezo_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Piezometer/",
+     "calib_dir" : "/home/willgoodwin/PostDoc/Foresee/Calib_Valid/Current_test/",
+     "sentinel_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_test/",
+     "sentinel_out_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_output_files/",
+     "interferometry_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/",
+     "interferometry_out_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/interferometry_output_files/",
+     "sentinel_interf_out_dir" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_interferometry_output_files/",
+     "reprojected_out_dir" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/reprojected_output_files/",
+     "inclino_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Inclinometer/",
+     "ground_motion_failure" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/GroundMotion/Failure/",
+     "ground_motion_csv" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/ground_motion_csv/",
+     "rain_intensity_caliv_valid" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration_GG/",
+     "figures_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/figures_output_marina/",
+     "time_series_ml" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/time_series_machine_learning/"
+   }
