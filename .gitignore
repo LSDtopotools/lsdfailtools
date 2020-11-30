@@ -19,3 +19,5 @@ python_tools/machine_learning/
 python_tools/time_series_analysis/
 tmp/
 
+python_tools/Visualisation/*.png
+python_tools/Visualisation/*.geojson
