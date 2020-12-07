@@ -27,7 +27,7 @@ def gpm_30min_download(input_dir, Start_Date = None,End_Date = None, backslh ='\
 
 
     # Login!
-    GetLoginInfo = list(retrieveLogin())
+    #GetLoginInfo = list(retrieveLogin())
 
     #Get actual time
     try:
@@ -120,8 +120,8 @@ def gpm_30min_download(input_dir, Start_Date = None,End_Date = None, backslh ='\
             print (filelist)
 
 
-
-            """try:
+            '''
+            try:
                 try:
                     startImg = filelist.index('3B-DAY.MS.MRG.3IMERG.'+str_Start_Date[0]+str_Start_Date[1]+str_Start_Date[2]+'-S000000-E002959.V06.HDF5')
                 except:
@@ -162,15 +162,15 @@ def gpm_30min_download(input_dir, Start_Date = None,End_Date = None, backslh ='\
                     except:
                         pass
             else:
-                pass"""
-
+                pass
+            '''
             filteredList = filelist #= list(filter(lambda x: x not in os.listdir(input_dir),filelist))
 
-            #print(filteredList)
+            print(filteredList)
 
             for item in range(0,len(filteredList)):
 
-                os.system('wget --user=' + GetLoginInfo[0] + ' --password=' + GetLoginInfo[1] + ' --show-progress -c -q '+  url + filteredList[item] + ' -O ' + input_dir + backslh + filteredList[item])
+                os.system('wget --user=' + os.environ["NASA_USERNAME"] + ' --password=' + os.environ["NASA_PASSWORD"] + ' --show-progress -c -q '+  url + filteredList[item] + ' -O ' + input_dir + backslh + filteredList[item])
 
     #except:
     #    print ('\nDownloads finished')
