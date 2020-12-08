@@ -141,7 +141,7 @@ def ENVI_raster_binary_to_2d_array(file_name):
 
 
 
-def maps_to_timeseries(working_dir):
+def maps_to_timeseries(working_dir, arglist):
 	# List the .bil files
 	files = sorted(os.listdir(working_dir)); bilfiles = []
 	for i in range(len(files)):
@@ -162,6 +162,8 @@ def maps_to_timeseries(working_dir):
 		Rainarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(working_dir + bilfiles[i])
 		Rain = numpy.mean(Rainarr)
 		Intensity = Rain/(30*60) # Intensity of rainfall during the period (mm/sec)
+		print("hello")
+		print(Intensity)
 		#Intlist.append(Intensity)
 
 		# Save it all together
@@ -194,7 +196,9 @@ def download_days(arglist, zero_list, zero_dir, fst_dir, backslh):
 	if zero_list[n].endswith('.nc4') > -1 and zero_list[n].find('.xml') == -1 and zero_list[n].find('.aux') == -1 and zero_list[n].find('.tfw') == -1:
 			extract_subdata = 'HDF5:"%s%s%s"://precipitationCal' % (zero_dir, backslh, zero_list[n])
 			outfile = '%s%s%s_precipitationCal.tif' % (fst_dir,backslh, zero_list[n][:-4])
-			
+			print("hello from download_days")
+			print(outfile)
+
 			process(outfile,extract_subdata,arglist[0])
 			raster_crop(arglist, outfile)
 			extract_subdata = outfile = None

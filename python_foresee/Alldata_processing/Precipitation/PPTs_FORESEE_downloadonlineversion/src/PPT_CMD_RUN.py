@@ -87,7 +87,7 @@ if args.OP == '':
 arglist = [args.ProdTP,args.StartDate,args.EndDate,args.ProcessDir,args.SptSlc,args.OP]
 print(arglist)
 
-
+print("hello from line 90 PPT_CMD_RUN")
 
 
 ################################################################################
@@ -153,6 +153,7 @@ if arglist[5] == False:
 	dwnld(download_dir,backslh=backslh,Start_Date = arglist[1],End_Date = arglist[2])
 
 DirEnd = create_dir
+print("hello from line 156 PPT_CMD_RUN")
 
 zero_dir = download_dir#[:-1]
 fst_dir = input_dir_data + backslh + '1'
@@ -172,17 +173,19 @@ try:
 except:
 	print (fth_dir + "_processed"+": this directory already exists")
 
+print("hello from line 176 PPT_CMD_RUN")
 
 
 ################################################################################
 ################################################################################
-"""Dwnload the files"""
+"""Download the files"""
 ################################################################################
 ################################################################################
 
 
 zero_list = os.listdir(zero_dir)
 zero_list = sorted(zero_list, key = lambda x: x.rsplit('.', 1)[0])
+print(zero_list)
 
 if arglist[0] == 'GPM_M': # We do not expect this case to arise in our use case
 	for n in range(0,len(zero_list),1):
@@ -193,6 +196,7 @@ if arglist[0] == 'GPM_M': # We do not expect this case to arise in our use case
 elif arglist[0] == 'GPM_D': # We do not expect this case to arise in our use case
 	for n in range(0,len(zero_list),1):
 		fn.download_days(arglist, zero_list, zero_dir, fst_dir, backslh)
+		print("hello from line 198 PPT_CMD_RUN")
 
 
 
@@ -210,10 +214,11 @@ else:
 #######################################################################
 # Transform into a time series
 #######################################################################
+print("hello from line 216 PPT_CMD_RUN")
 
 # Where are the .bil files?
 working_dir = fst_dir + backslh
-fn.maps_to_timeseries(working_dir)
+fn.maps_to_timeseries(working_dir, arglist)
 
 
 
@@ -223,6 +228,3 @@ fn.maps_to_timeseries(working_dir)
 
 
 # python Integration.py --ProdTP GPM_30min --StartDate 2018-02-01 --EndDate 2018-02-08 --ProcessDir /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data --SptSlc /home/willgoodwin/PostDoc/Foresee/Data/Topography/AoI.shp --OP
-
-
-	
