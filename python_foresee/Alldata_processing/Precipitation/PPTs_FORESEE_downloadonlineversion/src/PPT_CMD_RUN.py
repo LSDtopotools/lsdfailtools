@@ -201,8 +201,8 @@ elif arglist[0] == 'GPM_D': # We do not expect this case to arise in our use cas
 
 
 elif arglist[0] == 'GPM_30min':
-	for n in range(0,len(zero_list),1):
-		fn.download_hhs(arglist, zero_list, zero_dir, fst_dir, backslh)
+	for n in range(0,len(zero_list)-1,1):
+		fn.download_hhs(arglist, zero_list, zero_dir, fst_dir, backslh, n)
 
 
 
@@ -218,7 +218,8 @@ print("hello from line 216 PPT_CMD_RUN")
 
 # Where are the .bil files?
 working_dir = fst_dir + backslh
-fn.maps_to_timeseries(working_dir, arglist)
+
+fn.maps_to_timeseries(arglist, working_dir)
 
 
 

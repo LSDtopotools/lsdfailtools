@@ -14,6 +14,7 @@ from osgeo.gdalnumeric import *
 from osgeo.gdalconst import *
 
 
+gcs_path = "/home/willgoodwin/Software/anaconda3/envs/coastalsat/lib/python3.7/site-packages/fiona/gdal_data/"
 
 
 def process(out_dir,data_file,dataInfo):
@@ -70,7 +71,9 @@ def process(out_dir,data_file,dataInfo):
 	#####################################
 	# 0. Make the HDF5 file into a .tif containing the calibrated precipitation
 	#####################################
+	print (data_file)
 	os.system('gdal_translate -of GTiff HDF5:' + data_file + '://Grid/precipitationCal ' + data_file[:-5] + '.tif')
+
 
 	#####################################
 	# 1. The produced .tif file is rotated 90° so we must rotated back and assign a correct projection
@@ -87,6 +90,8 @@ def process(out_dir,data_file,dataInfo):
 
 	# Extract the band you need
 	band = ds.GetRasterBand(1)
+
+
 	arr = band.ReadAsArray()
 	TPSGPM = rot90(arr,1)
 	TPSGPM = ((TPSGPM.astype(float))> 0)*((TPSGPM.astype(float))*hourFactor) + ((TPSGPM.astype(float))< 0)*0
@@ -128,13 +133,19 @@ def process(out_dir,data_file,dataInfo):
         0,                      # 4
         -Y_PXL_SIZE))
 
+
+
 	# Define the target srs
 	srs = osr.SpatialReference()
 	srs.ImportFromEPSG(4326)
 	dataset.SetProjection(srs.ExportToWkt())
 
+
+
+
 	# Write array to band
 	dataset.GetRasterBand(1).WriteArray(TPSGPM)
+
 	# Save to disk
 	dataset.FlushCache()  # Write to disk.
 
