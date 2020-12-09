@@ -21,6 +21,7 @@ from osgeo.gdalnumeric import *
 from osgeo.gdalconst import *
 import csv
 
+gcs_path = "/home/willgoodwin/Software/anaconda3/envs/coastalsat/lib/python3.7/site-packages/fiona/gdal_data/"
 
 
 ################################################################################
@@ -141,8 +142,9 @@ def ENVI_raster_binary_to_2d_array(file_name):
 
 
 
-def maps_to_timeseries(working_dir):
+def maps_to_timeseries(arglist, working_dir):
 	# List the .bil files
+	print('Got to the timeseries function')
 	files = sorted(os.listdir(working_dir)); bilfiles = []
 	for i in range(len(files)):
 		ending = files[i][-4:]
@@ -172,6 +174,8 @@ def maps_to_timeseries(working_dir):
 	    writer = csv.writer(f)
 	    writer.writerow(['duration_s','intensity_mm_sec'])
 	    writer.writerows(Full_list)
+	print ('DOOOOONE')
+	print (working_dir)
 
 
 
@@ -201,16 +205,16 @@ def download_days(arglist, zero_list, zero_dir, fst_dir, backslh):
 
 
 
-def download_hhs(arglist, zero_list, zero_dir, fst_dir, backslh):
+def download_hhs(arglist, zero_list, zero_dir, fst_dir, backslh, n):
 	if zero_list[n].endswith('.HDF5') > -1 and zero_list[n].find('.xml') == -1 and zero_list[n].find('.aux') == -1 and zero_list[n].find('.tfw') == -1:
-			if 	zero_list[n].find('.HDF5') > -1:
-				extract_subdata = "%s%s%s" % (zero_dir,backslh,zero_list[n])
-				#extract_subdata = 'HDF5:"%s%s%s"://Grid/precipitation' % (zero_dir,backslh,zero_list[n])
-				outfile = '%s%s%s.bil' % (fst_dir,backslh,zero_list[n][:-5])
+		if 	zero_list[n].find('.HDF5') > -1:
+			extract_subdata = "%s%s%s" % (zero_dir,backslh,zero_list[n])
+			#extract_subdata = 'HDF5:"%s%s%s"://Grid/precipitation' % (zero_dir,backslh,zero_list[n])
+			outfile = '%s%s%s.bil' % (fst_dir,backslh,zero_list[n][:-5])
 
-				process(outfile,extract_subdata,arglist[0])
-				raster_crop(arglist, outfile)
-				extract_subdata = outfile = None
+			process(outfile,extract_subdata,arglist[0])
+			raster_crop(arglist, outfile)
+			extract_subdata = outfile = None
 
 
 
@@ -233,6 +237,7 @@ def raster_crop(arglist, outfile):
 
 		# Cut the raster to your desired extent
 		os.system('gdalwarp -overwrite -of ENVI -t_srs EPSG:4326 -cutline ' + cutfile + ' -crop_to_cutline ' + to_cut + ' ' + cutted_file)
+		#os.system('gdalwarp --config GDAL_DATA ' + gcs_path + ' -overwrite -of ENVI -t_srs EPSG:4326 -cutline ' + cutfile + ' -crop_to_cutline ' + to_cut + ' ' + cutted_file)
 		# Get rid of the big files
 		os.system('rm ' + outfile)
 		os.system('rm ' + cutted_file+'.aux.xml')
