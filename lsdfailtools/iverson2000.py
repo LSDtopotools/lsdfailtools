@@ -172,6 +172,9 @@ def worker(arg, q):
     time = this_model.cppmodel.output_times
     minimum_FS = this_model.cppmodel.output_minFS
     minimum_depth = this_model.cppmodel.output_depthsFS
+    # Psi and FS below are 2D arrays in depth and time
+    #Psi_timedepth = self.cppmodel.output_Psi_timedepth
+    #FS_timedepth = self.cppmodel.output_FS_timedepth
     #output_FS_timedepth = this_model.cppmodel.output_FS_timedepth
 
 

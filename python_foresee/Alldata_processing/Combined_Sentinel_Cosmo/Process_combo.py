@@ -34,42 +34,32 @@ import Combo_functions as fn
 ################################################################################
 ################################################################################
 
-with open("../../file_with_paths.json") as file_with_paths :
+with open("file_paths_combined_sentinel_cosmo.json") as file_with_paths :
 	FILE_PATHS = json.load(file_with_paths)
 
-print("The base output directory is {}".format(FILE_PATHS["ground_motion_failure"]))
+print("The base output directory is {}".format(FILE_PATHS["ground_motion_output"]))
 
 
 
-#base_dir = "/home/willgoodwin/PostDoc/Foresee/Data/"
-out_dir = FILE_PATHS["ground_motion_failure"]
-out_dir_csv = FILE_PATHS["ground_motion_csv"]
-
-sentinel_dir = FILE_PATHS["sentinel_dir"]
-# INTERFEROMETRY DATA from CosmoSkyMed
-interferometry_dir = FILE_PATHS["interferometry_dir"]
-
+out_dir = FILE_PATHS["ground_motion_output"]
+out_dir_csv = FILE_PATHS["ground_motion_csv_output"]
 
 
 # The coordinates in thes files are in UTMZone33N: EPSG32633.
-ew_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
-v_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
+ew_file = FILE_PATHS["interferometry_EW"]
+v_file = FILE_PATHS["interferometry_VERT"]
 
 # For some unknown reason the coordinates in this file are in UTMZone32N: EPSG32632
-sentinel_file_badproj = sentinel_dir + "FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2.shp"
-sentinel_file = sentinel_dir + "FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2_epsg32633.shp"
+sentinel_file_badproj = FILE_PATHS["sentinel_file_original"]
+sentinel_file = FILE_PATHS["sentinel_file_reprojected"]
 
 # Let's put it back in EPSG32633 to make it easy for ourselves, of it's not done already
 if not os.path.isfile(sentinel_file):
 	fn.reproject_shp(sentinel_file_badproj, 32633)
 
 # The coordinates in thes files are in UTMZone33N: EPSG32633.
-topo_dir = FILE_PATHS["topo_dir"]
-# new 10m DEM data
-slopefile = topo_dir + "10m_DEM_tinitaly/w45510_s10_SLOPE_AoI_32633.bil"
+slopefile = FILE_PATHS["slopefile"]
 
-curvaturefile = topo_dir + "10m_DEM_tinitaly/w45510_s10_CURV_AoI_32633.bil"
-aspectfile = topo_dir + "10m_DEM_tinitaly/w45510_s10_ASPECT_AoI_32633.bil"
 
 # Line of Sight (LoS) and axis vectors are given in (Easting, Northing, Vertical)
 Sentinel_LoS = np.array([0.632024, 0.117139, -0.766044])
@@ -78,9 +68,8 @@ ew_axis = np.array([1,0,0])
 vert_axis = np.array([0,0,1])
 ns_axis = np.array([0,1,0])
 
-#Here comes the rain again
-rain_dir = FILE_PATHS["rain_dir"]
-rain_file = rain_dir + "2014-01-01_to_2019-12-31_Intensity.csv"
+# import precipitation data
+rain_file = FILE_PATHS["rain_file"]
 
 N_bands = 3
 
@@ -119,8 +108,6 @@ EWV_intervals_yr = [ item.days/365 for item in EWV_intervals ]
 
 # Load the topographic slope file
 slope_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(slopefile)
-curv_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(curvaturefile)
-aspect_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(aspectfile)
 
 originX = geotransform[0]
 originY = geotransform[3]
@@ -164,16 +151,10 @@ counter = 0
 # create a failures array
 fail_arr = np.zeros((N_bands, slope_array.shape[0], slope_array.shape[1]), dtype = np.float)
 print(np.shape(fail_arr))
-# create dataframe to hold ground motion, time and slope data for each pixel
-#add DEM data
-
-#for i,j in itertools.product(range(1486,slope_array.shape[0],1), range(0,slope_array.shape[1],1)):
-#for i,j in itertools.product(range(4,5,1), range(690,691,1)):
 
 for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shape[1])):
 	slope = slope_array[i,j]
-	curvature = curv_array[i,j]
-	aspect = aspect_array[i,j]
+
 	if slope >= 0:
 		xbox = [originX + j*pixelWidth, originX + (j+1)*pixelWidth]
 		ybox = [originY + i*pixelHeight, originY + (i+1)*pixelHeight]
@@ -203,10 +184,7 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 			all_failures = []
 
 			for (arr, dates, intervals) in [(s, S_dates, S_intervals_yr), (ewv, EWV_dates, EWV_intervals_yr)]:
-				# print('movement: {}'.format(movement))
-				# print('movement_dates:{}'.format(movement_dates))
-				# print('datasource:{}'.format(datasource))
-				# print('all_failures:{}'.format(all_failures))
+
 				if datacounter == 0:
 					datasource.append("Sentinel")
 				elif datacounter == 1:
@@ -223,10 +201,7 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 				movement_dates.append(dates_av10)
 
 				datacounter += 1
-				# print('movement: {}'.format(movement))
-				# print('movement_dates:{}'.format(movement_dates))
-				# print('datasource:{}'.format(datasource))
-				# print('all_failures:{}'.format(all_failures))
+
 				# order the failure indices in the  pixel
 				if len(failure_indices) > 0:
 					ordered_failures = sorted(failure_indices)
@@ -240,20 +215,13 @@ for i,j in itertools.product(range(slope_array.shape[0]), range(slope_array.shap
 						else:
 							fail_arr[k,i,j] = min(TF, fail_arr[k,i,j])
 
-				#else:
-				# 	if fail_arr[:,i,j].all() <= 0:
-				#		fail_arr[:,i,j] = -1 # -1 means the pixel was looked at but we found no failure
 
-			# print('movement: {}'.format(movement))
-			# print('movement_dates:{}'.format(movement_dates))
-			# print('datasource:{}'.format(datasource))
-			# print('all_failures:{}'.format(all_failures))
 			if plot_rainfall_ground_motion == True:
 				# this plots don't include curvature or aspect
 				fn.plot_disp_failure(movement, movement_dates, all_failures, rain, slope, startdate, enddate,i,j, out_dir, datasource)
 
 			elif make_csv_ground_motion == True:
-				fn.save_disp_failure_csv_updated(movement, movement_dates, slope, curvature, aspect, i,j, out_dir_csv, datasource)
+				fn.save_disp_failure_csv(movement, movement_dates, slope, i,j, out_dir_csv, datasource)
 
 
 

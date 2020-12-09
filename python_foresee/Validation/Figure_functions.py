@@ -20,7 +20,7 @@ import lsdfailtools.iverson2000 as iverson
 
 ######################################################
 ######################################################
-# A figure to map calibrated points
+# A function to map calibrated points
 ######################################################
 ######################################################
 def map_calibrated (demarr, calibrated, road, fig_height, fig_width, fig_name):
@@ -49,35 +49,9 @@ def map_calibrated (demarr, calibrated, road, fig_height, fig_width, fig_name):
 
 
 
-
 ######################################################
 ######################################################
-# A figure to map calibrated points
-######################################################
-######################################################
-def plot_failtime_abandonedplot (calibrated, fig_height, fig_width, fig_name):
-
-	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
-	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
-
-	ax1.set_xlabel('time (days)')
-
-	late_failtimes = sorted(list(set(list(calibrated['observed_failtime']))))
-
-	for i in range(len(late_failtimes)):
-		df = calibrated[calibrated['observed_failtime'] == late_failtimes[i]]
-		df['time_of_failure'] = df['time_of_failure']/(24*3600)
-
-		ax1.hist(df['time_of_failure'], bins = 20, color = plt.cm.jet(i/len(late_failtimes)), lw = 0, density = True, alpha = 0.7)
-
-	plt.tight_layout()
-	plt.savefig(fig_name)
-
-
-
-######################################################
-######################################################
-# A figure to map calibrated points
+# A function to plot the calibration parameters
 ######################################################
 ######################################################
 def plot_parameters (calibrated, fig_height, fig_width, fig_name):
@@ -125,7 +99,7 @@ def plot_parameters (calibrated, fig_height, fig_width, fig_name):
 
 ######################################################
 ######################################################
-# A figure to map validation results
+# A function to map validation results
 ######################################################
 ######################################################
 def map_validation(rain, depths, calibrated, validated, road, demarr, slopearr, failarr, failinterval, fig_height, fig_width, fig_name):
@@ -196,7 +170,6 @@ def plot_failtime_calib_valid (calibrated, validated, rain, fig_height, fig_widt
 	ax1.set_xlabel('Observed failure time (days)')
 	ax1.set_ylabel('Modelled failure time (days) (red = calibrated; blue = validation)')
 
-	#ax11.fill_between(rain['time_s']/(3600*24), 0, rain['rainfall_mm'], facecolor = 'k', lw = 0.1, alpha = 0.5)
 	ax12.fill_between(rain['rainfall_mm'], 0, rain['time_s']/(3600*24), facecolor = 'k', lw = 0.1, alpha = 0.5)
 
 	for i in range(len(calibrated)):
@@ -221,7 +194,7 @@ def plot_failtime_calib_valid (calibrated, validated, rain, fig_height, fig_widt
 
 ######################################################
 ######################################################
-# A figure to map validation results
+# A function to plot the rainfall intensity
 ######################################################
 ######################################################
 
@@ -245,7 +218,7 @@ def plot_rain(rain, fig_height, fig_width, fig_name):
 
 ######################################################
 ######################################################
-# A figure to map validation results
+# A function to plot failures
 ######################################################
 ######################################################
 

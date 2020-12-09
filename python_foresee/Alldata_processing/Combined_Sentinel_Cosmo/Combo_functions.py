@@ -28,49 +28,6 @@ from numpy.linalg import lstsq
 from scipy import stats
 
 
-################################################################################
-################################################################################
-"""Import internal modules"""
-################################################################################
-################################################################################
-
-#from gpm_download_month_V06B import gpm_month_download
-#from gpm_download_day_V06B import gpm_day_download
-#from gpm_download_30min_V06B import gpm_30min_download
-
-#AncillaryData
-#from image_process import process_HDF5, process_nc4
-#from get_info import get_info
-
-
-################################################################################
-################################################################################
-"""Argument Parser"""
-################################################################################
-################################################################################
-
-def parseArguments():
-
-    parser = argparse.ArgumentParser(prog='Precipitation Processing Tool')
-
-    parser.add_argument('--ProdTP', choices= ['GPM_M','GPM_D','GPM_30min'], default='GPM_30min', dest='ProdTP',  help='GPM_M: GPM Monthly (IMERGM v6);\n GPM_D: GPM Daily (IMERGDF v6); \n GPM_30min: GPM Half-hourly (IMERGHHE v6)\n')
-
-    StartDF = '01-06-2000'
-    parser.add_argument('--StartDate',dest='StartDate', help='Insert the start date',default=StartDF,type=str)
-
-    EndDF = str((datetime.datetime.now()).strftime('%Y-%m-%d'))
-    parser.add_argument('--EndDate',dest='EndDate', help='Insert the end date',default=EndDF,type=str)
-
-    parser.add_argument('--ProcessDir',dest='ProcessDir', help='Insert the processing directory path',type=str)
-
-    parser.add_argument('--SptSlc',dest='SptSlc', nargs="?", help='Insert the slice feature path',type=str)
-
-    parser.add_argument('--OP', dest='OP',action="store_true", help='Call this argument if you only want to process the data. Make sure you have a directory with a raw files subfolder.')
-
-    parser.add_argument('--DirOut', dest='DirOut', help='This is the output directory for the final timeseries file. Defaults to current working directory.', default = os.getcwd(),type=str)
-
-    args = parser.parse_args();
-    return args
 
 
 ################################################################################
@@ -104,41 +61,26 @@ def ENVI_raster_binary_to_2d_array(file_name):
     else:
         print ("%s opened successfully" %file_name)
 
-        #print '~~~~~~~~~~~~~~'
-        #print 'Get image size'
-        #print '~~~~~~~~~~~~~~'
+        #Get image size
         cols = inDs.RasterXSize
         rows = inDs.RasterYSize
         bands = inDs.RasterCount
 
-        #print "columns: %i" %cols
-        #print "rows: %i" %rows
-        #print "bands: %i" %bands
-
-        #print '~~~~~~~~~~~~~~'
-        #print 'Get georeference information'
-        #print '~~~~~~~~~~~~~~'
+        # Get georeference information
         geotransform = inDs.GetGeoTransform()
         originX = geotransform[0]
         originY = geotransform[3]
         pixelWidth = geotransform[1]
         pixelHeight = geotransform[5]
 
-        #print "origin x: %i" %originX
-        #print "origin y: %i" %originY
-        #print "width: %2.2f" %pixelWidth
-        #print "height: %2.2f" %pixelHeight
 
-        # Set pixel offset.....
-        #print '~~~~~~~~~~~~~~'
-        #print 'Convert image to 2D array'
-        #print '~~~~~~~~~~~~~~'
+        # Set pixel offset
+        # Convert image to 2D array
         band = inDs.GetRasterBand(1)
-        #print band
+
         image_array = band.ReadAsArray(0, 0, cols, rows)
         image_array_name = file_name
-        #print type(image_array)
-        #print image_array.shape
+
 
         return image_array, pixelWidth, (geotransform, inDs)
 
@@ -168,12 +110,6 @@ def ENVI_raster_binary_from_2d_array(envidata, file_out, post, image_array):
     driver = gdal.GetDriverByName('ENVI')
 
     original_geotransform, inDs = envidata
-
-    #print 'WOOO'
-    #print envidata
-    #print original_geotransform
-    #print inDs
-    #print inDs.GetProjection()
 
     rows, cols = image_array.shape
     bands = 1
@@ -367,7 +303,7 @@ def find_failure_indices(arr_av10, dates_av10, startdate, enddate, datacounter):
     if datacounter == 1:
         threshold = 10
 
-    # USE THIS: THIS IS NATURE SO IT'S FINAL
+    # USE THIS:
     # https://www.nature.com/articles/s41598-018-25369-w.pdf
 
     # 1. slope of linear regression over the whole displacement timeseries
@@ -467,9 +403,7 @@ def save_disp_failure_csv(all_movement, all_movement_dates, slope, i,j, out_dir_
         movement = all_movement[source]
         movement = movement.squeeze()
         movement_dates = all_movement_dates[source]
-        # don't include failures for now
-        #failures = all_failures[source]
-        #failures = failures.squeeze()
+
         for k in range(len(movement)):
             ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
             ground_motion_df.to_csv(out_dir_csv + 'TEST_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
@@ -479,11 +413,8 @@ def save_disp_failure_csv_updated(all_movement, all_movement_dates, slope, curva
 
     for source in range(len(datasource)):
         movement = all_movement[source]
-        #movement = movement.squeeze()
         movement_dates = all_movement_dates[source]
-        # don't include failures for now
-        #failures = all_failures[source]
-        #failures = failures.squeeze()
+
         for k in range(len(movement)):
             movement = np.array(movement)
             movement_dates = np.array(movement_dates)
@@ -493,9 +424,6 @@ def save_disp_failure_csv_updated(all_movement, all_movement_dates, slope, curva
 
                     ground_motion_df = ground_motion_df.append({'ground_motion':movement[k,m], 'time_of_motion':movement_dates[m],'slope':slope, 'curvature':curvature, 'aspect':aspect,'row':i,'col':j, 'datasource':source}, ignore_index=True)
                     ground_motion_df.to_csv(out_dir_csv + '10mDEM_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
-        #else:
-            #ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
-            #ground_motion_df.to_csv(out_dir_csv + 'TEST_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
 
 
 
@@ -658,10 +586,6 @@ def maps_to_timeseries(working_dir, arglist, output_dir):
     if ending == '.bil':
         bilfiles.append(files[i])
 
-
-    #Timelist = []
-    #CumTimelist = []
-    #Intlist = []
     Full_list = []
     for i in range(len(bilfiles)):
 
@@ -678,12 +602,10 @@ def maps_to_timeseries(working_dir, arglist, output_dir):
     Rainarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(working_dir + bilfiles[i])
     Rain = numpy.mean(Rainarr)
     Intensity = Rain/(30*60) # Intensity of rainfall during the period (mm/sec)
-    #Intlist.append(Intensity)
-
     # Save it all together
     Full_list.append([30*60, Intensity])
 
-    # Now save the stuff
+    # Now save it
     with open(output_dir+'/'+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(['duration_s','intensity_mm_sec'])

@@ -1,0 +1,12 @@
+{
+     "slopefile" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633_SLOPE.bil",
+     "curvaturefile" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/10m_DEM_tinitaly/w45510_s10_CURV_AoI_32633.bil",
+     "aspectfile" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/10m_DEM_tinitaly/w45510_s10_ASPECT_AoI_32633.bil",
+     "rain_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv",
+     "sentinel_file_original" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_test/FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2.shp",
+     "sentinel_file_reprojected" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_test/FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2_epsg32633.shp",
+     "interferometry_EW" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp",
+     "interferometry_VERT" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Interferometry/FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp",
+     "ground_motion_output" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/GroundMotion/Failure/",
+     "ground_motion_csv_output" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/ground_motion_csv/",
+   }

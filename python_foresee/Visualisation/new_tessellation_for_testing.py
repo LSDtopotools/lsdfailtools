@@ -253,13 +253,8 @@ except OSError:
 os.rename('{}.xyz'.format(filename), '{}.csv'.format(filename))
 
 os.system('ogr2ogr -f "ESRI Shapefile" -oo X_POSSIBLE_NAMES=X* -oo Y_POSSIBLE_NAMES=Y* -oo KEEP_GEOM_COLUMNS=YES {0}.shp {0}.csv'.format(filename))
-quit()
-'''
 
-#import fiona
-#shape = fiona.open(faildir+"test_convert_array_to_raster.shp")
-#first = shape.next()
-#print(first)
+'''
 
 shp_file = gpd.read_file(faildir+"test_convert_array_to_raster.shp")
 print(shp_file.head(5))
@@ -270,73 +265,12 @@ shp_file['Z'] = shp_file['Z'].astype('float64')
 print(shp_file.dtypes)
 shp_file = shp_file[shp_file.Z.notnull()]
 shp_file = shp_file.dropna()
-shp_file.to_file(driver = 'ESRI Shapefile', filename= faildir+"result.shp")
+#shp_file.to_file(driver = 'ESRI Shapefile', filename= faildir+"result.shp")
 print(shp_file.head(5))
-
-#shp_file.to_file('myshpfile.geojson', driver='GeoJSON')
-
 '''
-points_csv_file = faildir+'points_validation_raster.csv'
-points_csv_df = pd.read_csv(points_csv_file)
-print(points_csv_df.head(5))
+topodir = FILE_PATHS["topo_dir"]
+AoI = topodir + "AoI.shp"
+
+# Import area of interest in Italy for region clipping
+AoI = gpd.read_file(topodir + "AoI.shp")
 '''
-'''
-#points_csv_df["XYZ"] = points_csv_df["XYZ"].str.replace(" ",",")
-points_csv_df[['lon', 'lat', 'alt']] = points_csv_df['X Y Z'].str.split(' ', 2, expand=True)
-points_csv_df = points_csv_df.drop('X Y Z', 1)
-points_csv_df = points_csv_df.drop('alt', 1)
-points_csv_df['time_of_failure'] = valid_df['time_of_failure']
-
-points_csv_df = points_csv_df.dropna(subset=['time_of_failure'])
-#points_csv_df = pd.to_numeric(points_csv_df)
-points_csv_df["lon"] = points_csv_df["lon"].astype(str).astype(float)
-points_csv_df["lat"] = points_csv_df["lat"].astype(str).astype(float)
-print(points_csv_df.count())
-print(points_csv_df.dtypes)
-
-points_csv_df['geometry'] = points_csv_df.apply(lambda x: Point((float(x.lon), float(x.lat))), axis=1)
-points_csv_df = gpd.GeoDataFrame(points_csv_df, geometry='geometry')
-print(points_csv_df.head())
-points_csv_df.to_file(faildir+'MyGeometries.shp', driver='ESRI Shapefile')
-quit()
-
-
-geometry = [Point(xy) for xy in zip(points_csv_df.X, points_csv_df.Y)]
-# add time of failure associated to each of the points
-#df = points_csv_df.drop(['X', 'Y'], axis=1)
-points_csv_df = points_csv_df.drop(['X', 'Y'], axis=1)
-
-gdf = gpd.GeoDataFrame(points_csv_df, crs="EPSG:32633", geometry=geometry)
-print(gdf)
-
-#gdf = gpd.GeoDataFrame(df, crs="EPSG:32633",geometry=gpd.points_from_xy(points_csv_df.X, points_csv_df.Y, crs="EPSG:32633"))
-#print(gdf.head(5))
-# save the GeoDataFrame
-gdf.to_file(driver = 'ESRI Shapefile', filename= faildir+"validation_point_locations.shp")
-quit()
-import pandas as pd
-import geojson
-
-def data2geojson(df):
-    features = []
-    insert_features = lambda X: features.append(
-            geojson.Feature(geometry=geojson.Point((X["X"],
-                                                    X["Y"])),
-                            properties=dict(time_of_failure=X["time_of_failure"])))
-    df.apply(insert_features, axis=1)
-    with open('map1.geojson', 'w', encoding='utf8') as fp:
-        geojson.dump(geojson.FeatureCollection(features), fp, sort_keys=True, ensure_ascii=False)
-
-#data2geojson(points_csv_df)
-'''
-
-
-
-
-
-
-
-
-#######################
-# Map calibrated points
-#ff.map_calibrated (demarr, calibrated, line, 10, 15, fig_out_dir + 'Map_calibrated_pixels.png')

@@ -7,7 +7,7 @@
 
 # Importing the model
 import sys
-sys.path.insert(0,'../../lsdfailtools/lsdfailtools')# Importing the model
+sys.path.insert(0,'../../lsdfailtools')# Importing the model
 import iverson2000 as iverson
 
 # I'll need that to process the outputs
@@ -54,25 +54,14 @@ topo_dir = FILE_PATHS["topo_dir"]
 
 demfile = topo_dir + "eu_dem_AoI_epsg32633.bil"
 slopefile = topo_dir + "eu_dem_AoI_epsg32633_SLOPE.bil"
-cutfile = topo_dir + "eu_dem_v11_E40N20_AoI.bil" # this one needs to be in WGS84 to interface with NASA
 
 # road file
 roaddir = FILE_PATHS["road_dir"]
 roadfile = roaddir + "Road_line.shp" # this is in EPSG:32633
 
-# Rain files - This is the path to creat the rainfall input
-
-# Rain file
-raindir = FILE_PATHS["rain_dir"]
-PPT_dir = FILE_PATHS["PPT_dir"]
-PPT_cmd_run = PPT_dir + "PPT_CMD_RUN.py"
-
 # piezometry files
 piezo_path = FILE_PATHS["piezo_dir"]
 piezo_data_file = piezo_path + "data_piezometer.csv"
-
-# NOTE: the rainfile is a bit different since we create it for the simulation
-
 
 ######################################################
 ######################################################
@@ -107,25 +96,13 @@ roadline = np.array(road.shapes()[0].points)
 ######################################################
 ######################################################
 
-
-
-# CREATE then Read the rainfall - that's a model input
-#os.system("python " + PPT_cmd_run + " --ProdTP GPM_D --StartDate " + StartDate + " --EndDate " + EndDate + " --ProcessDir " + raindir + " --SptSlc " + cutfile + "--OP --DirOut " + rundir)
-# to make this file:
-#python PPT_CMD_RUN.py --ProdTP GPM_D --StartDate 2014-01-01 --EndDate 2019-12-31 --ProcessDir /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data/ --SptSlc /home/willgoodwin/PostDoc/Foresee/Data/Topography/eu_dem_v11_E40N20_AoI.bil --OP --DirOut /home/willgoodwin/PostDoc/Foresee/Calib_Valid/Current_test/
-# or use the module Boris made
-
-# DOESNAE WORK, for now do with the existing files
+# Read the rainfall data
 rainfile = rundir + StartDate + "_to_" + EndDate + "_Intensity.csv"
 rain = pd.read_csv(rainfile)
 
-# Read the piezo data - that's the other model input
+# Read the piezometer data - that's the other model input
 Piezo_data = pd.read_csv(piezo_data_file)
 GW_d_ini = fn.GW_depth_ini(Piezo_data, StartDate)
-
-
-
-
 
 
 ######################################################
@@ -139,7 +116,6 @@ GW_d_ini = fn.GW_depth_ini(Piezo_data, StartDate)
 distarr = fn.calc_dist2road(slopearr.shape, roadline, geotransform)
 
 # Now select pixels based on the distance array and the number of pixels we want.
-# Note: the selection process could definitely be refined.
 final_selectarr = fn.select_pixels(distarr, failarr, Cal_params.at[0,'Num_cal'])
 
 
@@ -152,20 +128,6 @@ final_selectarr = fn.select_pixels(distarr, failarr, Cal_params.at[0,'Num_cal'])
 
 # Now calibrate the points
 fn.calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW_d_ini, Cal_params, Iverson_MC_params, rundir)
-
-
-
-
-# PICK UP HERE!
-
-# Things to do to improve this thing:
-
-# 3. What do you do about GW depth? data shows it to be anywhere between 0.2m and 10m ...
-
-# 4. try further optimising by running MC in conjunction with GA stuff.
-
-# 5. Figure out this failure threshold thingy. But for now just use 80 mm/yr.
-
 
 
 

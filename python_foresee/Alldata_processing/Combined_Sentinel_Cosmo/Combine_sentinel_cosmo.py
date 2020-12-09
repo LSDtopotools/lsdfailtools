@@ -21,6 +21,7 @@ interferometry_out_dir = FILE_PATHS["interferometry_out_dir"]
 
 topo_file = FILE_PATHS["topo_dir"] + "eu_dem_AoI_epsg32633.bil"
 
+# ground motion threshold
 threshold = [40, 60, 80, 100, 150, 200, 500, 1000] # mm/yr
 
 
