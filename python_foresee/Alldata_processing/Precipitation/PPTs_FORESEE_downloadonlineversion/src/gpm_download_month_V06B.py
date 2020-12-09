@@ -15,7 +15,7 @@ from Login_UI import retrieveLogin
 
 def gpm_month_download(outputDir, Start_Date = None,End_Date = None, backslh ='\\'):
 
-    GetLoginInfo = list(retrieveLogin())
+    #GetLoginInfo = list(retrieveLogin())
 
     #Get actual time
     try:
@@ -119,7 +119,7 @@ def gpm_month_download(outputDir, Start_Date = None,End_Date = None, backslh ='\
 
             for item in range(0,len(filteredList)):
 
-                os.system('wget --user=' + GetLoginInfo[0] + ' --password=' + GetLoginInfo[1] + ' --show-progress -c -q '+  url + filteredList[item] + ' -O ' + outputDir + backslh + filteredList[item])
+                os.system('wget --user=' + os.environ["NASA_USERNAME"] + ' --password=' + os.environ["NASA_PASSWORD"] + ' -q '+  url + filteredList[item] + ' -O ' + outputDir + backslh + filteredList[item])
 
     except:
         print ('\nDownloads finished')

@@ -102,41 +102,26 @@ def ENVI_raster_binary_to_2d_array(file_name):
     else:
         print ("%s opened successfully" %file_name)
 
-        #print '~~~~~~~~~~~~~~'
-        #print 'Get image size'
-        #print '~~~~~~~~~~~~~~'
+        #Get image size
         cols = inDs.RasterXSize
         rows = inDs.RasterYSize
         bands = inDs.RasterCount
 
-        #print "columns: %i" %cols
-        #print "rows: %i" %rows
-        #print "bands: %i" %bands
+        #Get georeference information'
 
-        #print '~~~~~~~~~~~~~~'
-        #print 'Get georeference information'
-        #print '~~~~~~~~~~~~~~'
         geotransform = inDs.GetGeoTransform()
         originX = geotransform[0]
         originY = geotransform[3]
         pixelWidth = geotransform[1]
         pixelHeight = geotransform[5]
 
-        #print "origin x: %i" %originX
-        #print "origin y: %i" %originY
-        #print "width: %2.2f" %pixelWidth
-        #print "height: %2.2f" %pixelHeight
+        # Set pixel offset
+        #Convert image to 2D array'
 
-        # Set pixel offset.....
-        #print '~~~~~~~~~~~~~~'
-        #print 'Convert image to 2D array'
-        #print '~~~~~~~~~~~~~~'
         band = inDs.GetRasterBand(1)
-        #print band
         image_array = band.ReadAsArray(0, 0, cols, rows)
         image_array_name = file_name
-        #print type(image_array)
-        #print image_array.shape
+
 
         return image_array, pixelWidth, (geotransform, inDs)
 
@@ -145,7 +130,6 @@ def ENVI_raster_binary_to_2d_array(file_name):
 
 def maps_to_timeseries(arglist, working_dir):
 	# List the .bil files
-	print('Got to the timeseries function')
 	files = sorted(os.listdir(working_dir)); bilfiles = []
 	for i in range(len(files)):
 		ending = files[i][-4:]
@@ -158,15 +142,13 @@ def maps_to_timeseries(arglist, working_dir):
 	#Intlist = []
 	Full_list = []
 	for i in range(len(bilfiles)):
-		print (bilfiles[i])
 		timer = datetime.datetime.strptime(bilfiles[i], 'Calib_rainfall_%Y%m%d-S%H%M%S-V06B_cut.bil')
 
 		# Add to the rainfall list
 		Rainarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(working_dir + bilfiles[i])
 		Rain = numpy.mean(Rainarr)
 		Intensity = Rain/(30*60) # Intensity of rainfall during the period (mm/sec)
-		print("hello")
-		print(Intensity)
+
 		#Intlist.append(Intensity)
 
 		# Save it all together
@@ -177,8 +159,7 @@ def maps_to_timeseries(arglist, working_dir):
 	    writer = csv.writer(f)
 	    writer.writerow(['duration_s','intensity_mm_sec'])
 	    writer.writerows(Full_list)
-	print ('DOOOOONE')
-	print (working_dir)
+
 
 
 
@@ -201,8 +182,7 @@ def download_days(arglist, zero_list, zero_dir, fst_dir, backslh):
 	if zero_list[n].endswith('.nc4') > -1 and zero_list[n].find('.xml') == -1 and zero_list[n].find('.aux') == -1 and zero_list[n].find('.tfw') == -1:
 			extract_subdata = 'HDF5:"%s%s%s"://precipitationCal' % (zero_dir, backslh, zero_list[n])
 			outfile = '%s%s%s_precipitationCal.tif' % (fst_dir,backslh, zero_list[n][:-4])
-			print("hello from download_days")
-			print(outfile)
+
 
 			process(outfile,extract_subdata,arglist[0])
 			raster_crop(arglist, outfile)
@@ -213,9 +193,11 @@ def download_days(arglist, zero_list, zero_dir, fst_dir, backslh):
 def download_hhs(arglist, zero_list, zero_dir, fst_dir, backslh, n):
 	if zero_list[n].endswith('.HDF5') > -1 and zero_list[n].find('.xml') == -1 and zero_list[n].find('.aux') == -1 and zero_list[n].find('.tfw') == -1:
 		if 	zero_list[n].find('.HDF5') > -1:
+
 			extract_subdata = "%s%s%s" % (zero_dir,backslh,zero_list[n])
 			#extract_subdata = 'HDF5:"%s%s%s"://Grid/precipitation' % (zero_dir,backslh,zero_list[n])
 			outfile = '%s%s%s.bil' % (fst_dir,backslh,zero_list[n][:-5])
+
 
 			process(outfile,extract_subdata,arglist[0])
 			raster_crop(arglist, outfile)

@@ -170,7 +170,7 @@ def gpm_30min_download(input_dir, Start_Date = None,End_Date = None, backslh ='\
 
             for item in range(0,len(filteredList)):
 
-                os.system('wget --user=' + os.environ["NASA_USERNAME"] + ' --password=' + os.environ["NASA_PASSWORD"] + ' --show-progress -c -q '+  url + filteredList[item] + ' -O ' + input_dir + backslh + filteredList[item])
+                os.system('wget --user=' + os.environ["NASA_USERNAME"] + ' --password=' + os.environ["NASA_PASSWORD"] + ' -q '+  url + filteredList[item] + ' -O ' + input_dir + backslh + filteredList[item])
 
     #except:
     #    print ('\nDownloads finished')
