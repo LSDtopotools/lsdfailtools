@@ -5,8 +5,6 @@ Process_insar_EWV.py
 This is a file to process the East-West and Vertical InSAR data, which are in the same format and seem to have the same dates.
 Here, processing means finding which pixels on our DEM have one or more failures and when.
 
-NOTE TO SELF: you should probably start all over again with the high res DEM they gave you ...
-#  .... But hopefully with all this clean code it should be easy ...
 
 """
 
@@ -34,22 +32,23 @@ import Insar_functions as fn
 # Set the path variables
 ################################################################################
 ################################################################################
-with open("../../file_with_paths.json") as file_with_paths :
+with open("files_path_insar.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
+
+print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
+
 
 interferometry_dir = FILE_PATHS["interferometry_dir"]
 out_failure_dir = FILE_PATHS["interferometry_out_dir"]
 
 
-ew_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
-vert_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
+ew_file = FILE_PATHS["interferometry_EW_CSK"]
+vert_file = FILE_PATHS["interferometry_VERT_CSK"]
 
 # Careful, this file is in the Italian EPSG
-topo_file = FILE_PATHS["topo_dir"] + "eu_dem_AoI_epsg32633.bil"
+dem_file = FILE_PATHS["dem_file"]
 
 
-# Figure out direction of movement
-# Line of Sight (LoS) and axis vectors are given in (Easting, Northing, Vertical)
 
 # Existing axes in data
 ew_axis = np.array([1,0,0])
@@ -81,7 +80,7 @@ intervals_yr = [ item.days/365 for item in intervals ]
 velocity_dates = dates[1:]
 
 # Load the topography file
-topo_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(topo_file)
+topo_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(dem_file)
 
 originX = geotransform[0]
 originY = geotransform[3]
@@ -105,26 +104,6 @@ preEWVarr = np.zeros((topo_array.shape[0],topo_array.shape[1], N_bands ), dtype 
 
 # time your run
 runstart = datetime.datetime.now()
-
-
-# Start a plot for the lols
-fig=plt.figure(1, facecolor='White',figsize=[7, 7])
-ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
-ax2 =  ax1.twinx()
-'''
-# Load rainfall data from 03/09/2016 until the end of 2018 for the lols
-# MR: the dates are different to the ones initialy provided. Need to check this for consistency.
-rain = bb.read_csv(FILE_PATHS["rain_intensity_caliv_valid"] + "2014-01-01_to_2019-12-31_Intensity.csv")
-rainlist = [datetime.datetime(2014, 1, 1)]
-for i in range(1,len(rain)):
-	rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
-rain['time'] = rainlist
-rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
-
-#plot the rain
-ax1.plot(rain['time'], rain['rainfall_mm'], '-b', lw = 0.5)
-'''
-
 
 
 
@@ -153,34 +132,13 @@ for th in range(len(threshold)):
 		# get the 2D velocity magnitude (squared to save time?)
 		sq_magnitude_2D = inst_vel_ew**2 + inst_vel_v**2
 
-
-		ax2.plot(velocity_dates, sq_magnitude_2D, c = plt.cm.jet(i*100), lw = 1)
-
 		if i > 1:
 			break
 
-
-
 		# 2.3 every time velocity > threshold, fill a band with the date of failure observation.
-
-
-
 
 		# Find out at which date indices the velocity exceeds failure threshold
 		failures = np.where(sq_magnitude_2D > threshold[th]**2)[0]
-
-
-		#NOTE: Maybe this is not the best way to identify failures ....
-		# Why not try something with "instantaneous" acceleration?
-		# I guess it depends on you definition of failure ...
-		# It's always the same problem: the definition varies depending on your interests.
-		# Let's try out something on the plots
-
-		# Figure out a way to pick out a rain-induced failure!
-		# and also make sure your displacement is the right one ...
-
-
-
 
 		# This is the latest failure identification algorithm.
 		# if there is one more failure(s)
@@ -228,33 +186,3 @@ for th in range(len(threshold)):
 		print ('saving band', i+1)
 		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_failure_dir+"EWV_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, EWVarr[:,:,i])
 		fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_failure_dir+"EWV_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, preEWVarr[:,:,i])
-
-
-
-	#ax1.set_xlim(left = datetime.datetime(2014, 1, 1), right = datetime.datetime(2019, 12, 31))
-	#plt.savefig(FILE_PATHS["interferometry_out_dir"]+"InSAR_EWV.png")
-quit()
-
-
-
-
-
-# The approach is:
-# 0. Define a failure threshold for velocity. e.g.: 80 mm/yr
-
-# 1. create 3 nul arrays (Aarr, Darr, and EWVarr) of the shape of topo_array and 10 bands deep, containing float objects.
-# Note: EW and V have identical point geometries and flyover dates.
-
-# 2. loop through the points in EW or V
-#	2.1 assign the point to a pixel
-#	2.2 calculate the 2D displacement velocity timeseries in the EW-V plane for that point
-#	2.3 every time velocity > threshold, fill a band with the date of failure observation.
-#	NB: the date is the time in seconds after simulation start (i.e. after the first measurement with zero displacement).
-#	NB: actual failure will have occurred before that
-#	NB if there are more than 10 failures, the threshold might be wrong
-#	2.4 if there are no failures, mark the date as -1
-
-# 3. save the time of first, second and third failure (that should be enough)
-
-
-# 4. repeat for the ascending and descending data
