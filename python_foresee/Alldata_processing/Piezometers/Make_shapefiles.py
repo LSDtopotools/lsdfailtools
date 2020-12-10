@@ -32,7 +32,7 @@ import functions as fn
 with open("../../file_with_paths.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
-print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
+print("The base output directory is {}".format(FILE_PATHS["piezo_dir"]))
 
 piezo_dir = FILE_PATHS["piezo_dir"]
 piezo_data = FILE_PATHS["piezo_data"]
