@@ -1,7 +1,4 @@
-"""
-Custard_functions.py
-The supporting functions for Acacia.py
-"""
+
 ################################################################################
 ################################################################################
 # Import external and internal modules
@@ -427,4 +424,3 @@ def outputGeoTiff(data, filename, geo_t, proj, output_dir = os.getcwd(), dtype =
     else:
         ds.GetRasterBand(1).WriteArray(data)
     ds = None
-
