@@ -391,7 +391,7 @@ def plot_disp_failure(all_movement, all_movement_dates, all_failures, rain, slop
 
     ax1.set_ylabel('Cumulative Displacement (mm)')
 
-    plt.savefig(out_dir_csv+'TESTGroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.png')
+    plt.savefig(out_dir_csv+'GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.png')
 
 ######################################################################
 # saves the ground motion timeseries for each pixel
@@ -406,7 +406,7 @@ def save_disp_failure_csv(all_movement, all_movement_dates, slope, i,j, out_dir_
 
         for k in range(len(movement)):
             ground_motion_df = ground_motion_df.append({'ground_motion':movement[k], 'time_of_motion':movement_dates[k],'slope':slope,'row':i,'col':j, 'datasource':datasource}, ignore_index=True)
-            ground_motion_df.to_csv(out_dir_csv + 'TEST_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
+            ground_motion_df.to_csv(out_dir_csv + 'Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
 
 def save_disp_failure_csv_updated(all_movement, all_movement_dates, slope, curvature, aspect, i,j, out_dir_csv, datasource):
     ground_motion_df= pd.DataFrame(columns=['ground_motion','time_of_motion','slope','curvature','aspect','row','col'])
@@ -423,7 +423,7 @@ def save_disp_failure_csv_updated(all_movement, all_movement_dates, slope, curva
                 for m in range(np.shape(movement)[1]):
 
                     ground_motion_df = ground_motion_df.append({'ground_motion':movement[k,m], 'time_of_motion':movement_dates[m],'slope':slope, 'curvature':curvature, 'aspect':aspect,'row':i,'col':j, 'datasource':source}, ignore_index=True)
-                    ground_motion_df.to_csv(out_dir_csv + '10mDEM_Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
+                    ground_motion_df.to_csv(out_dir_csv + 'Timeseries_GroundMotion_pixel'+str(i)+'_'+str(j)+'_failure.csv', index=False)
 
 
 
