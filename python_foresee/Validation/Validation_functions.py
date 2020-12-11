@@ -236,10 +236,10 @@ def calc_dist2road(dimensions, roadline, geotransform):
 
 ######################################################
 ######################################################
-# A figure to map validation results
+# A figure to map validation results more extensively using a single point
 ######################################################
 ######################################################
-def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
+def run_validation_single_output(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
 
 
     # how do you select the parameters?
@@ -250,7 +250,10 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
     sbins = np.arange(0,np.amax(slopearr), 0.05)
 
     valid_df= pd.DataFrame(columns=['alpha', 'D_0', 'K_sat', 'd','Iz_over_K_steady','friction_angle','cohesion','weight_of_water','weight_of_soil','time_of_failure','factor_of_safety', 'min_depth','S','Z','row','col','observed_failtime'])
-
+    # Set up the arrays to be written to
+    Psi = []
+    FoS =[]
+    time_index = []
     for i,j in product(range(slopearr.shape[0]), range(slopearr.shape[1])):
     #for i,j in product(range(0,20,1), range(500,820,1)):
         #for i,j in product(range(500,600,1), range(800,900,1)):
@@ -292,26 +295,127 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
                     weight_of_soil = mean_df['weight_of_soil'],
                     depths = depths)
 
-                mymodel.run(rain['duration_s'].values, rain['intensity_mm_sec'].values)
+                mymodel.run_with_outputs(rain['duration_s'].values, rain['intensity_mm_sec'].values)
+                
+                print("Getting outputs")
 
-
+                Times = mymodel.cppmodel.output_times
                 failures = mymodel.cppmodel.output_failure_times
                 failures_b = mymodel.cppmodel.output_failure_bool
-				FoS = mymodel.cpp.model.output_depthsFS
-			    min_depth = mymodel.cpp.output_failure_mindepths
+
+                # min_depth_temp = mymodel.cppmodel.output_failure_mindepths
+                # min_depth.append(min_depth_temp)
 
                 if len(failures) > 0 and len(failures_b[failures_b ==True]) > 1:
                     failures = failures[failures_b ==True][0]
                 else:
                     failures = 0
+                
+                if failures != 0:
+                    print("Found a failure")
+                    index = numpy.where(failures_b ==True)[0]
+                    index = index[0]
+                    time_index.append(index)
+                     # Output the Psi data
+                    Psi_temp = mymodel.cppmodel.output_Psi_timedepth
+                    Psi.append(Psi_temp)
+                    # Output the FoS
+                    FoS_temp = mymodel.cppmodel.output_FS_timedepth
+                    FoS.append(FoS_temp)
+    
 
-                valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures, 'factor_of_safety':FoS, 'min_depth':min_depth,'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
+                valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures, 'Time':Times, 'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
+    numpy.save(rundir+"Psi", Psi)
+    numpy.save(rundir+"fos", FoS)
+    numpy.save(rundir+"time_index", time_index)
 
-    valid_df.to_csv(rundir + 'Validated_updated_FoS_depth.csv', index=False)
+    # numpy.save(rundir+"min_depth", min_depth)
+    valid_df.to_csv(rundir + 'Validated_updated.csv', index=False)
 
 
+######################################################
+######################################################
+# A figure to map validation results 
+######################################################
+######################################################
+def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
 
 
+    # how do you select the parameters?
+    # based on location and slope
+
+    # make slope bins in the calibrated df
+    #shist, sbins = np.histogram(calibrated['S'], bins  = 10)
+    sbins = np.arange(0,np.amax(slopearr), 0.05)
+
+    valid_df= pd.DataFrame(columns=['alpha', 'D_0', 'K_sat', 'd','Iz_over_K_steady','friction_angle','cohesion','weight_of_water','weight_of_soil','time_of_failure','factor_of_safety', 'min_depth','S','Z','row','col','observed_failtime'])
+    # Set up the arrays to be written to
+    Psi = []
+    FoS =[]
+    time_index = []
+    for i,j in product(range(slopearr.shape[0]), range(slopearr.shape[1])):
+    #for i,j in product(range(0,20,1), range(500,820,1)):
+        #for i,j in product(range(500,600,1), range(800,900,1)):
+
+        if failarr[i,j] > 0.:
+            print (i,j)
+
+            # this is our slope
+            S = slopearr[i,j]
+            Z = demarr[i,j]
+
+            # find out in which bin it is
+            lesser = sbins[np.where(sbins < S)[0][-1]]
+            greater = sbins[np.where(sbins >= S)[0][0]]
+
+            #find the points that have been calibrated in this range
+            sdf = calibrated[calibrated['S'] >= lesser]
+            sdf = sdf[sdf['S'] < greater]
+
+            # If there are indeed points in this category
+            if len(sdf)<1:
+                print ('woops, there is nothing here')
+            else:
+                dist = np.sqrt((j-sdf['row'])**2 + (i-sdf['col'])**2)
+                where = np.where(np.asarray(dist) == min(np.asarray(dist)))[0]
+
+                select_df = sdf.iloc[where]
+                mean_df = select_df.iloc[0]
+                #mean_df = select_df.mean(axis = 0)
+
+                mymodel = iverson.iverson_model(alpha = S,
+                    D_0 = mean_df['D_0'],
+                    K_sat = mean_df['K_sat'],
+                    d = mean_df['d'],
+                    Iz_over_K_steady = mean_df['Iz_over_K_steady'],
+                    friction_angle = mean_df['friction_angle'],
+                    cohesion = mean_df['cohesion'],
+                    weight_of_water = mean_df['weight_of_water'],
+                    weight_of_soil = mean_df['weight_of_soil'],
+                    depths = depths)
+
+                mymodel.run_with_outputs(rain['duration_s'].values, rain['intensity_mm_sec'].values)
+                
+                print("Getting outputs")
+
+                Times = mymodel.cppmodel.output_times
+                failures = mymodel.cppmodel.output_failure_times
+                failures_b = mymodel.cppmodel.output_failure_bool
+
+                # min_depth_temp = mymodel.cppmodel.output_failure_mindepths
+                # min_depth.append(min_depth_temp)
+
+                if len(failures) > 0 and len(failures_b[failures_b ==True]) > 1:
+                    failures = failures[failures_b ==True][0]
+                else:
+                    failures = 0
+                
+
+
+                valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures, 'Time':Times, 'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
+
+    # numpy.save(rundir+"min_depth", min_depth)
+    valid_df.to_csv(rundir + 'Validated_updated.csv', index=False)
 
 
 
