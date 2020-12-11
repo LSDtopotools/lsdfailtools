@@ -31,40 +31,19 @@ import Sentinel_functions as fn
 # Set the path variables
 ################################################################################
 ################################################################################
-with open("../../file_with_paths.json") as file_with_paths :
+with open("file_paths_insar_sentinel.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
-#piezo_dir = "/home/willgoodwin/PostDoc/Foresee/Data/Terrestrial/"
-piezo_dir = FILE_PATHS["piezo_dir"]
+
+print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
 
 
-interferometry_dir = FILE_PATHS["interferometry_dir"]
-sentinel_out_dir = FILE_PATHS["sentinel_out_dir"]
+sentinel_out_dir = FILE_PATHS["out_failure_dir"]
 
-
-sentinel_dir = FILE_PATHS["sentinel_dir"]
-
-# The coordinates in this file are in UTMZone32N: EPSG32632
-sentinel_file = sentinel_dir + "FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2.shp"
+# The coordinates in this file are in UTMZone32N/WGS84
+sentinel_file = FILE_PATHS["interferometry_sentinel"]
 
 # Careful, this file is in WGS84
-topo_dir = FILE_PATHS["topo_dir"]
-topo_file = topo_dir + "eu_dem_AoI_epsg32633.bil"
-
-
-# Line of Sight (LoS) and axis vectors are given in (Easting, Northing, Vertical)
-LoS_vector = np.array([0.632024, 0.117139, -0.766044])
-
-# Other axes in data
-ew_axis = np.array([1,0,0])
-vert_axis = np.array([0,0,1])
-ns_axis = np.array([0,1,0])
-
-
-################################################################################
-################################################################################
-# Load the relevant data
-################################################################################
-################################################################################
+dem_file = FILE_PATHS["dem_file"]
 
 # Open the light files. They also have the most (and the same) dates to work on
 Sentinel = gpd.read_file(sentinel_file)
@@ -75,11 +54,10 @@ datecols = np.array([item for item in cols if item.startswith('D20')])
 dates = np.array([ datetime.datetime.strptime(item, 'D%Y%m%d') for item in datecols ])
 intervals = dates[1:] - dates[:-1]
 intervals_yr = [ item.days/365 for item in intervals ]
-velocity_dates = dates[1:]
-acceleration_dates = velocity_dates[1:]
+
 
 # Load the topography file
-topo_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(topo_file)
+topo_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(dem_file)
 
 originX = geotransform[0]
 originY = geotransform[3]
@@ -93,10 +71,10 @@ pixelHeight = geotransform[5]
 ################################################################################
 ################################################################################
 # 0. Define a failure threshold among several options
-threshold = [1000] # m/yr2
+threshold = [40, 60, 80, 100, 150, 200, 500, 1000] # mm/yr
 N_bands = 3
 
-# 1. create 3 nul arrays (Aarr, Darr, and EWVarr) of the shape of topo_array and N_bands bands deep, containing float objects.
+# 1. create nul arrays of the shape of topo_array and N_bands bands deep, containing float objects.
 S_startdate = datetime.datetime.strptime(datecols[0], 'D%Y%m%d')
 S_enddate = datetime.datetime.strptime(datecols[-1], 'D%Y%m%d')
 Sarr = np.zeros((topo_array.shape[0],topo_array.shape[1], N_bands ), dtype = np.float)
@@ -104,21 +82,6 @@ preSarr = np.zeros((topo_array.shape[0],topo_array.shape[1], N_bands ), dtype = 
 
 # time your run
 runstart = datetime.datetime.now()
-
-
-
-
-# Load rainfall data from 03/09/2016 until the end of 2018 for the lols
-rain = bb.read_csv(FILE_PATHS["rain_intensity_caliv_valid"] + "2014-01-01_to_2019-12-31_Intensity.csv")
-rainlist = [datetime.datetime(2014, 1, 1)]
-for i in range(1,len(rain)):
-	rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
-rain['time'] = rainlist
-rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
-
-
-
-
 
 
 for th in range(len(threshold)):
@@ -159,7 +122,7 @@ for th in range(len(threshold)):
 			inst_acc_av10 = (inst_vel_av10[1:] - inst_vel_av10[:-1]) / intervals_yr_av10[1:]
 			inst_acc = (inst_vel[1:] - inst_vel[:-1]) / intervals_yr[1:]
 
-			# Only keep positie acceleration as we are not interested in stuff slowing down
+			# Only keep positive acceleration as we are not interested in stuff slowing down
 			inst_acc_av10[inst_acc_av10 < 0] = 0
 			inst_acc[inst_acc < 0] = 0
 
@@ -213,8 +176,6 @@ for th in range(len(threshold)):
 					Tfail.append(Sarr[y_id, x_id, k])
 					Tprefail.append(preSarr[y_id, x_id, k])
 
-				# Plot the failures
-				fn.plot_dva_rainfall(i, rain, dates, disp, av10_disp, inst_vel, inst_vel_av10, inst_acc, inst_acc_av10, S_startdate, S_enddate, Tfail, Tprefail, threshold[th])
 
 			# 2.4 if there are no failures, mark the date as -1
 			else:
