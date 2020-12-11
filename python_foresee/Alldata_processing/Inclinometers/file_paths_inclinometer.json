@@ -1,0 +1,8 @@
+{
+    "inclino_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Inclinometer/",
+     "inclino_data" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Inclinometer/data_inclinometer.csv",
+     "inclino_location" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Inclinometer/coo_inclinometer.csv",
+     "world_epsg_initial" : "4326",
+     "italy_epsg_final" : "32633"
+
+   }
