@@ -5,26 +5,27 @@
 ################################################################################
 
 import os
+import re
 import sys
+import csv
 import time
 import shutil
-import re
-import numpy
 import tkinter
-from tkinter import filedialog
 import platform
 import argparse
 import datetime
+import numpy as np
+import pandas as pd
+from itertools import product
+from tkinter import filedialog
+import matplotlib.lines as mlines
 from osgeo import gdal, ogr, osr
 from osgeo.gdalnumeric import *
 from osgeo.gdalconst import *
-import csv
-import pandas as pd
-import numpy as np
+
 import lsdfailtools.iverson2000 as iverson
 
-import matplotlib.lines as mlines
-from itertools import product
+
 
 
 ################################################################################

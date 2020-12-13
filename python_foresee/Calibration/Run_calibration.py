@@ -7,10 +7,9 @@
 
 # Importing the model
 import sys
-sys.path.insert(0,'../../lsdfailtools')# Importing the model
+sys.path.insert(0,'../../lsdfailtools')
 import iverson2000 as iverson
 
-# I'll need that to process the outputs
 import os
 import json
 from datetime import datetime
@@ -31,37 +30,34 @@ import Calibration_functions as fn
 ################################################################################
 ################################################################################
 
-with open("../file_with_paths.json") as file_with_paths :
+with open("file_paths_calibration.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
+
+print("The base output directory is {}".format(FILE_PATHS["calibration_dir"]))
 
 
 # Model directory
-rundir = FILE_PATHS["rain_intensity_caliv_valid"]
+calibration_dir = FILE_PATHS["calibration_dir"]
 
 # parameter files
 # the params that fix the iterations and the number of calibrated points in our "sortaMarkovChainMonteCarlo"
-Cal_params_file = rundir + "Calibration_parameters.csv"
+Cal_params_file = FILE_PATHS["calibration_param"]
 # the params used to define the physical soil properties in the iverson MC runs
-Iverson_MC_params_file = rundir + "Iverson_MC_parameters.csv"
+Iverson_MC_params_file = FILE_PATHS["iverson_param"]
 
 # failure data files
-faildir = FILE_PATHS["ground_motion_failure"]
-
-failfile = faildir + "Failtime_1_since_20141020.bil"
+failfile = FILE_PATHS["ground_motion_failure"]
 
 # topography files
-topo_dir = FILE_PATHS["topo_dir"]
 
-demfile = topo_dir + "eu_dem_AoI_epsg32633.bil"
-slopefile = topo_dir + "eu_dem_AoI_epsg32633_SLOPE.bil"
+demfile = FILE_PATHS["dem_file"]
+slopefile = FILE_PATHS["slope_file"]
 
 # road file
-roaddir = FILE_PATHS["road_dir"]
-roadfile = roaddir + "Road_line.shp" # this is in EPSG:32633
+roadfile = FILE_PATHS["road_file"] # this is in EPSG:32633
 
 # piezometry files
-piezo_path = FILE_PATHS["piezo_dir"]
-piezo_data_file = piezo_path + "data_piezometer.csv"
+piezo_data_file = FILE_PATHS["piezo_file"]
 
 ######################################################
 ######################################################
@@ -97,7 +93,7 @@ roadline = np.array(road.shapes()[0].points)
 ######################################################
 
 # Read the rainfall data
-rainfile = rundir + StartDate + "_to_" + EndDate + "_Intensity.csv"
+rainfile = calibration_dir + StartDate + "_to_" + EndDate + "_Intensity.csv"
 rain = pd.read_csv(rainfile)
 
 # Read the piezometer data - that's the other model input
@@ -127,26 +123,4 @@ final_selectarr = fn.select_pixels(distarr, failarr, Cal_params.at[0,'Num_cal'])
 
 
 # Now calibrate the points
-fn.calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW_d_ini, Cal_params, Iverson_MC_params, rundir)
-
-
-
-
-"""fig_height = 7; fig_width = 7
-fig=plt.figure(6, facecolor='White',figsize=[fig_width, fig_height])
-
-ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
-
-
-dem_mask = np.ma.masked_where(demarr <= -10, demarr)
-Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
-
-ax1.add_line(l)
-
-Map2 = ax1.imshow(distarr, interpolation='None', cmap=plt.cm.jet, vmin = np.amin(distarr), vmax =  np.amax(distarr), alpha = 0.3)
-
-select_mask = np.ma.masked_where(final_selectarr <= 0, final_selectarr)
-Map2 = ax1.imshow(select_mask, interpolation='None', cmap=plt.cm.jet, vmin = 0, vmax =  1, alpha = 1.)
-
-print ('figure saved')
-plt.savefig(rundir+ 'selected_points_for_calibration.jpg')"""
+fn.calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW_d_ini, Cal_params, Iverson_MC_params, calibration_dir)
