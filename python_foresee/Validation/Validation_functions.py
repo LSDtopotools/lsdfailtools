@@ -10,7 +10,6 @@ import argparse
 import time
 import shutil
 import re
-import numpy
 import tkinter
 from tkinter import filedialog
 import platform
@@ -211,8 +210,8 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
 
                 failures = mymodel.cppmodel.output_failure_times
                 failures_b = mymodel.cppmodel.output_failure_bool
-                FoS = mymodel.cppmodel.output_depthsFS
-                min_depth = mymodel.cppmodel.output_minFS
+                FoS = mymodel.cppmodel.output_minFS
+                min_depth = mymodel.cppmodel.output_depthsFS
 
                 if len(failures) > 0 and len(failures_b[failures_b ==True]) > 1:
                     failures = failures[failures_b ==True][0]

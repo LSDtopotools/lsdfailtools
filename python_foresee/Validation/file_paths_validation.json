@@ -1,0 +1,12 @@
+{
+     "dem_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil",
+     "slope_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633_SLOPE.bil",
+
+     "road_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Road/Road_line.shp",
+     "piezo_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Piezometer/",
+     "ground_motion_failure" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/GroundMotion/Failure/Failtime_1_since_20141020.bil",
+     "calibration_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv",
+     "calibration_param" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibration_parameters.csv",
+     "iverson_param" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Iverson_MC_parameters.csv",
+     "output_validation_dir" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/
+   }
