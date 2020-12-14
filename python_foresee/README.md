@@ -1,74 +1,35 @@
 # FORESEE development #
 
-FORESEE is a Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure.
+Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure. The main outputs of this model are the identified failure locations and the timing of the failure. Additional outputs such as depth of failure and factor of safety can also be obtained.
 
 ## Installation ##
-1. Create and activate a conda environment:
+1. DOCKER INSTRUCTIONS:
 
-```bash
-conda create -n <ENV_NAME>
-conda activate <ENV_NAME>
-```
-2. Go to the lsdfailtools-master and follow the documentation from the README file there. This is in charge of creating and installing the cpp-python interface. This will create a wheel which can be installed via pip.
 
-Note: you will need to install gcc version 5+ if you have an older version:
-
-```bash
-conda install -c omgarcia gcc-6
-```
-This install version gcc (GCC) 6.1.0.
-
-Note #2: before building the wheel, you need to may need to install xtensor:
-```bash
-conda install -c conda-forge xtensor xtensor-python
-```
-
-3. Install the following packages using
-
-```bash
- conda install -c conda-forge <PACKAGE_NAME>
- ```
-
-* `numpy`
-* `scipy `
-* `pandas`
-* `pytables`
-* `matplotlib`
-* `pyshp`
-* `scikit-learn`
-* `gdal`
-* `shapely`
-* `scikit-image`
-* `geopandas`
-* `seaborn`
-* `matplotlib-scalebar`
-
-(When installing geopandas, there is a downgrade of gdal but everything should still be working).
-
-4. Once this is all installed, we can start running the code.
 
 Scripts to run first:
 
-**ALLDATA_PROCESSING**: process all the input data: Inclinometers, InSAR, Piezometers, Precipitation, Sentinel, Cosmo-SKYMed.
+**ALLDATA_PROCESSING**: Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
+The inclinometers and the piezometer data must be obtained from on-site locations or purchased.
+The precipitation data is obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with the following column structure:
 
-1. COMBINED SENTINEL COSMO
+Duration of precipitation (s)
+Precipitation intensity (mm/s)
 
-    * `Combo_functions.py`: Obtains time series of ground motion data in line of sight directions. Calculates velocity and acceleration. Detects when the failure happens.Plots the rain along with the precipitation, cumulative displacement, velocity and acceleration for each of the pixels.Plots linear fit on the displacement axis for each pixel.Plots the rain along with the slope for each pixel. Plots cumulative displacement, absolute velocity and displacement acceleration.
+The sentinel interferometry data can be downloaded from the sentinel-1 website, which is freely available to access.
+The Cosmo-SKYMed interferometry data must be purchased from TELESPAZIO VEGA.
 
-    * `Combine_sentinel_cosmo.py`: Similar to process_combo.py
 
-    * `Process_combo.py`: Finds which pixels in the DEM have one or more failures and when. Uses Sentinel and Cosmo-SkyMed data.Loads sentinel, Cosmo-SkyMed, slope, and rainfall data. Makes a ground movement time series and saves the times of failure. Saves the first three failures for East, West, Ascending and Descending data.
-
-2. INCLINOMETERS
+1. INCLINOMETERS
 
     Data needs:
     * Terrestrial data: inclinometer data and coordinates in .csv format.
 
     * Inclinometer data recorded: see README file in Inclinometers folder for more info.
 
-* `Make_shapefiles.py`: Loads inclinometer data. Transforms inclinometer data .csv to velocity .shp, makes sure coordinate system is consistent. Uses functions.py.
+* `Make_shapefiles.py`: Loads inclinometer data. Transforms inclinometer data .csv to velocity .shp and makes sure coordinate system is consistent. Uses `functions.py`.
 
-3. PIEZOMETERS - measure ground water pressure
+2. PIEZOMETERS
 
      Data needs:
 
@@ -77,55 +38,72 @@ Scripts to run first:
 
 * `Make_shapefiles.py`: same as for inclinometer. Transforms the piezometer .csv into .shp with location and data of the instrument. Uses `functions.py`.
 
-4. InSAR - shows the deformation of the soil column at ground level. Vertical and EW directions.
+3. InSAR_SENTINEL.
 
       Data needs:
 
-    * Interferometry data.
-    * Topography data - DEM.  
+    * Sentinel-1 InSAR data timeseries
+    * DEM file of the area of interest.
+
+* `Process_sentinel.py`: Find out what pixels have failures and when. Takes area of interest from the DEM provided and checks whether the pixels are inside the area. It calculates the acceleration at each point, if it is above a threshold, the point is considered as a failure. OUTPUT: .bil file with the failing pixels and the time of failure.
 
 
-* `Process_insar_EWV`: This is a file to process the East-West and Vertical InSAR data, which are in the same format and have the same dates. Here, processing means finding which pixels on our DEM have one or more failures and when. Uses Insar_functions.py. Calculates the 2D displacement velocity and magnitude in each direction for all dates. If the velocity is greater than the threshold, failure + failure time is recorded. This is the same as for the Sentinel-Cosmo SkyMed data.
+4. InSAR_CSK
+
+      Data needs:
+
+    * CosmoSkyMed InSAR data: Ascending, Descending, Vertical and EW.
+    * DEM file of the area of interest.  
+
+
+* `Process_insar_EWV`: This is a file to process the East-West and Vertical InSAR data, which are in the same format and have the same dates. Here, processing means finding which pixels on our DEM have one or more failures and when. Calculates the 2D displacement velocity and magnitude in each direction for all dates. If the velocity is greater than the threshold, the failure and the failure time are recorded.
+OUTPUT: .bil file with the failing pixels and the time of failure from the EWV component.
+
 * `Process_insar_AD` : This is a file to process the Ascending and Descending InSAR data. Follows the same procedure as `Process_insar_EWV`.
+OUTPUT: .bil file with the failing pixels and the time of failure from the AD component.
 
-5. PRECIPITATION
+* `Combine_insar`: Combines the .bil outputs from `Process_insar_AD` and `Process_insar_EWV`. Takes the earliest possible time when combining the failure outputs for each pixel.
+OUTPUT: .bil file with the failing pixels and the time of failure from the combination of the AD and the EWV components.
 
-      Data Needs:
+5. COMBINED SENTINEL COSMO - Sentinel and CosmoSkyMed data are processed together.
 
-    * Precipitation Data (has already been downloaded). If additional data needs to be downloaded, follow the README document on the Precipitation folder. This has the instructions on how to download the data.
+          Data needs:
 
-6. SENTINEL (this can possibly be deleted and use COMBINED SENTINEL COSMO)
+        * CosmoSkyMed InSAR data: Ascending, Descending, Vertical and EW.
+        * Sentinel-1 InSAR data timeseries
+        * Topographic slope file with of the area of interest.  
 
-      Data needs:
+    * `Combine_sentinel_cosmo.py`: Similar to process_combo.py
 
-    * Sentinel timeseries shapefile
-    * DEM file. These include velocity and acceleration.
-    * Precipitation data as downloaded from the GPM website.
-    * InSAR data for combining sentinel with InSAR.
+    * `Process_combo.py`: Finds which pixels in the DEM have one or more failures and when. Uses Sentinel and Cosmo-SkyMed data. Makes a ground movement time series and saves the times of failure.
+OUTPUT: .bil file with the failing pixels and the time of failure from the combination of the AD and the EWV components of Cosmo SkyMed and Sentinel-1 data.
 
-* `Process_sentinel.py`: this follows the same logic as previous processing files. Find out what pixels have failures and when. Creates sentinel failtime files.
 
-* `Combine_sentinel.py`: Takes the InSAR data from A, D, EW and retains a failure if all 3 datasets show failures. Finds the dates of the failures. Creates the All-failtime files.
+
+6. PRECIPITATION
+
+      Set of scripts that generate the precipitation data. For documentation on how to download and process the data please refer to the Precipitation folder within ALLDATA_PROCESSING.
+      OUTPUT: .csv file with the time passes between consecutive precipitation events and the precipitation intensity.
+
 
 **CALIBRATION**
 
   Data Needs:
 
-* calibration_parameters.csv: Nruns, itermax, Num_cal, StartDate, EndDate, failinterval
-* iverson_MC_parameters.csv: D_0, K_sat, Iz_over_K_steady, friction_angle, cohesion, weight_of_water, weight_of_soil, depth
-* Ground Motion Failure data: for given time interval (.bil format)
-* DEM: .bil file
-* slope file: .bil file
-* cut file: .bil file (need to check what this is)
-* Road line file: .shp file
-* Precipitation command run file: .py file for precipitation
+* Calibration parameters: .csv containing Nruns, itermax, Num_cal, StartDate, EndDate, failinterval
+* Parameters Iverson Monte  Carlo: .csv containing D_0, K_sat, Iz_over_K_steady, friction angle, cohesion, weight of water, weight of soil, depth
+* Ground Motion InSAR Failure data (.bil format). This is the output from `Process_combo.py`.
+* DEM: .bil file of the area of interest with EPSG:32633
+* DEM slope: .bil file of the slope values in the area of interest with EPSG:32633
+* Road file: .shp file with the outline of the road.
 * Piezometer: .csv file
 
-`Run_calibration.py`: Select the pixels based on the closest points to the road and the number of pixels that we want. Run calibration with these points.
+`Run_calibration.py`: Select the pixels based on the closest points to the road and the number of pixels that we want. Run calibration of the Iverson Model with these points to choose the optimal parameters for the simulation.
+OUTPUT: .csv file with the observed and the modelled time of failure, the pixel positions, the factor of safety and the depth of failure. It also includes the chosen parameter values for each point.
 
 **VALIDATION**
 
-  Data Needs (same as for calibration):
+  Data Needs :
 
 * calibration_parameters.csv
 * Iverson_MC_parameters.csv
@@ -138,7 +116,7 @@ Scripts to run first:
 * Piezometer: .csv file
 * Calibrated points: .csv file
 
-`Run_validation.py`: Loads rasters into arrays and reads calibration points and parameters. Reads also Iverson parameters. Performs and maps the validation.
+`Run_validation.py`: Loads raster files into arrays and reads calibration points and parameters. Reads also Iverson parameters. Performs and maps the validation.
 
 **VISUALISATION**
 
