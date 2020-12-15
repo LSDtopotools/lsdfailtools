@@ -16,6 +16,8 @@ import numpy as np
 import shapefile
 import itertools
 import sys
+import json
+import os
 import matplotlib.cbook as cbook
 from matplotlib_scalebar.scalebar import ScaleBar
 import matplotlib.font_manager as fm
@@ -24,6 +26,16 @@ import matplotlib.font_manager as fm
 import lsdfailtools.iverson2000 as iverson
 
 
+with open("file_paths_visualisation.json") as file_with_paths :
+    FILE_PATHS = json.load(file_with_paths)
+
+print("The base output directory is {}".format(FILE_PATHS["figures_dir"]))
+
+
+# Model directory
+rain_start_day = FILE_PATHS["rain_start_day"]
+rain_start_month = FILE_PATHS["rain_start_month"]
+rain_start_year = FILE_PATHS["rain_start_year"]
 
 
 
@@ -102,7 +114,6 @@ def plot_failtime_calib_valid(calibrated, validated, rain, fig_height, fig_width
 
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
-	#ax11 = ax1.twinx()
 	ax12 = ax1.twiny()
 
 
@@ -204,7 +215,6 @@ def map_validation_updated(rain, depths, calibrated, validated, road, demarr, sl
 		x = calibrated['col'].iloc[i]
 		y = calibrated['row'].iloc[i]
 		calib_arr[y-2:y+2,x-2:x+2] = 1
-		print(calib_arr[i,j])
 
 
 	valid_arr = 0* demarr
@@ -219,46 +229,24 @@ def map_validation_updated(rain, depths, calibrated, validated, road, demarr, sl
 				valid_arr[y-2:y+2,x-2:x+2] = 3 # too late
 			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
 				valid_arr[y-2:y+2,x-2:x+2] = 2 # too soon
-			#valid_arr[y-2:y+2,x-2:x+2] = abs(validated['time_of_failure'].iloc[i] - validated['observed_failtime'].iloc[i]) /(24*3600)
 
 
 	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
 	ax1.add_line(road)
 	Map1 = ax1.imshow(dem_mask, interpolation='None', cmap=plt.cm.Greys_r, vmin = np.amin(dem_mask), vmax = np.amax(dem_mask), alpha = 1.)
 
-
-
 	calib_valid = np.where(valid_arr < 1, calib_arr, valid_arr)
 
 	calib_valid_mask = np.ma.masked_where(calib_valid <= 0, calib_valid)
-	#print(calib_valid_mask)
-	#Map2 = ax1.imshow(valid_mask, interpolation='None', cmap=plt.cm.jet_r, vmin = 1, vmax = 4, alpha = 1.)
-
-	#calib_valid = np.where(valid_arr == 0, calib_arr, valid_arr)
-
-	#calib_valid_mask = np.ma.masked_where(calib_valid <= 0., calib_valid)
-	#Map1 = ax1.imshow(calib_mask, interpolation='None', cmap=plt.cm.cool, alpha = 1.)
-
-	#calib_valid = np.where(valid_arr <= 0, calib_arr, valid_arr)
-	#calib_valid_mask = np.ma.masked_where(calib_valid <= 0, calib_valid)
-	####
 
 	unique_values = [1.0, 2.0, 3.0, 4.0]
-	print(np.amin(calib_valid_mask))
-	print(np.amax(calib_valid_mask))
+
 
 	Map2 = ax1.imshow(calib_valid_mask, interpolation='None', cmap=plt.cm.jet_r, vmin = np.amin(calib_valid_mask) , vmax=  np.amax(calib_valid_mask), alpha = 1.)
 
-	# MR: the error could be that this is Map1 as well instead of Map2
-	#Map2 = ax1.imshow(Cmask, interpolation='None', cmap=plt.cm.jet_r, vmin = np.amin(Cmask), vmax = np.amax(Cmask), alpha = 1.)
-	#ax1.add_line(road)
-	#Map2 = ax1.imshow(Cmask, interpolation='none')
-	#unique_values = np.unique(new_arr_test.ravel())
 
-	print(unique_values)
 	float_list_values = list(map(float, unique_values))
 
-	#unique_values_categories = [ "Post failure", "Pre failure", "At failure", "Calibrated" ]
 	unique_values_categories = [ "Calibrated", "Pre failure", "Post failure", "At failure" ]
 
 	unique_values_dict = OrderedDict(zip(unique_values_categories, unique_values))
@@ -266,7 +254,7 @@ def map_validation_updated(rain, depths, calibrated, validated, road, demarr, sl
 	# get the colors of the values, accordiang to the colormap used by imshow
 	colors = [Map2.cmap(Map2.norm(value)) for value in unique_values]
 	# create a patch (proxy artist) for every color
-	#MR: need to make a dictionary to relate the values and the timing of the failure
+	#need to make a dictionary to relate the values and the timing of the failure
 	patches = [mpatches.Patch(color=colors[i], label="{l}".format(l = list(unique_values_dict.keys())[i])) for i in range(len(unique_values)) ]
 	#put those patches as legend-handles into the legend
 	plt.legend(handles=patches, bbox_to_anchor=(1.05,1), loc=2, borderaxespad=0.)
@@ -308,7 +296,6 @@ def map_validation_arrays(rain, depths, calibrated, validated, road, demarr, slo
 				post_failure[y-2:y+2,x-2:x+2] = 3 # too late
 			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
 				pre_failure[y-2:y+2,x-2:x+2] = 2 # too soon
-			#valid_arr[y-2:y+2,x-2:x+2] = abs(validated['time_of_failure'].iloc[i] - validated['observed_failtime'].iloc[i]) /(24*3600)
 
 	ax1.add_line(road)
 	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
@@ -330,14 +317,12 @@ def map_validation_arrays(rain, depths, calibrated, validated, road, demarr, slo
 
 	float_list_values = list(map(float, unique_values))
 
-	#unique_values_categories = [ "Post failure", "Pre failure", "At failure", "Calibrated" ]
 	unique_values_categories = [ "Calibrated", "Pre failure", "Post failure", "At failure" ]
 
 	unique_values_dict = OrderedDict(zip(unique_values_categories, unique_values))
 	# get the colors of the values, accordiang to the colormap used by imshow
 	colors = ['yellow', 'cyan', 'blue', 'fuchsia']
 	# create a patch (proxy artist) for every color
-	#MR: need to make a dictionary to relate the values and the timing of the failure
 	patches = [mpatches.Patch(color=colors[i], label="{l}".format(l = list(unique_values_dict.keys())[i])) for i in range(len(unique_values)) ]
 	#put those patches as legend-handles into the legend
 	plt.legend(handles=patches, fontsize = 20, bbox_to_anchor=(0, 0, 0.5, 0.5), loc='lower left')#, borderaxespad=0.5)
@@ -385,7 +370,6 @@ def map_validation_arrays_zoom(rain, depths, calibrated, validated, road, demarr
 				post_failure[y-2:y+2,x-2:x+2] = 3 # too late
 			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
 				pre_failure[y-2:y+2,x-2:x+2] = 2 # too soon
-			#valid_arr[y-2:y+2,x-2:x+2] = abs(validated['time_of_failure'].iloc[i] - validated['observed_failtime'].iloc[i]) /(24*3600)
 
 	ax1.add_line(road)
 
@@ -408,7 +392,6 @@ def map_validation_arrays_zoom(rain, depths, calibrated, validated, road, demarr
 
 	float_list_values = list(map(float, unique_values))
 
-	#unique_values_categories = [ "Post failure", "Pre failure", "At failure", "Calibrated" ]
 	unique_values_categories = [ "Calibrated", "Pre failure", "Post failure", "At failure" ]
 
 	unique_values_dict = OrderedDict(zip(unique_values_categories, unique_values))
@@ -464,8 +447,6 @@ def map_validation_colorbar(rain, depths, calibrated, validated, road, demarr, s
 				valid_arr[y-2:y+2,x-2:x+2] = 2
 			elif validated['time_of_failure'].iloc[i] < validated['observed_failtime'].iloc[i] - failinterval:
 				valid_arr[y-2:y+2,x-2:x+2] = 1
-			# if time_of_failure - observed_failtime < 0 : modelled failure detected before observed failure
-			# if time_of_failure - observed_failtime > 0 : modelled failure detected after observed failure
 			valid_arr[y-2:y+2,x-2:x+2] = (validated['time_of_failure'].iloc[i] - validated['observed_failtime'].iloc[i]) /(24*3600)
 
 	dem_mask = np.ma.masked_where(demarr <= -10, demarr)
@@ -488,7 +469,6 @@ def map_validation_colorbar(rain, depths, calibrated, validated, road, demarr, s
 
 	float_list_values = list(map(float, unique_values))
 
-	#unique_values_categories = [ "Post failure", "Pre failure", "At failure", "Calibrated" ]
 	unique_values_categories = [ "Calibrated"]
 
 	unique_values_dict = OrderedDict(zip(unique_values_categories, unique_values))
@@ -526,7 +506,7 @@ def plot_rain(rain, fig_height, fig_width, fig_name):
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 
-	rainlist = [datetime.datetime(2014, 1, 1)]
+	rainlist = [datetime.datetime(rain_start_year, rain_start_month, rain_start_day)]
 	for i in range(1,len(rain)):
 		rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
 
@@ -554,7 +534,7 @@ def plot_rain_failures(rain, calibrated, fig_height, fig_width, fig_name):
 	ax1 =  plt.subplot2grid((1,1),(0,0),colspan=1, rowspan=1)
 	ax2 =  ax1.twinx()
 
-	rainlist = [datetime.datetime(2014, 1, 1)]
+	rainlist = [datetime.datetime(rain_start_year, rain_start_month, rain_start_day)]
 	for i in range(1,len(rain)):
 		rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[i]), 0))
 
@@ -564,10 +544,10 @@ def plot_rain_failures(rain, calibrated, fig_height, fig_width, fig_name):
 	ax1.plot(rain['time'], rain['rainfall_mm'])
 
 	for i in range(len(calibrated)):
-		time = datetime.datetime(2014, 1, 1) + datetime.timedelta(0,int(calibrated['time_of_failure'].iloc[i]))
+		time = datetime.datetime(rain_start_year, rain_start_month, rain_start_day) + datetime.timedelta(0,int(calibrated['time_of_failure'].iloc[i]))
 		ax2.scatter(time, calibrated['S'].iloc[i])
 
-	ax1.set_xlim(left = datetime.datetime(2014, 1, 1), right = datetime.datetime(2018, 12, 31))
+	ax1.set_xlim(left = datetime.datetime(rain_start_year, rain_start_month, rain_start_day), right = datetime.datetime(2018, 12, 31))
 	ax1.set_xlabel("Year", fontsize = 20, labelpad = 10)
 	ax1.set_ylabel("Precipitation (mm/day)", fontsize = 20, labelpad = 10 )
 	plt.xticks(fontsize=14)
@@ -588,16 +568,14 @@ def density_plot(validated, fig_width, fig_height, fig_name):
 		observed_failtime = validated['observed_failtime'].iloc[i]/(24*3600)
 		observed_failtime_list.append(observed_failtime)
 
-		modelled_failtime = validated['time_of_failure'].iloc[i]/(24*3600) # this is the time since 2014 start date
+		modelled_failtime = validated['time_of_failure'].iloc[i]/(24*3600) # this is the time since start date
 		modelled_failtime_list.append(modelled_failtime)
 
 
 	df_failures = pd.DataFrame()
 	df_failures['observed_failures'] = observed_failtime_list
 	df_failures['modelled_failures'] = modelled_failtime_list
-	#ax1 = sns.histplot(modelled_failtime_list, binwidth=50, kde=True, label='Modelled failures')#, x = "Observed failure time (days)"
 
-	#fig, ax = plt.subplots()
 	for a in [df_failures['observed_failures'], df_failures['modelled_failures']]:
 		ax1= sns.histplot(df_failures['observed_failures'], bins=range(1, int(max(modelled_failtime_list)), 50), ax=ax1, kde=False, color = 'tab:blue', alpha=0.5)
 		ax1= sns.histplot(df_failures['modelled_failures'], bins=range(1, int(max(modelled_failtime_list)), 50), ax=ax1, kde=False, color = 'tab:orange', alpha=0.5)
@@ -607,16 +585,6 @@ def density_plot(validated, fig_width, fig_height, fig_name):
 	ax2 = sns.kdeplot(data = df_failures, x = 'modelled_failures', label = 'Modelled Failures')
 
 	ax2.set_ylabel('Probability density function', fontsize = 16, labelpad = 10.)
-	#ax1.set_ylim([-20,max(rain['time_s']/(3600*24))+20])
-	#ax1.set_xlim([0,max(validated['observed_failtime']/(3600*24))+20])
-	#ax12.set_ylim([0,max(rain['rainfall_mm'])+5])
-	#ax1.tick_params(axis='x', labelsize=16)
-	#ax1.tick_params(axis='y', labelsize=16)
-	#ax12.tick_params(axis='x', labelsize=16)
-	# plt.xlabel('Modelled failure time (days)') # might be good to convert this into a date axis rather than absolute values
-	# plt.savefig("modelled_pdf")
-	# ax1.clear()
-	#ax2 = sns.histplot(observed_failtime_list, binwidth=50,kde = True, label='Observed failures')#, x = "Observed failure time (days)"
 	ax1.set_xlabel('Failure Time (days)', fontsize = 16, labelpad = 10.)
 	ax1.set_ylabel('Number of failure events', fontsize = 16, labelpad = 10.)
 	plt.xlabel('Failure time (days)') # might be good to convert this into a date axis rather than absolute values
@@ -625,14 +593,6 @@ def density_plot(validated, fig_width, fig_height, fig_name):
 	plt.tight_layout()
 	plt.savefig(fig_name)
 
-
-	#sns.histplot(df_failures, legend = True)
-	# sns.distplot(df_failures['observed_failures'], label='Observed failures')
-	# sns.distplot(df_failures['modelled_failures'], label='Modelled failures')
-	# plt.xlabel('Failure time (days)')
-	# plt.ylabel('Number of failures')
-	# plt.legend()
-	# plt.savefig("modelled_vs_observed_failtimes")
 
 def time_interval (row):
 	if row['modelled_failures']<=150 :
@@ -658,12 +618,6 @@ def time_interval (row):
 	if row['modelled_failures']>1500 :
 		return 1700
 
-	# df_failures['intervals1'] = np.where(df_failures['modelled_failures']<=150, '150', '0')
-	# df_failures['intervals2'] = np.where((df_failures['modelled_failures']>150)&(df_failures['modelled_failures']<=300), '300', '0')
-	# df_failures['intervals3'] = np.where((df_failures['modelled_failures']>300)&(df_failures['modelled_failures']<=450), '450', '0')
-	# df_failures['intervals4'] = np.where((df_failures['modelled_failures']>450)&(df_failures['modelled_failures']<=600), '600', '0')
-	# df_failures['intervals5'] = np.where((df_failures['modelled_failures']>600)&(df_failures['modelled_failures']<=750), '750', '0')
-	# df_failures['intervals6'] = np.where((df_failures['modelled_failures']>600), '1000', '0')
 
 def time_split_violin_plot(validated, fig_width, fig_height, fig_name):
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
@@ -675,7 +629,7 @@ def time_split_violin_plot(validated, fig_width, fig_height, fig_name):
 		observed_failtime = validated['observed_failtime'].iloc[i]/(24*3600)
 		observed_failtime_list.append(observed_failtime)
 
-		modelled_failtime = validated['time_of_failure'].iloc[i]/(24*3600) # this is the time since 2014 start date
+		modelled_failtime = validated['time_of_failure'].iloc[i]/(24*3600) # this is the time since start date
 		modelled_failtime_list.append(modelled_failtime)
 
 
@@ -691,8 +645,8 @@ def time_split_violin_plot(validated, fig_width, fig_height, fig_name):
 	ax = sns.violinplot(x="time_interval", y="observed_failures", data=df_failures)
 
 
-	plt.xlabel('Model Failure time (days)', fontsize=14) # might be good to convert this into a date axis rather than absolute values
-	plt.ylabel(' ', fontsize=14) # might be good to convert this into a date axis rather than absolute values
+	plt.xlabel('Model Failure time interval (days)', fontsize=14) # might be good to convert this into a date axis rather than absolute values
+	plt.ylabel('Observed failure time(days)', fontsize=14) # might be good to convert this into a date axis rather than absolute values
 
 	plt.xticks(fontsize=12)
 	plt.yticks(fontsize=12)
