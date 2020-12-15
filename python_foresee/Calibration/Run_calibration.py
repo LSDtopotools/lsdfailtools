@@ -21,7 +21,14 @@ import itertools
 # importing custom functions
 import Calibration_functions as fn
 
-
+print ('Run_calibration.py')
+print ('This is the file that performs the calibration of the iverson model.')
+print('Authors: GchGoodwin, MRuizSanchez-Oro')
+print ('pausing for')
+print ('3 ... ')
+print ('2 ... ')
+print ('1 ... ')
+print ('GO!')
 
 
 ################################################################################

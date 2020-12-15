@@ -8,5 +8,5 @@
      "calibration_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv",
      "calibration_param" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibration_parameters.csv",
      "iverson_param" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Iverson_MC_parameters.csv",
-     "output_validation_dir" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/
+     "output_validation_dir" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/"
    }

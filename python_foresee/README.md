@@ -67,15 +67,14 @@ OUTPUT: .bil file with the failing pixels and the time of failure from the combi
 
 5. COMBINED SENTINEL COSMO - Sentinel and CosmoSkyMed data are processed together.
 
-          Data needs:
+      Data needs:
 
-        * CosmoSkyMed InSAR data: Ascending, Descending, Vertical and EW.
-        * Sentinel-1 InSAR data timeseries
-        * Topographic slope file with of the area of interest.  
+    * CosmoSkyMed InSAR data: Ascending, Descending, Vertical and EW.
+    * Sentinel-1 InSAR data timeseries
+    * Topographic slope file with of the area of interest.
 
-    * `Combine_sentinel_cosmo.py`: Similar to process_combo.py
-
-    * `Process_combo.py`: Finds which pixels in the DEM have one or more failures and when. Uses Sentinel and Cosmo-SkyMed data. Makes a ground movement time series and saves the times of failure.
+* `Combine_sentinel_cosmo.py`: Similar to process_combo.py
+* `Process_combo.py`: Finds which pixels in the DEM have one or more failures and when. Uses Sentinel and Cosmo-SkyMed data. Makes a ground movement time series and saves the times of failure.
 OUTPUT: .bil file with the failing pixels and the time of failure from the combination of the AD and the EWV components of Cosmo SkyMed and Sentinel-1 data.
 
 

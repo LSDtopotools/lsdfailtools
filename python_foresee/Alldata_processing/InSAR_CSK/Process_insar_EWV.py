@@ -39,7 +39,7 @@ print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
 
 
 interferometry_dir = FILE_PATHS["interferometry_dir"]
-out_failure_dir = FILE_PATHS["interferometry_out_dir"]
+out_failure_dir = FILE_PATHS["out_failure_dir"]
 
 
 ew_file = FILE_PATHS["interferometry_EW_CSK"]

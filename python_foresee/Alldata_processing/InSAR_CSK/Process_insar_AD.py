@@ -32,7 +32,7 @@ print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
 
 
 interferometry_dir = FILE_PATHS["interferometry_dir"]
-out_failure_dir = FILE_PATHS["interferometry_out_dir"]
+out_failure_dir = FILE_PATHS["out_failure_dir"]
 
 ascending_file = FILE_PATHS["interferometry_A_CSK"]
 descending_file = FILE_PATHS["interferometry_D_CSK"]

@@ -1,6 +1,6 @@
 {
      "dem_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil",
      "interferometry_sentinel" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Sentinel/FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2.shp",
-     "out_failure_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/interferometry_output_files/",
+     "out_failure_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/interferometry_output_files/"
 
    }
