@@ -3,21 +3,25 @@
 Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure. The main outputs of this model are the identified failure locations and the timing of the failure. Additional outputs such as depth of failure and factor of safety can also be obtained.
 
 ## Installation ##
-1. DOCKER INSTRUCTIONS:
+1. DOCKER INSTRUCTIONS
 
 
 
-Scripts to run first:
+## Command line instructions ##
+If you want to know how to run the code from the command line, you will find all the instructions in the file INSTRUCTIONS.md.
 
 **ALLDATA_PROCESSING**: Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
-The inclinometers and the piezometer data must be obtained from on-site locations or purchased.
-The precipitation data is obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with the following column structure:
+
+* The inclinometers and the piezometer data must be obtained from on-site locations or purchased.
+* The precipitation data is obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with the following column structure:
 
 Duration of precipitation (s)
 Precipitation intensity (mm/s)
 
-The sentinel interferometry data can be downloaded from the sentinel-1 website, which is freely available to access.
-The Cosmo-SKYMed interferometry data must be purchased from TELESPAZIO VEGA.
+* The sentinel interferometry data has been provided from the University of Cantabria, processes using the ISBAS method to obtain a timeseries. Alternatively, it can be downloaded from the Sentinel-1 website, which is freely available to access.
+* The Cosmo-SKYMed interferometry data must be purchased from TELESPAZIO VEGA UK.
+* The DEM data can be supplied by the user in any resolution. In our case we use the EU-DEM 25 m, which is obtained freely from Copernicus Land Monitoring Service website <https://www.eea.europa.eu/data-and-maps/data/copernicus-land-monitoring-service-eu-dem>.
+* The topographic slope file can be obtained from ...
 
 
 1. INCLINOMETERS
@@ -38,34 +42,7 @@ The Cosmo-SKYMed interferometry data must be purchased from TELESPAZIO VEGA.
 
 * `Make_shapefiles.py`: same as for inclinometer. Transforms the piezometer .csv into .shp with location and data of the instrument. Uses `functions.py`.
 
-3. InSAR_SENTINEL.
-
-      Data needs:
-
-    * Sentinel-1 InSAR data timeseries
-    * DEM file of the area of interest.
-
-* `Process_sentinel.py`: Find out what pixels have failures and when. Takes area of interest from the DEM provided and checks whether the pixels are inside the area. It calculates the acceleration at each point, if it is above a threshold, the point is considered as a failure. OUTPUT: .bil file with the failing pixels and the time of failure.
-
-
-4. InSAR_CSK
-
-      Data needs:
-
-    * CosmoSkyMed InSAR data: Ascending, Descending, Vertical and EW.
-    * DEM file of the area of interest.  
-
-
-* `Process_insar_EWV`: This is a file to process the East-West and Vertical InSAR data, which are in the same format and have the same dates. Here, processing means finding which pixels on our DEM have one or more failures and when. Calculates the 2D displacement velocity and magnitude in each direction for all dates. If the velocity is greater than the threshold, the failure and the failure time are recorded.
-OUTPUT: .bil file with the failing pixels and the time of failure from the EWV component.
-
-* `Process_insar_AD` : This is a file to process the Ascending and Descending InSAR data. Follows the same procedure as `Process_insar_EWV`.
-OUTPUT: .bil file with the failing pixels and the time of failure from the AD component.
-
-* `Combine_insar`: Combines the .bil outputs from `Process_insar_AD` and `Process_insar_EWV`. Takes the earliest possible time when combining the failure outputs for each pixel.
-OUTPUT: .bil file with the failing pixels and the time of failure from the combination of the AD and the EWV components.
-
-5. COMBINED SENTINEL COSMO - Sentinel and CosmoSkyMed data are processed together.
+3. COMBINED SENTINEL COSMO - Sentinel and CosmoSkyMed data are processed together.
 
       Data needs:
 
@@ -79,10 +56,40 @@ OUTPUT: .bil file with the failing pixels and the time of failure from the combi
 
 
 
-6. PRECIPITATION
+4. PRECIPITATION
 
       Set of scripts that generate the precipitation data. For documentation on how to download and process the data please refer to the Precipitation folder within ALLDATA_PROCESSING.
       OUTPUT: .csv file with the time passes between consecutive precipitation events and the precipitation intensity.
+
+NOTE: If the user does not require the Sentinel and the Cosmo-SkyMed data to be combined (as per step 2.) and instead only one of the two data sources are to be included for the calibration and the validation process, follow steps 4. or 5. accordingly. This output data will substitute consequent data inputs where InSAR data is required in Calibration, Validation or Visualisation processes.
+
+5. InSAR_SENTINEL.
+
+    Data needs:
+
+  * Sentinel-1 InSAR data timeseries
+  * DEM file of the area of interest.
+
+* `Process_sentinel.py`: Find out what pixels have failures and when. Takes area of interest from the DEM provided and checks whether the pixels are inside the area. It calculates the acceleration at each point, if it is above a threshold, the point is considered as a failure. OUTPUT: .bil file with the failing pixels and the time of failure.
+
+
+6. InSAR_CSK
+
+    Data needs:
+
+  * CosmoSkyMed InSAR data: Ascending, Descending, Vertical and EW.
+  * DEM file of the area of interest.  
+
+
+* `Process_insar_EWV`: This is a file to process the East-West and Vertical InSAR data, which are in the same format and have the same dates. Here, processing means finding which pixels on our DEM have one or more failures and when. Calculates the 2D displacement velocity and magnitude in each direction for all dates. If the velocity is greater than the threshold, the failure and the failure time are recorded.
+OUTPUT: .bil file with the failing pixels and the time of failure from the EWV component.
+
+* `Process_insar_AD` : This is a file to process the Ascending and Descending InSAR data. Follows the same procedure as `Process_insar_EWV`.
+OUTPUT: .bil file with the failing pixels and the time of failure from the AD component.
+
+* `Combine_insar`: Combines the .bil outputs from `Process_insar_AD` and `Process_insar_EWV`. Takes the earliest possible time when combining the failure outputs for each pixel.
+OUTPUT: .bil file with the failing pixels and the time of failure from the combination of the AD and the EWV components.
+
 
 
 **CALIBRATION**
