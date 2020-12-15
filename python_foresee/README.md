@@ -97,6 +97,8 @@ OUTPUT: .bil file with the failing pixels and the time of failure from the combi
 * DEM slope: .bil file of the slope values in the area of interest with EPSG:32633
 * Road file: .shp file with the outline of the road.
 * Piezometer: .csv file
+* Rainfall Intensity: .csv file
+
 
 `Run_calibration.py`: Select the pixels based on the closest points to the road and the number of pixels that we want. Run calibration of the Iverson Model with these points to choose the optimal parameters for the simulation.
 OUTPUT: .csv file with the observed and the modelled time of failure, the pixel positions, the factor of safety and the depth of failure. It also includes the chosen parameter values for each point.
@@ -105,28 +107,45 @@ OUTPUT: .csv file with the observed and the modelled time of failure, the pixel 
 
   Data Needs :
 
-* calibration_parameters.csv
-* Iverson_MC_parameters.csv
-* Ground Motion Failure
-* DEM file
-* Slope file
-* Cut file
-* Road File
-* Precipitation command run file: .py file for precipitation
+* Calibration parameters: .csv containing Nruns, itermax, Num_cal, StartDate, EndDate, failinterval
+* Parameters Iverson Monte  Carlo: .csv containing D_0, K_sat, Iz_over_K_steady, friction angle, cohesion, weight of water, weight of soil, depth
+* Ground Motion InSAR Failure data (.bil format). This is the output from `Process_combo.py`.
+* DEM: .bil file of the area of interest with EPSG:32633
+* DEM slope: .bil file of the slope values in the area of interest with EPSG:32633
+* Road file: .shp file with the outline of the road.
 * Piezometer: .csv file
 * Calibrated points: .csv file
+* Rainfall Intensity: .csv file
 
-`Run_validation.py`: Loads raster files into arrays and reads calibration points and parameters. Reads also Iverson parameters. Performs and maps the validation.
+
+
+`Run_validation.py`: Performs the validation for the area of interest using the calibrated points, along with the InSAR data from both CosmoSkyMed and Sentinel.
+OUTPUT: .csv file with the observed and the modelled time of failure, the pixel positions, the factor of safety and the depth of failure. It also includes the chosen parameter values for each point.
 
 **VISUALISATION**
 
 Data Needs:
 
-* InSAR failure and prefailure files in all directions.
-* DEM file (.bil)
-* Slope file (.bil)
-* Read file (.shp)
-* Calibration points file (.csv)
-* Rainfall Intensity (.csv)
+* Ground Motion InSAR Failure data (.bil format). This is the output from `Process_combo.py`.
+* DEM: .bil file of the area of interest with EPSG:32633
+* DEM slope: .bil file of the slope values in the area of interest with EPSG:32633
+* Road file: .shp file with the outline of the road.
+* Calibrated points: .csv file
+* Rainfall Intensity: .csv file
 
-`Final_outputs_visualisation.py`: Maps calibrated points, failtime distribution, parameter distribution, validation map, rain data plot with associated failures, with and w/o validation data. Tries PCA on calibration points to see the correlation between the rain and the calibrated parameters.
+`Final_outputs_visualisation.py`: Generates a collection of maps and graphs representing the data:
+
+* Map of calibrated points
+* Distribution of failure times, showing calibration and validation points as well as the precipitation record.
+* Plots showing the distribution of parameters with respect to height and elevation.
+* Map of the validated and calibrated points. The points indicate where failure happens and whether it was predicted before, after or within a 25-day window of the observed failure.
+* Zoomed-in version of the map detailed above.
+* Map of validated points with a colourbar indicating the exact number of days between the observed failure events and the modelled failure event.
+* Plot of the rainfall data as a function of time.
+* Plot of the rainfall data along with the calibrated failure points as a function of time.
+* Probability density function and histogram of the temporal distribution of failures both for the modelled and the observed failure events.
+* Violin plot with the temporal distribution of modelled failures split into time intervals (violins) with respect to observed failure time distribution.
+
+`convert_csv_to_shapefile.py`: Converts a .csv file with x,y locations in an array to a raster image of the points and a point shapefile with the desired attributes.
+
+`voronoi_from_point_shp.py`: Uses the shapefile from `convert_csv_to_shapefile.py` as an input. The points from the shapefile are converted into a voronoi cells and saved as a multipolygon shapefile.
