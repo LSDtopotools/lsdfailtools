@@ -5,27 +5,27 @@
 ################################################################################
 
 import os
+import re
 import sys
-import argparse
+import csv
 import time
 import shutil
-import re
-import numpy
 import tkinter
-from tkinter import filedialog
 import platform
 import argparse
 import datetime
+import numpy as np
+import pandas as pd
+from itertools import product
+from tkinter import filedialog
+import matplotlib.lines as mlines
 from osgeo import gdal, ogr, osr
 from osgeo.gdalnumeric import *
 from osgeo.gdalconst import *
-import csv
-import pandas as pd
-import numpy as np
+
 import lsdfailtools.iverson2000 as iverson
 
-import matplotlib.lines as mlines
-from itertools import product
+
 
 
 ################################################################################
@@ -59,41 +59,21 @@ def ENVI_raster_binary_to_2d_array(file_name):
     else:
         print ("%s opened successfully" %file_name)
 
-        #print '~~~~~~~~~~~~~~'
-        #print 'Get image size'
-        #print '~~~~~~~~~~~~~~'
         cols = inDs.RasterXSize
         rows = inDs.RasterYSize
         bands = inDs.RasterCount
 
-        #print "columns: %i" %cols
-        #print "rows: %i" %rows
-        #print "bands: %i" %bands
-
-        #print '~~~~~~~~~~~~~~'
-        #print 'Get georeference information'
-        #print '~~~~~~~~~~~~~~'
         geotransform = inDs.GetGeoTransform()
         originX = geotransform[0]
         originY = geotransform[3]
         pixelWidth = geotransform[1]
         pixelHeight = geotransform[5]
 
-        #print "origin x: %i" %originX
-        #print "origin y: %i" %originY
-        #print "width: %2.2f" %pixelWidth
-        #print "height: %2.2f" %pixelHeight
-
-        # Set pixel offset.....
-        #print '~~~~~~~~~~~~~~'
-        #print 'Convert image to 2D array'
-        #print '~~~~~~~~~~~~~~'
         band = inDs.GetRasterBand(1)
-        #print band
+
         image_array = band.ReadAsArray(0, 0, cols, rows)
         image_array_name = file_name
-        #print type(image_array)
-        #print image_array.shape
+
 
         return image_array, pixelWidth, (geotransform, inDs)
 
@@ -123,12 +103,6 @@ def ENVI_raster_binary_from_2d_array(envidata, file_out, post, image_array):
     driver = gdal.GetDriverByName('ENVI')
 
     original_geotransform, inDs = envidata
-
-    #print 'WOOO'
-    #print envidata
-    #print original_geotransform
-    #print inDs
-    #print inDs.GetProjection()
 
     rows, cols = image_array.shape
     bands = 1
@@ -170,7 +144,7 @@ def calc_dist2road(dimensions, roadline, geotransform):
     l = mlines.Line2D(roadline[:,0], roadline[:,1])
 
 
-    # then calculate a matrix of distances to it!
+    # then calculate a matrix of distances to it
     for i,j in product(range(dimensions[0]), range(dimensions[1])):
             distarr[i,j] = min((j-roadline[:,0])**2 + (i-roadline[:,1])**2)
     distarr[distarr <= 0.] = 1
@@ -202,8 +176,6 @@ def GW_depth_ini(Piezo_data, Start):
 ################################################################################
 ################################################################################
 def select_pixels(distarr, failarr, Num_cal):
-    # this bit can definitely be improved on!
-
     print ('Selecting pixels for calibration')
 
     # this is too strict for Sentinel points, which are further than most of those we had with InSAr
@@ -223,8 +195,6 @@ def select_pixels(distarr, failarr, Num_cal):
             if failarr[i,j] > 0: # if there is a failure
 
                 die_roll = np.random.rand()
-
-                #if selectarr[i,j] > die_roll and final_selectarr[i,j] != 1  and failarr[i,j]-prefailarr[i,j] > 3*24*3600 and failarr[i,j]-prefailarr[i,j] < 100*24*3600 and npoints < Num_cal:
 
                 if selectarr[i,j] > die_roll :
 
@@ -302,7 +272,7 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW, Ca
                         # run the initial MC simulation
                         results = MC_assisted(rain, GW, S, Nruns, Iverson_MC_params, rundir, work_df, Z, i, j)
 
-                    # Select the results with the best fitness - NEEDS WORK!
+                    # Select the results with the best fitness
                     selected = assess_fitness(results, F, failinterval, Nruns)
 
                     # store the most succesful runs in a dataframe
@@ -318,10 +288,10 @@ def calibrate_points_MC(final_selectarr, demarr, slopearr, failarr, rain, GW, Ca
                     while len(inbounds_ID) < 2 and n < itermax:
                         print ('MC iteration:', n)
 
-                        # run the MC - NEEDS WORK!
+                        # run the MC
                         results = MC_loop (rain, GW, S, Nruns, Iverson_MC_params, rundir, work_df)
 
-                        # Select the results with the best fitness - NEEDS WORK!
+                        # Select the results with the best fitness
                         selected = assess_fitness(results, F, failinterval, Nruns)
 
                         # store the most succesful runs (inbounds) in a dataframe
@@ -509,7 +479,7 @@ def MC_loop (rain, GW, S, Nruns, P, rundir, work_df):
     MCrun.run_MC_failure_test(rain["duration_s"].values, rain["intensity_mm_sec"].values,
                       n_process = 2, output_name = rundir+"test_MC_close.csv", n_iterations = N1, replace = True)
 
-    # now open the MC test filexx
+    # now open the MC test file
     results_close = pd.read_csv(rundir+"test_MC_close.csv")
 
 
@@ -523,7 +493,7 @@ def MC_loop (rain, GW, S, Nruns, P, rundir, work_df):
     MCrun.run_MC_failure_test(rain["duration_s"].values, rain["intensity_mm_sec"].values,
                       n_process = 2, output_name = rundir+"test_MC_far.csv", n_iterations = N2, replace = True)
 
-    # now open the MC test filexx
+    # now open the MC test file
     results_far = pd.read_csv(rundir+"test_MC_far.csv")
     results = results_close.append(results_far, ignore_index = True)
 

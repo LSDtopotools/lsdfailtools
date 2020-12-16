@@ -1,7 +1,3 @@
-"""
-Custard_functions.py
-The supporting functions for Acacia.py
-"""
 ################################################################################
 ################################################################################
 # Import external and internal modules
@@ -42,13 +38,10 @@ from scipy.ndimage.measurements import label
 def create_point(coords):
     """
     This function creates a point with ogr.
-
     Args:
         coords [list]: the coordinates. [lat, lon] works fine for WGS84 for example.
-
     Returns:
         an ogr point object
-
     Author: GCHG
     """
     point = ogr.Geometry(ogr.wkbPoint)
@@ -139,15 +132,12 @@ def inclino_to_one_df(df_loc, df_data):
 def inclino_to_many_shp(df, path, filename):
     """
     This  function saves the terrestrial .csv data into multiple shapefiles for mapping. It stores statistics of the data at each timestep
-
     Args:
         Data2D (2D numpy array): the 2D array you want a distribution for
         Nodata_value (float): The value for ignored elements
-
     Returns:
         bins [1D numpy array]: the value bins
         hist [1D numpy array]: the probability associated to the bins
-
     Author: GCHG
     """
 
@@ -204,15 +194,12 @@ def inclino_to_many_shp(df, path, filename):
 def inclino_to_velocity_shp(df, path, filename, EPSG):
     """
     This  function saves the terrestrial .csv data into multiple shapefiles for mapping. It stores statistics of the data at each timestep
-
     Args:
         Data2D (2D numpy array): the 2D array you want a distribution for
         Nodata_value (float): The value for ignored elements
-
     Returns:
         bins [1D numpy array]: the value bins
         hist [1D numpy array]: the probability associated to the bins
-
     Author: GCHG
     """
 
@@ -268,15 +255,12 @@ def inclino_to_velocity_shp(df, path, filename, EPSG):
 def piezo_to_shp(df, path, filename):
     """
     This  function saves the terrestrial .csv data into multiple shapefiles for mapping. It stores statistics of the data at each timestep
-
     Args:
         Data2D (2D numpy array): the 2D array you want a distribution for
         Nodata_value (float): The value for ignored elements
-
     Returns:
         bins [1D numpy array]: the value bins
         hist [1D numpy array]: the probability associated to the bins
-
     Author: GCHG
     """
     # Now define the dates at which you create a shapefile
@@ -396,7 +380,6 @@ def buildShapefile(input_dir, shapefile_out, samples_per_pc = 100):
 def outputGeoTiff(data, filename, geo_t, proj, output_dir = os.getcwd(), dtype = 6, nodata = None):
     """
     Writes a GeoTiff file to disk.
-
     Args:
         data: A numpy array.
         geo_t: A GDAL geoMatrix (ds.GetGeoTransform()).
@@ -427,4 +410,3 @@ def outputGeoTiff(data, filename, geo_t, proj, output_dir = os.getcwd(), dtype =
     else:
         ds.GetRasterBand(1).WriteArray(data)
     ds = None
-

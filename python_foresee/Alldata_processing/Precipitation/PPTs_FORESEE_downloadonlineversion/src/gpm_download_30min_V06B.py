@@ -128,7 +128,6 @@ def gpm_30min_download(input_dir, Start_Date = None,End_Date = None, backslh ='\
                     startImg = filelist.index('3B-HHR-E.MS.MRG.3IMERG.20000601-S000000-E002959.0000.V06B.HDF5')
             except:
                 startImg = None
-
             #DEL UNDER START
             if years[i] == str_Start_Date[0]:
                 if months[j] == str_Start_Date[1]:
@@ -141,18 +140,12 @@ def gpm_30min_download(input_dir, Start_Date = None,End_Date = None, backslh ='\
                     pass
             else:
                 pass
-
             try:
                 endImg = filelist.index('3B-DAY.MS.MRG.3IMERG.'+str_End_Date[0]+str_End_Date[1]+str_End_Date[2]+'-S233000-E235959.V06.HDF5')
-
             except:
                 endImg = None
-
-
-
             #print startImg,endImg,
             #print '3B-DAY.MS.MRG.3IMERG.'+str_End_Date[0]+str_End_Date[1]+str_End_Date[2]+'-S000000-E235959.V05.nc4'
-
             #DEL OVER END
             if years[i] == str_End_Date[0]:
                 if months[j] == str_End_Date[1]:

@@ -1,8 +1,6 @@
 """
 Integration.py
-
 This is the master file for the command line tool.
-
 The files in this tool are  a modified version of the PPTs tool presented here: https://github.com/lapig-ufg/PPTs
 """
 
@@ -223,6 +221,3 @@ fn.maps_to_timeseries(arglist, working_dir)
 
 
 # python Integration.py --ProdTP GPM_30min --StartDate 2018-02-01 --EndDate 2018-02-08 --ProcessDir /home/willgoodwin/PostDoc/Foresee/Data/Precipitation/GPM_data --SptSlc /home/willgoodwin/PostDoc/Foresee/Data/Topography/AoI.shp --OP
-
-
-	

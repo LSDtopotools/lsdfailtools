@@ -11,15 +11,15 @@ Before you try to download the data, create an account in NASA EartData website 
 Requisites:
 
   * Python 3.6 or above
-  
+
   * PyQt5 python package
-  
+
   * Gdal python package and Gdal Binaries (if Unix system)
-  
+
   * **WGET package** (If windows!, download Cygwin setup here http://cygwin.com/install.html, install with wget package and add C:\cygwin64\bin to variables of the system) - Tutorial: http://www.bloggingtips.info/install-wget-windows/. __Don't forget to add Cygwin (C:\cygwin64\bin) to the systen vauable PATH__
-  
-  
-Recommendations: 
+
+
+Recommendations:
    * Install Anaconda Python 3.6 or above (https://www.anaconda.com/download/) and the Gdal package (https://anaconda.org/conda-forge/gdal) and, for Windows users, add some system variables like:
      * PATH =  C:\ProgramData\Miniconda3; C:\ProgramData\Miniconda3\Library\bin; C:\ProgramData\Miniconda3\Scripts;
      * GDAL_DATA = C:\ProgramData\Miniconda3\Library\share\gdal
@@ -45,11 +45,9 @@ GPM_M: GPM monthly (IMERGM v6)
 ***--SptSlc*** = Insert the cutline feature path (if not used, it assumes a global product)
 
 ***--OP*** = Call this argument if you already have the data and want to process it. Make sure you have a directory with a raw files subfolder!!!!
- 
- 
+
+
  **E.G.***: python PPT_CMD_RUN.py --ProdTP GPM_30min --StartDate 2018-01-01 --EndDate 2018-12-31 --ProcessDir ~./mydirectory --SptSlc ~./boundary.shp --OP
- 
- 
+
+
  ***UNDER CONSTRUCTION!***
- 
- 

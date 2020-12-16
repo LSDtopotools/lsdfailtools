@@ -76,15 +76,12 @@ def parseArguments():
 def ENVI_raster_binary_to_2d_array(file_name):
     """
     This function transforms a raster into a numpy array.
-
     Args:
         file_name (ENVI raster): the raster you want to work on.
         gauge (string): a name for your file
-
     Returns:
         image_array (2-D numpy array): the array corresponding to the raster you loaded
         pixelWidth (geotransform, inDs) (float): the size of the pixel corresponding to an element in the output array.
-
     Source: http://chris35wills.github.io/python-gdal-raster-io/
     """
 
@@ -198,7 +195,7 @@ def download_days(arglist, zero_list, zero_dir, fst_dir, backslh):
 	if zero_list[n].endswith('.nc4') > -1 and zero_list[n].find('.xml') == -1 and zero_list[n].find('.aux') == -1 and zero_list[n].find('.tfw') == -1:
 			extract_subdata = 'HDF5:"%s%s%s"://precipitationCal' % (zero_dir, backslh, zero_list[n])
 			outfile = '%s%s%s_precipitationCal.tif' % (fst_dir,backslh, zero_list[n][:-4])
-			
+
 			process(outfile,extract_subdata,arglist[0])
 			raster_crop(arglist, outfile)
 			extract_subdata = outfile = None
