@@ -42,7 +42,8 @@ inclino_loc = FILE_PATHS["inclino_location"]
 
 world_epsg = FILE_PATHS["world_epsg_initial"] # for WGS84
 ita_epsg = FILE_PATHS["italy_epsg_final"] # for Italy
-
+print("fuck")
+quit()
 ################################################################################
 ################################################################################
 # Load the .csv data (instrument location and readings)

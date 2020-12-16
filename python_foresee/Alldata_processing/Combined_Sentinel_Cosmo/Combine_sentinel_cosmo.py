@@ -40,7 +40,7 @@ for i in range(len(threshold)):
 
 	Combo_failarr = np.zeros(Aarr.shape, dtype = np.float)
 	Combo_prefailarr = np.zeros(Aarr.shape, dtype = np.float)
-    Combo_startdate = datetime.datetime(FILE_PATHS["desc_start_year"], FILE_PATHS["desc_start_month"], FILE_PATHS["desc_start_day"])
+	Combo_startdate = datetime.datetime(FILE_PATHS["desc_start_year"], FILE_PATHS["desc_start_month"], FILE_PATHS["desc_start_day"])
 
 	for x, y in itertools.product(range(Aarr.shape[0]), range(Aarr.shape[1])):
 

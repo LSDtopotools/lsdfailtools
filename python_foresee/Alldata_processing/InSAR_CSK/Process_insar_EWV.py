@@ -32,13 +32,12 @@ import Insar_functions as fn
 # Set the path variables
 ################################################################################
 ################################################################################
-with open("files_path_insar.json") as file_with_paths :
+with open("file_paths_insar_csk.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
 
 
-interferometry_dir = FILE_PATHS["interferometry_dir"]
 out_failure_dir = FILE_PATHS["out_failure_dir"]
 
 
@@ -47,7 +46,6 @@ vert_file = FILE_PATHS["interferometry_VERT_CSK"]
 
 # Careful, this file is in the Italian EPSG
 dem_file = FILE_PATHS["dem_file"]
-
 
 
 # Existing axes in data

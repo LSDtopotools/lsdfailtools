@@ -25,13 +25,12 @@ import matplotlib.pyplot as plt
 
 import Insar_functions as fn
 
-with open("file_paths_insar.json") as file_with_paths :
+with open("file_paths_insar_csk.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
 
 
-interferometry_dir = FILE_PATHS["interferometry_dir"]
 out_failure_dir = FILE_PATHS["out_failure_dir"]
 
 ascending_file = FILE_PATHS["interferometry_A_CSK"]

@@ -13,12 +13,12 @@ import matplotlib.pyplot as plt
 
 import Insar_functions as fn
 
-with open("file_paths_insar.json") as file_with_paths :
+with open("file_paths_insar_csk.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
 
-out_failure_dir = FILE_PATHS["interferometry_out_dir"]
+out_failure_dir = FILE_PATHS["out_failure_dir"]
 dem_file = FILE_PATHS["dem_file"]
 
 threshold = [40, 60, 80, 100, 150, 200, 500, 1000] # mm/yr
@@ -43,8 +43,8 @@ for i in range(len(threshold)):
 
 	Combo_failarr = np.zeros(Aarr.shape, dtype = np.float)
 	Combo_prefailarr = np.zeros(Aarr.shape, dtype = np.float)
-    # the start date of the combination should be the earliest of the dates
-    Combo_startdate = datetime.datetime(FILE_PATHS["desc_start_year"], FILE_PATHS["desc_start_month"], FILE_PATHS["desc_start_day"])
+	# the start date of the combination should be the earliest of the dates
+	Combo_startdate = datetime.datetime(FILE_PATHS["desc_start_year"], FILE_PATHS["desc_start_month"], FILE_PATHS["desc_start_day"])
 
 	for x, y in itertools.product(range(Aarr.shape[0]), range(Aarr.shape[1])):
 
