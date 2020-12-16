@@ -77,7 +77,7 @@ def process(out_dir,data_file,dataInfo):
 
 	#####################################
 	# 1. The produced .tif file is rotated 90° so we must rotated back and assign a correct projection
-	# While we're at it, let's make it a .bil file
+	# While we're at it, let's amke it a .bil file
 	#####################################
 
 	print ('transposing and projecting into ', outfile)

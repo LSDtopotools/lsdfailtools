@@ -109,17 +109,17 @@ rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 
 #######################
 # Map calibrated points
-ff.map_calibrated(demarr, calibrated, line, 10, 15, fig_out_dir + 'Map_calibrated_pixels_test.png')
+ff.map_calibrated(demarr, calibrated, line, 10, 15, fig_out_dir + 'Map_calibrated_pixels.png')
 
 ######################
 # Map the distribution of failtimes (calibrated and validated points) along with precipitation data
-ff.plot_failtime_calib_valid(calibrated, validated, rain, 10, 10, fig_out_dir + 'Failtime_distribution_test.png')
+ff.plot_failtime_calib_valid(calibrated, validated, rain, 10, 10, fig_out_dir + 'Failtime_distribution.png')
 
 ######################
 
 # Map the distribution of parameters wrt with slope and elevation
 
-ff.plot_parameters(calibrated, 7, 18, fig_out_dir + 'Failure_params_test.png')
+ff.plot_parameters(calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
 
 ######################
 # Map the validation

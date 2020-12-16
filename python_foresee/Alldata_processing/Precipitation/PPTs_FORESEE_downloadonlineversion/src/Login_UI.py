@@ -26,7 +26,7 @@ except AttributeError:
 
 
 class Ui_LoginWindow(object):
-    
+
     def setupUi(self, LoginWindow):
         LoginWindow.setObjectName("LoginWindow")
         LoginWindow.setWindowModality(QtCore.Qt.NonModal)
@@ -50,7 +50,7 @@ class Ui_LoginWindow(object):
         self.PasswordLine.setGeometry(QtCore.QRect(80, 70, 231, 20))
         self.PasswordLine.setEchoMode(QtWidgets.QLineEdit.Password)
         self.PasswordLine.setObjectName("PasswordLine")
-        
+
         self.buttonBox = QtWidgets.QDialogButtonBox(LoginWindow)
         self.buttonBox.setGeometry(QtCore.QRect(110, 100, 151, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -68,7 +68,7 @@ class Ui_LoginWindow(object):
         self.label = QtWidgets.QLabel(LoginWindow)
         self.label.setGeometry(QtCore.QRect(20, 140, 228, 21))
         self.label.setObjectName("RegisterPhrase")
-        
+
         self.ClickHere = QtWidgets.QPushButton(LoginWindow)
         self.ClickHere.setGeometry(QtCore.QRect(234, 140, 61, 20))
         self.ClickHere.setObjectName("ClickHere")
@@ -103,7 +103,7 @@ def retrieveLogin():
 	ex.setupUi(LoginWindow)
 	LoginWindow.show()
 	result = LoginWindow.exec_()
-	
+
 	if result == 1:
 		text = (ex.LoginLine.text(),ex.PasswordLine.text())
 		#print("Login in NASA HTTPS successful")

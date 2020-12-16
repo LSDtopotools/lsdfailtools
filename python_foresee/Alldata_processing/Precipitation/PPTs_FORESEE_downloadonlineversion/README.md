@@ -27,7 +27,7 @@ Recommendations:
 
 # HOW TO RUN
 
-Parse some arguments to ***PPT_CMD_RUN.py***:
+Parse some arguments to ***Integration.py***:
 
 
 ***--ProdTP*** = 'GPM_30min' (default)
@@ -44,7 +44,10 @@ GPM_M: GPM monthly (IMERGM v6)
 
 ***--SptSlc*** = Insert the cutline feature path (if not used, it assumes a global product)
 
-***--OP*** = Call this argument if you already have the data and want to process it. Make sure you have a directory with a raw files subfolder!
+***--OP*** = Call this argument if you already have the data and want to process it. Make sure you have a directory with a raw files subfolder!!!!
 
 
  **E.G.***: python PPT_CMD_RUN.py --ProdTP GPM_30min --StartDate 2018-01-01 --EndDate 2018-12-31 --ProcessDir ~./mydirectory --SptSlc ~./boundary.shp --OP
+
+
+ ***UNDER CONSTRUCTION!***

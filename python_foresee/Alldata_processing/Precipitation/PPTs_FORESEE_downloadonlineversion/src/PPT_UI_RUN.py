@@ -37,25 +37,25 @@ class Ui_GPM_WINDOW(object):
         self.GPM_Window = QtWidgets.QWidget(GPM_WINDOW)
         self.GPM_Window.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.GPM_Window.setObjectName("GPM_Window")
-        
+
 
         #SPATIAL SLICE
         self.Global_Slice_BT = QtWidgets.QRadioButton(self.GPM_Window)
         self.Global_Slice_BT.setGeometry(QtCore.QRect(10, 200, 82, 17))
         self.Global_Slice_BT.setChecked(True)
         self.Global_Slice_BT.setObjectName("Global_Slice_BT")
-        
+
         self.ScaleSlice = QtWidgets.QButtonGroup(GPM_WINDOW)
         self.ScaleSlice.setObjectName("ScaleSlice")
         self.ScaleSlice.addButton(self.Global_Slice_BT)
-        
+
         self.Regional_Slice_BT = QtWidgets.QRadioButton(self.GPM_Window)
         self.Regional_Slice_BT.setGeometry(QtCore.QRect(10, 220, 82, 17))
         self.Regional_Slice_BT.setChecked(False)
         self.Regional_Slice_BT.setObjectName("Regional_Slice_BT")
         ##
         self.Regional_Slice_BT.toggled.connect(lambda:self.CheckCheck(self.Regional_Slice_BT))
-        
+
         self.ScaleSlice.addButton(self.Regional_Slice_BT)
         self.Mask_Insert_BT = QtWidgets.QToolButton(self.GPM_Window)
         self.Mask_Insert_BT.setEnabled(False)
@@ -66,7 +66,7 @@ class Ui_GPM_WINDOW(object):
         self.Mask_Insert_BT.setObjectName("Mask_Insert_BT")
         self.Mask_Insert_BT.clicked.connect(self.selectSlice)
         #self.ScaleSlice.addButton(self.Mask_Insert_BT)
-  
+
         self.Mask_Insert_LB = QtWidgets.QLabel(self.GPM_Window)
         self.Mask_Insert_LB.setGeometry(QtCore.QRect(30, 240, 111, 16))
         self.Mask_Insert_LB.setObjectName("Mask_Insert_LB")
@@ -85,45 +85,45 @@ class Ui_GPM_WINDOW(object):
         self.MaskDir_TX.setGeometry(QtCore.QRect(90, 260, 221, 20))
         self.MaskDir_TX.setObjectName("MaskDir_TX")
 
-        #TEMPORAL SLICE    
+        #TEMPORAL SLICE
         self.Start_Date_Cal = QtWidgets.QDateEdit(self.GPM_Window)
         self.Start_Date_Cal.setGeometry(QtCore.QRect(70, 100, 81, 22))
         self.Start_Date_Cal.setMinimumDateTime(QtCore.QDateTime(QtCore.QDate(1998, 1, 1), QtCore.QTime(0, 0, 0)))
         self.Start_Date_Cal.setCalendarPopup(True)
         self.Start_Date_Cal.setDate(QtCore.QDate(2014, 3, 12))
         self.Start_Date_Cal.setObjectName("Start_Date_Cal")
-        
+
         self.D_M_Y_LB1 = QtWidgets.QLabel(self.GPM_Window)
         self.D_M_Y_LB1.setGeometry(QtCore.QRect(70, 80, 81, 16))
         self.D_M_Y_LB1.setObjectName("D_M_Y_LB1")
-        
+
         self.Start_Date_LB = QtWidgets.QLabel(self.GPM_Window)
         self.Start_Date_LB.setGeometry(QtCore.QRect(10, 100, 61, 16))
         self.Start_Date_LB.setObjectName("Start_Date_LB")
-        
+
         self.End_Date_Cal = QtWidgets.QDateEdit(self.GPM_Window)
         self.End_Date_Cal.setGeometry(QtCore.QRect(70, 150, 81, 22))
         self.End_Date_Cal.setProperty("showGroupSeparator", False)
         self.End_Date_Cal.setCalendarPopup(True)
         self.End_Date_Cal.setDate(QtCore.QDate(Year, Month, Day))
         self.End_Date_Cal.setObjectName("End_Date_Cal")
-        
+
         self.D_M_Y_LB2 = QtWidgets.QLabel(self.GPM_Window)
         self.D_M_Y_LB2.setGeometry(QtCore.QRect(70, 130, 81, 16))
         self.D_M_Y_LB2.setObjectName("D_M_Y_LB2")
-       
+
         self.End_Date_LB = QtWidgets.QLabel(self.GPM_Window)
         self.End_Date_LB.setGeometry(QtCore.QRect(10, 150, 51, 16))
         self.End_Date_LB.setObjectName("End_Date_LB")
 
 
 
-        #PRODUCT TYPE        
+        #PRODUCT TYPE
         self.GPM_M_BT = QtWidgets.QRadioButton(self.GPM_Window)
         self.GPM_M_BT.setGeometry(QtCore.QRect(10, 30, 82, 17))
         self.GPM_M_BT.setChecked(True)
         self.GPM_M_BT.setObjectName("GPM_M_BT")
-        
+
         self.Precipitation_Products = QtWidgets.QButtonGroup(GPM_WINDOW)
         self.Precipitation_Products.setObjectName("Precipitation_Products")
         self.Precipitation_Products.addButton(self.GPM_M_BT)
@@ -139,7 +139,7 @@ class Ui_GPM_WINDOW(object):
         self.TRMM_D_BT.setGeometry(QtCore.QRect(250, 30, 82, 17))
         self.TRMM_D_BT.setObjectName("TRMM_D_BT")
         self.Precipitation_Products.addButton(self.TRMM_D_BT)
-        
+
         #PRODUCT CHECKS
 
         self.GPM_M_BT.toggled.connect(lambda:self.CheckProd(self.GPM_M_BT))
@@ -156,7 +156,7 @@ class Ui_GPM_WINDOW(object):
         font.setWeight(75)
         self.PPT_TypeLb.setFont(font)
         self.PPT_TypeLb.setObjectName("PPT_TypeLb")
- 
+
         self.Date_Slice_LB = QtWidgets.QLabel(self.GPM_Window)
         self.Date_Slice_LB.setGeometry(QtCore.QRect(10, 60, 181, 16))
         font = QtGui.QFont()
@@ -165,7 +165,7 @@ class Ui_GPM_WINDOW(object):
         font.setWeight(75)
         self.Date_Slice_LB.setFont(font)
         self.Date_Slice_LB.setObjectName("Date_Slice_LB")
-        
+
         self.DW_PC_DIR_LB = QtWidgets.QLabel(self.GPM_Window)
         self.DW_PC_DIR_LB.setGeometry(QtCore.QRect(10, 290, 241, 16))
         font = QtGui.QFont()
@@ -174,7 +174,7 @@ class Ui_GPM_WINDOW(object):
         font.setWeight(75)
         self.DW_PC_DIR_LB.setFont(font)
         self.DW_PC_DIR_LB.setObjectName("DW_PC_DIR_LB")
-        
+
         self.OutDir_BT = QtWidgets.QToolButton(self.GPM_Window)
         self.OutDir_BT.setGeometry(QtCore.QRect(30, 310, 51, 21))
         self.OutDir_BT.setCheckable(False)
@@ -189,8 +189,8 @@ class Ui_GPM_WINDOW(object):
         self.OutDir_TX = QtWidgets.QLineEdit(self.GPM_Window)
         self.OutDir_TX.setGeometry(QtCore.QRect(90, 310, 221, 20))
         self.OutDir_TX.setObjectName("OutDir_TX")
-        
-   
+
+
         #PHOTOS
         self.label = QtWidgets.QLabel(self.GPM_Window)
         self.label.setEnabled(True)
@@ -199,17 +199,17 @@ class Ui_GPM_WINDOW(object):
         self.label.setPixmap(QtGui.QPixmap("gpm_1.jpg"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
-        
+
         #STATUSBAR
         self.statusbar = QtWidgets.QStatusBar(GPM_WINDOW)
         self.statusbar.setObjectName("statusbar")
-     
+
         #RUN EXIT BUTTONS
         self.Run_BT = QtWidgets.QPushButton(self.GPM_Window)
         self.Run_BT.setGeometry(QtCore.QRect(90, 360, 75, 23))
         self.Run_BT.setObjectName("Run_BT")
         self.Run_BT.clicked.connect(self.exec_Processing)
-        
+
         self.Exit_BT = QtWidgets.QPushButton(self.GPM_Window)
         self.Exit_BT.setGeometry(QtCore.QRect(180, 360, 75, 23))
         self.Exit_BT.setObjectName("Exit_BT")
@@ -277,7 +277,7 @@ class Ui_GPM_WINDOW(object):
                 self.MaskDir_TX.setText('')
 
     def CheckProd(self,a):
-        
+
         DateNow = list(map(int,((datetime.datetime.now()).strftime('%Y-%m-%d')).split('-')))
         YearNow = int(DateNow[0])
         MonthNow = int(DateNow[1])
@@ -294,11 +294,11 @@ class Ui_GPM_WINDOW(object):
         elif a.isChecked() == True and a.text() == "TRMM Month":
             self.Start_Date_Cal.setDate(QtCore.QDate(1998, 1, 1))
             self.End_Date_Cal.setDate(QtCore.QDate(YearNow, MonthNow, DayNow))
-        
+
         elif a.isChecked() == True and a.text() == "TRMM Day":
             self.Start_Date_Cal.setDate(QtCore.QDate(1998, 1, 1))
             self.End_Date_Cal.setDate(QtCore.QDate(YearNow, MonthNow, DayNow))
-        
+
         else:
             pass
 
@@ -323,9 +323,9 @@ class Ui_GPM_WINDOW(object):
         StartDate = str((datetime.datetime.strptime(str(self.Start_Date_Cal.text()),'%d/%M/%Y')).strftime('%Y-%M-%d'))
         EndDate = str((datetime.datetime.strptime(str(self.End_Date_Cal.text()),'%d/%M/%Y')).strftime('%Y-%M-%d'))
         Donwload_Dir = r'%s' % str(self.OutDir_TX.text())
-        
+
         Slice_Dir = r'%s' % str(self.MaskDir_TX.text())
-        
+
         if Slice_Dir == '':
             Slice_Dir = 'None'
 
@@ -333,9 +333,9 @@ class Ui_GPM_WINDOW(object):
         #print(zz);
         os.system('python Integration.py --ProdTP ' + ProdTp + ' --StartDate ' + StartDate + ' --EndDate ' + EndDate + ' --ProcessDir ' + Donwload_Dir + ' --SptSlc ' + Slice_Dir + ' ' + OP_Info)
 
-if __name__ == "__main__":  
+if __name__ == "__main__":
 
-    
+
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()
     ui = Ui_GPM_WINDOW()

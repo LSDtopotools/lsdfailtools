@@ -343,6 +343,8 @@ def map_validation_arrays(rain, depths, calibrated, validated, road, demarr, slo
 	plt.tight_layout()
 	plt.savefig(fig_name)
 	ax1.clear()
+	plt.cla()
+
 
 def map_validation_arrays_zoom(rain, depths, calibrated, validated, road, demarr, slopearr, failarr, failinterval, fig_height, fig_width, fig_name):
 	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
@@ -420,6 +422,7 @@ def map_validation_arrays_zoom(rain, depths, calibrated, validated, road, demarr
 	plt.tight_layout()
 	plt.savefig(fig_name)
 	ax1.clear()
+	plt.cla()
 
 
 
@@ -493,6 +496,7 @@ def map_validation_colorbar(rain, depths, calibrated, validated, road, demarr, s
 	cax = fig.add_axes([0.93, 0.2, 0.02, 0.6])
 	cb = mpl.colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, spacing='proportional')
 	plt.savefig(fig_name)
+	plt.cla()
 
 
 ######################################################
