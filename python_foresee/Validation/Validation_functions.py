@@ -219,8 +219,8 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
                     min_depth = min_depth[failures_b ==True][0]
                 else:
                     failures = 0
-                    FoS = FoS[failures_b ==True][0]
-                    min_depth = min_depth[failures_b ==True][0]
+                    FoS = 0
+                    min_depth = 0
 
                 count += 1
                 valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures, 'factor_of_safety':FoS, 'min_depth':min_depth,'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
