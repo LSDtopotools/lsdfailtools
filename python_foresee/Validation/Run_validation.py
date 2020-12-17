@@ -99,7 +99,7 @@ piezo_data_file = piezo_path + "data_piezometer.csv"
 
 # calibrated points files
 calibdir = FILE_PATHS["rain_intensity_caliv_valid"]
-calibfile = calibdir + "Calibrated_single_test.csv"
+calibfile = calibdir + "Calibrated_FoS_depth.csv"
 
 
 ######################################################
@@ -156,18 +156,6 @@ if os.path.isfile(rundir+'Validated_updated.csv') is False:
     fn.run_validation_single_output(rain, depths, calibrated, demarr, slopearr, failarr,rundir)
 	# fn.run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir)
 validated = pd.read_csv(rundir+'Validated_updated.csv')
-
-#######################
-#Plot the FoS vs depth
-# Load the data
-factor_of_safety = np.load(rundir+"fos.npy")
-psi = np.load(rundir+'Psi.npy')
-time_index = np.load(rundir+'time_index.npy')
-points = [[368,607],[14,770]]
-# points= [[14,770]]
-ff.psi_fos_depth_plot_failure(validated, rain, psi,factor_of_safety,time_index, depths, points, 1, 8, 8, rundir + 'Figures/psi_fos_depth_at failure')
-
-# ff.psi_fos_depth_plot_random_timestep(validated, rain, psi,factor_of_safety,time_index, depths, points, 384, 8, 8, rundir + 'Figures/psi_fos_depth_at')
 
 #######################
 # Map calibrated points
