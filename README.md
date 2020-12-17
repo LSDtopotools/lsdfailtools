@@ -25,7 +25,7 @@ To build locally from a local Dockerfile:
 
 - Note: this requires a an account on the NASA EartData website (https://urs.earthdata.nasa.gov), make a login and password, click in Applications>Authorized Apps> Approve More Applications and select NASA GESDISC DATA ARCHIVE. This will be used in the PRECIPITATION section for downloading precipitaiton data.
 
-To build from DockerHub: ARE WE DOING THIS?
+To build from DockerHub:
 
 - Create a folder into which to put all the files, then run:
 
@@ -53,7 +53,8 @@ pip install dist/XXX.whl
 
 - Everything is now ready to run, note you will need to follow these steps everytime you want to use the software.
 
-**INPUTS**:
+## MODEL DATA INPUTS ##
+------------
 
 * **Piezometer data**: .csv file with piezometer readings and the information about where they are located. They must be obtained from on-site locations or purchased.
 
@@ -158,15 +159,14 @@ Variable names and units:
 
 |PARAMETER NAME| UNITS|
 | ----------- | ----------- |
-|HYDRAULIC DIFFUSIVITY (D_0)| $m^{2} s^{-1}$|
-|HYDRAULIC CONDUCTIVITY (K_sat)|$m s^{-1}$ |
+|HYDRAULIC DIFFUSIVITY (D_0)| m^{2} s^{-1}|
+|HYDRAULIC CONDUCTIVITY (K_sat)|m s^{-1} |
 |STEADY STATE (LONG TERM) WATER BALANCE (IZ/KZ) (Iz_over_K_steady)|dimensionless |
 |TANGENT OF FRICTION ANGLE| dimensionless|
-|COHESION |$Pa$|
-|COLUMN WEIGHT OF THE WATER (DENSITY TIME GRAVITATIONAL ACCELERATION)| $m^{-2} kg s^{-2}$ |
-|VOLUME WEIGHT OF THE SOIL (DENSITY TIME GRAVITATIONAL ACCELERATION)| $m^{-2} kg s^{-2}$ |
-|SOIL COLUMN DEPTH |$m$|
-
+|COHESION |Pa|
+|COLUMN WEIGHT OF THE WATER (DENSITY TIME GRAVITATIONAL ACCELERATION)| m^{-2} kg s^{-2} |
+|VOLUME WEIGHT OF THE SOIL (DENSITY TIME GRAVITATIONAL ACCELERATION)| m^{-2} kg s^{-2} |
+|SOIL COLUMN DEPTH |m|
 
 
 
@@ -183,7 +183,8 @@ Example file:
 
 
 
-**OUTPUTS**:
+## MODEL DATA OUTPUTS ##
+------------
 
 * **Calibration .csv file** (see table below for example).
 Contains the calibrated parameter values for the calibrated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
@@ -216,9 +217,10 @@ Multipolygon shapefile with the validation points from the .csv file transformed
 
 ## Analysis ##
 
+------------
 The analysis can be grouped into 4 main steps (see sections below). This involves processing the input data, calibrating the model, validating it, and finally visualisation of the results.
 
-The analysis scripts are found in the `python_foresee` folder. 
+The analysis scripts are found in the `python_foresee` folder.
 
 
 **ALLDATA_PROCESSING**: Process all the input data: Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
@@ -425,7 +427,11 @@ Authors
 -------
 
 Simon M. Mudd - University of Edinburgh
+
 Boris Gailleton - University of Edinburgh - GFZ Potsdam
+
 Guillaume ""Will"" Goodwin - University of Edinburgh - University of Padova
+
 Marina Ruiz Sanchez-Oro - University of Edinburgh
+
 Louis Kinnear - University of Edinburgh
