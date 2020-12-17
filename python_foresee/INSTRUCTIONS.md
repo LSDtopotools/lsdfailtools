@@ -5,13 +5,12 @@ Python software for predicting landslide failures based on precipitation, ground
 ## Installation ##
 1. DOCKER INSTRUCTIONS:
 
-* Install Docker on your machine using the following link https://docs.docker.com/get-docker/
+Install Docker on your machine using the following link https://docs.docker.com/get-docker/
+(note that these instructions may need administrator privileges to run properly)
 
-* (note that these instructions may need administrator privileges to run properly)
+Install the lsdfailtools software one of two ways:
 
-* Install the lsdfailtools software one of two ways:
-
-* To build locally from a local Dockerfile:
+To build locally from a local Dockerfile:
 
 - Download the Dockerfile from INSERT LINK
 
@@ -24,7 +23,7 @@ Python software for predicting landslide failures based on precipitation, ground
 
 - Note: this requires a an account on the NASA EartData website (https://urs.earthdata.nasa.gov), make a login and password, click in Applications>Authorized Apps> Approve More Applications and select NASA GESDISC DATA ARCHIVE. This will be used in the PRECIPITATION section for downloading precipitaiton data.
 
-* To build from DockerHub: ARE WE DOING THIS?
+To build from DockerHub: ARE WE DOING THIS?
 
 - Create a folder into which to put all the files, then run:
 
