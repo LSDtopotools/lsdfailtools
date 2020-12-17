@@ -1,36 +1,10 @@
-# FORESEE development #
-
-Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure. The main outputs of this model are the identified failure locations and the timing of the failure. Additional outputs such as depth of failure and factor of safety can also be obtained.
-
-## Installation ##
-DOCKER INSTRUCTIONS
-
-
-
 ## Command line instructions ##
 If you want to know how to run the code from the command line, you will find all the instructions in the file INSTRUCTIONS.md.
 
 ## Directory Structure, Usability, I/O data ##
 **ALLDATA_PROCESSING**
 
- Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
 
-* The inclinometers and the piezometer data must be obtained from on-site locations or purchased.
-* The precipitation data is obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with the vector columns: Duration of precipitation (s) and Precipitation intensity (mm/s)
-* The sentinel interferometry data has been provided from the University of Cantabria, processes using the ISBAS method to obtain a timeseries. Alternatively, it can be downloaded from the Sentinel-1 website, which is freely available to access.
-* The Cosmo-SKYMed interferometry data must be purchased from TELESPAZIO VEGA UK.
-* The DEM data can be supplied by the user in any resolution. In our case we use the EU-DEM 25 m, which is obtained freely from the Tinitaly website <http://tinitaly.pi.ingv.it/>.
-* The topographic slope file is derived from the DEM file.
-
-
-1. INCLINOMETERS
-
-    Data needs:
-    * Terrestrial data: inclinometer data and coordinates in .csv format.
-
-    * Inclinometer data recorded: see README file in Inclinometers folder for more info.
-
-* `Make_shapefiles.py`: Loads inclinometer data. Transforms inclinometer data .csv to velocity .shp and makes sure coordinate system is consistent. Uses `functions.py`.
 
 2. PIEZOMETERS
 

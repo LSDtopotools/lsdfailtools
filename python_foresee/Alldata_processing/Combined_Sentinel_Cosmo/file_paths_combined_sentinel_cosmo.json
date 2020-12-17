@@ -1,8 +1,6 @@
 {
-     "out_failure_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/interferometry_output_files/",
+     "out_failure_dir" : "/path/to/interferometry_output_files/",
      "slopefile" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633_SLOPE.bil",
-     "curvaturefile" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/10m_DEM_tinitaly/w45510_s10_CURV_AoI_32633.bil",
-     "aspectfile" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/10m_DEM_tinitaly/w45510_s10_ASPECT_AoI_32633.bil",
      "rain_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Precipitation/GPM_data/2014-01-01_to_2019-12-31_Intensity.csv",
      "sentinel_file_original" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_test/FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2.shp",
      "sentinel_file_reprojected" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/sentinel_test/FORESEE_D2.3_TimeSeries_Sentinel1_CaseStudy2_epsg32633.shp",

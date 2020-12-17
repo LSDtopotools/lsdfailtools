@@ -4,9 +4,9 @@ DOCKER INSTRUCTIONS:
 
 **INPUTS**:
 
-* **Piezometer data**: must be obtained from on-site locations or purchased.
+* **Piezometer data**: .csv file with piezometer readings and the information about where they are located. They must be obtained from on-site locations or purchased.
 
-Data format example:
+Piezometer reading example (.csv file):
 
 ID=unique identifier
 
@@ -23,6 +23,30 @@ LIV = Depth of water from ground level - When the reading is 'dry' the number 99
 |7|	23/10/2014|	0|	3.7	|3.5|	6.2	|999|	6.1	|999|	9.6	|5.5|
 |7|	24/06/2016|	1	|3.5|	3.5	|11.9|	7.4|	18.5	|7.8	|9.8	|3.7|
 |7|	15/05/2017|	2|	3.5	|3.5|	11.8	|7.4	|18.1	|7.4	|9.8	|3.8|
+
+Piezometer location information example (.csv file):
+
+ID=unique identifier
+
+NAME = Piezometer name
+
+PROGR_KM = KP of A16 motorway from "Autostrade"
+
+CARR = Carriageway (East or West) from "Autostrade"
+
+LONGITUDE, LATITUDE = coordinates in decimal degrees in WGS84
+
+ELEVATION = elevation in meters from "Autostrade"
+
+|ID	|NAME|	PROGR_KM|	Carr|	LONGITUDE|	LATITUDE	|ELEVATION	|LENGTH|
+| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+|1|	PzA	|89+500|	E|	15.145169|	41.090146|	440|	25.6|
+|2|	Pz4	|89+500|	E	|15.144353|	41.090037|	447	|23.8|
+|3|	Pz23	|89+500	|E	|15.14341	|41.088143	|476|	29.9|
+
+
+
+
 
 * **Precipitation data**: obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with columns indicating the duration of precipitation (s) and the precipitation intensity (mm/s).
 
@@ -100,6 +124,7 @@ Contains the calibrated parameter values for the calibrated pixels (location giv
 |2|	0.170809358	|2.23E-06|	6.16E-08|	3.236842105	|0.232207709|	0.426850153	|11188.8693	|9800|	17405.85364	|114998400|	0.303287506	|0.100000001|	0.17080936|	528.0549|	437	|825|	114393600|
 
 * **Validation .csv file** (see table below for example).
+
 Contains the validated parameter values for the validated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
 
 
@@ -109,20 +134,28 @@ Contains the validated parameter values for the validated pixels (location given
 |0.058242787|	4.64E-06|	2.21E-08|	3.236842105	|0.241673545	|0.200190446	|12116.30719|	9800.851942	|16740.39976|	100224000|	-0.467391968|	0.100000001	|0.058242787|	655.8518066	|5	|687|	87091200|
 |0.034425307|	1.45E-05	|8.70E-08|	3.236842105	|0.136849459	|0.291813387	|17356.14574|	9800	|18178.94782|	75254400|	-2.77532959	|0.100000001|	0.034425307	|684.3273315|	14	|770|	91756800|
 
+* **Calibration shapefile**
 
-**ALLDATA_PROCESSING**: Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
+Multipolygon shapefile with the calibration points from the .csv file transformed into Voronoi polygons (using Voronoi tessellation). The attributes of each polygon are the time of failure, the factor of safety and the depth of failure. Coordinate system: EPSG:4326.
+
+* **Validation shapefile**
+
+Multipolygon shapefile with the validation points from the .csv file transformed into Voronoi polygons (using Voronoi tessellation). The attributes of each polygon are the time of failure, the factor of safety and the depth of failure. Coordinate system: EPSG:4326.
 
 
-1. INCLINOMETERS
 
-Modify `file_paths_inclinometer.json` to include paths to input and output directories.
-Then run the command:
+**ALLDATA_PROCESSING**: Process all the input data: Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
 
-```bash
-python Make_shapefiles.py
-```
 
-2. PIEZOMETERS
+1. PIEZOMETERS
+
+Data input:
+
+* Piezometer data: piezometer data and coordinates in .csv format.
+
+Data output:
+* .shp with location and data of the piezometer
+
 
 Modify `file_paths_piezometer.json` to include paths to input and output directories.
 Then run the command:
@@ -131,16 +164,13 @@ Then run the command:
 python Make_shapefiles.py
 ```
 
-3. COMBINED SENTINEL COSMO
+2. PRECIPITATION
 
-Modify `file_paths_combined_sentinel_cosmo.json` to include paths to input and output directories.
-Then run the command:
+Data input:
+* Area of interest
 
-```bash
-python Process_combo.py
-```
-
-3. PRECIPITATION
+Data output:
+* .csv file with the duration of precipitation events and the precipitation intensity.
 
 Please refer to the README.md file within the Precipitation folder for details of how to obtain the precipitation data.
 Below is an example of the command to be used:
@@ -149,9 +179,38 @@ Below is an example of the command to be used:
 python PPT_CMD_RUN.py --ProdTP GPM_30min --StartDate 2018-01-01 --EndDate 2018-12-31 --ProcessDir ~./mydirectory --SptSlc ~./boundary.shp --OP
 ```
 
-NOTE: If the user does not require the Sentinel and the Cosmo-SkyMed data to be combined (as per step 2.) and instead only one of the two data sources are to be included for the calibration and the validation process, follow steps 4. or 5. accordingly. This output data will substitute consequent data inputs where InSAR data is required in Calibration, Validation or Visualisation processes.
+3. COMBINED SENTINEL COSMO
+
+Data input:
+
+* CosmoSkyMed InSAR data: Ascending, Descending, Vertical and EW.
+* Sentinel-1 InSAR data.
+* Topographic slope file.
+
+Data output:
+* .bil file with the failing pixels and the time of failure from the combination of the AD and the EWV components of Cosmo SkyMed and Sentinel-1 data.
+
+
+Modify `file_paths_combined_sentinel_cosmo.json` to include paths to input and output directories.
+Then run the command:
+
+```bash
+python Process_combo.py
+```
+
+
+
+**NOTE**: If the user does not require the Sentinel and the Cosmo-SkyMed data to be combined (as per step 2.) and instead only one of the two data sources are to be included for the calibration and the validation process, follow steps 4. or 5. accordingly. This output data will substitute consequent data inputs where InSAR data is required in Calibration, Validation or Visualisation processes.
 
 4. InSAR_SENTINEL
+
+Data input:
+
+* Sentinel-1 InSAR data
+* DEM file
+
+Data output:
+* .bil file with the failing pixels and the time of failure.
 
 Modify `file_paths_insar_sentinel.json` to include paths to input and output directories.
 Then run the command:
@@ -163,17 +222,41 @@ python Process_sentinel.py
 
 5. InSAR_CSK
 
+Data input:
+
+* CosmoSkyMed InSAR data: Ascending(A), Descending(D), Vertical(V) and East-West(W).
+* DEM file of the area of interest.
+
+Data output:
+
+* .bil file with the failing pixels and the time of failure from the combination of the AD and the EWV components.
+
 Modify `file_paths_insar_csk.json` to include paths to input and output directories.
 Then run the command:
 
 ```bash
 python Process_insar_AD.py
 python Process_insar_EWV.py
+python Combine_insar.py
 ```
 
 
 
 **CALIBRATION**
+
+Data input:
+* Calibration parameters:
+* Monte Carlo parameters:
+* Ground Motion InSAR Failure data (.bil format). This is the output from `Process_combo.py`.
+* DEM
+* Topographic slope
+* Road file
+* Piezometer data
+* Rainfall Intensity data
+
+Data output:
+
+* .csv file with the observed and the modelled time of failure, the pixel positions, the factor of safety and the depth of failure. It also includes the chosen parameter values for each point.
 
 Modify `file_paths_calibration.json` to include paths to input and output directories.
 Then run the command:
@@ -184,6 +267,22 @@ python Run_calibration.py
 
 **VALIDATION**
 
+Data input:
+
+* Calibration parameters
+* Monte  Carlo parameters
+* Ground Motion InSAR Failure data (.bil format). This is the output from `Process_combo.py`.
+* DEM
+* Topographic slope: .bil file of the slope values in the area of interest with EPSG:32633
+* Road file
+* Piezometer
+* Calibrated points (.csv file). This is the output from `Run_calibration.py`.
+* Rainfall Intensity
+
+Data output:
+
+* .csv file with the observed and the modelled time of failure, the pixel positions, the factor of safety and the depth of failure. It also includes the chosen parameter values for each point.
+
 Modify `file_paths_validation.json` to include paths to input and output directories.
 Then run the command:
 
@@ -193,6 +292,32 @@ python Run_validation.py
 
 
 **VISUALISATION**
+
+Data input:
+
+* Ground Motion InSAR Failure data (.bil format). This is the output from `Process_combo.py`.
+* DEM
+* Topographic slope
+* Road file
+* Calibrated points: .csv file. This is the output from `Run_calibration.py`
+* Validated points: .csv file. This is the output from `Run_validation.py`
+* Rainfall Intensity
+* Calibration parameters
+
+Data output:
+
+* Shapefile with Voronoi polygons of the points obtained from the calibration and/or the validation phases. 
+* Map of calibrated points
+* Distribution of failure times, showing calibration and validation points as well as the precipitation record.
+* Plots showing the distribution of parameters with respect to height and elevation.
+* Map of the validated and calibrated points. The points indicate where failure happens and whether it was predicted before, after or within a 25-day window of the observed failure.
+* Zoomed-in version of the map detailed above.
+* Map of validated points with a colourbar indicating the exact number of days between the observed failure events and the modelled failure event.
+* Plot of the rainfall data as a function of time.
+* Plot of the rainfall data along with the calibrated failure points as a function of time.
+* Probability density function and histogram of the temporal distribution of failures both for the modelled and the observed failure events.
+* Violin plot with the temporal distribution of modelled failures split into time intervals (violins) with respect to observed failure time distribution.
+
 
 Modify `file_paths_visualisation.json` to include paths to input and output directories.
 
