@@ -51,6 +51,10 @@ pip install dist/XXX.whl
 
 - Everything is now ready to run, note you will need to follow these steps everytime you want to use the software.
 
+## Analyses ##
+
+The analysis acan be grouped into 4 main steps below. This involves processing the input data, calibrating the model, validating it, and finally visualisation of the results.
+
 **ALLDATA_PROCESSING**: Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
 
 * The inclinometers and the piezometer data must be obtained from on-site locations or purchased.
