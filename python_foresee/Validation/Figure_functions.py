@@ -624,7 +624,88 @@ def psi_fos_depth_plot_failure(validated, rain, psi, factor_of_safety,time_index
 		plt.tight_layout()
 		plt.savefig(fig_name+'_'+str(points[j])+'.png')
 
+######################################################
+######################################################
+# A figure to show the Psi and FoS vs depth with precipitation running up to failure
+######################################################
+######################################################
+def psi_fos_depth_plot_run_up_to_failure(validated, rain, psi, factor_of_safety,time_index, depths, points,timesteps_before, timesteps_spacing, fig_height, fig_width, fig_name):
 
+	
+
+	fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	
+	axis = plt.subplot2grid((2,1),(0,0),colspan=1, rowspan=1)
+	depth= depths
+	
+	# Plot the figure
+	
+
+
+	for j in range(0,len(points)):
+
+		fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+	
+		axis = plt.subplot2grid((2,1),(0,0),colspan=1, rowspan=1)
+		
+		index = time_index[j]
+		print(index)
+		loc_index = (validated[(validated['row']  == points[j][0]) & (validated['col'] == points[j][1])].index.tolist())
+		loc_index = loc_index[0]
+		print(loc_index)
+		
+		psi_temp = psi[loc_index,:,index]
+		axis.plot(psi_temp,depth,c='k', label='Psi at Failure')
+		for l in range(1,timesteps_before):
+
+			psi_temp_minus = psi[loc_index,:,index-(l*timesteps_spacing)]
+			axis.plot(psi_temp_minus,depth,c='k',alpha=(1-(1/timesteps_before*l)), label='Psi at -{} timesteps'.format(l*timesteps_spacing),linestyle='dotted')
+		axis2=axis.twiny()
+		factor_of_safety_temp = factor_of_safety[loc_index,:,index]
+		axis2.plot(factor_of_safety_temp,depth,c='orange', label='Factor of safety')
+		for l in range(1,timesteps_before):
+
+			factor_of_safety_temp_minus = factor_of_safety[loc_index,:,index-(l*timesteps_spacing)]
+			axis2.plot(factor_of_safety_temp_minus,depth,c='orange',alpha=(1-(1/timesteps_before*l)), label='Factor of Safety at -{} timesteps'.format(l*timesteps_spacing),linestyle='--')
+		
+
+		axis.set_xlim(1,5)
+
+
+		axis2.set_xlim(0,5)
+		axis2.axvline(x=1,c='k',linestyle='--',linewidth=1)
+
+		axis.set_xlabel('Psi (kPa)')
+		axis2.set_xlabel('Factor of Safety (dimensionless)')
+		axis.set_ylabel('Depth (m)')
+		axis.invert_yaxis()
+		axis.legend(loc='lower right',fontsize=6)
+		axis2.legend(loc='center right',fontsize=6)
+		# Now plot the Precipitation
+
+		fig=plt.figure(1, facecolor='White',figsize=[fig_width, fig_height])
+		ax1 =  plt.subplot2grid((2,1),(1,0),colspan=1, rowspan=1)
+
+		rainlist = [datetime.datetime(2016, 9, 3)]
+		for k in range(1,len(rain)):
+			rainlist.append(rainlist[-1]+ datetime.timedelta(0,int(rain['duration_s'].iloc[k]), 0))
+
+		rain['time'] = rainlist
+		rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
+
+		ax1.axvline(x=rain['time'][index],c='k',linestyle='--',linewidth=1,label='Failure',)
+		ax1.legend(loc='upper left',fontsize=10)		
+		ax1.bar(rain['time'], rain['rainfall_mm'],width=10)
+
+		# print(rain['time'][index])
+		ax1.set_xlim(min(rain['time']),max(rain['time']))
+		ax1.set_ylim(0,max(rain['rainfall_mm'])+5)
+
+		ax1.set_xlabel('Date')
+		ax1.set_ylabel('Rainfall (mm)')
+
+		plt.tight_layout()
+		plt.savefig(fig_name+'_'+str(points[j])+'.png')
 ######################################################
 ######################################################
 # A figure to show the Psi and FoS vs depth with precipitation at a random timestep
