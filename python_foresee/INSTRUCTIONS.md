@@ -5,7 +5,38 @@ Python software for predicting landslide failures based on precipitation, ground
 ## Installation ##
 1. DOCKER INSTRUCTIONS:
 
+* Install Docker on your machine using the following link https://docs.docker.com/get-docker/
 
+* (note that these instructions may need administrator privileges to run properly)
+
+* Install the lsdfailtools software one of two ways:
+
+* 1) To build locally from a local Dockerfile:
+
+** Download the Dockerfile from INSERT LINK
+
+** Place the Dockerfile in a directory then navigate there via the command line and run:
+
+** `docker build --tag lsdft .`
+
+** Then run:
+** `sudo docker run -it -v /path/to/your/cloned/repo:/LSDTopoTools -e NASA_USERNAME="username" -e NASA_PASSWORD="password"`
+
+** Ensure that you have already cloned the lsdfailtools repository somewhere on your machine either using git from the command line or by downloading from the github website directly and unzipping it (https://github.com/LSDtopotools/lsdfailtools.git)
+
+** Note: this requires a an account on the NASA EartData website (https://urs.earthdata.nasa.gov), make a login and password, click in Applications>Authorized Apps> Approve More Applications and select NASA GESDISC DATA ARCHIVE. This will be used in the PRECIPITATION section for downloading precipitaiton data.
+
+* 2) To build from DockerHub: ARE WE DOING THIS?
+
+** Create a folder into which to put all the files, then run:
+
+** `docker run --rm -it -v /path/to/your/folder?you?just?made:/LSDTopoTools dockerhub/dockerhub_info`
+
+** This should pull the repository along with setting up your Docker container ready for analysis
+
+* You should now be inside the Docker container at the top directory of your cloned repo ready to begin!
+
+* To escape your docker session at any point use `ctrl-d`
 
 **ALLDATA_PROCESSING**: Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
 
