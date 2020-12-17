@@ -3,7 +3,7 @@
 Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure. The main outputs of this model are the identified failure locations and the timing of the failure. Additional outputs such as depth of failure and factor of safety can also be obtained.
 
 ## Installation ##
-1. DOCKER INSTRUCTIONS
+DOCKER INSTRUCTIONS
 
 
 
@@ -19,8 +19,8 @@ If you want to know how to run the code from the command line, you will find all
 * The precipitation data is obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with the vector columns: Duration of precipitation (s) and Precipitation intensity (mm/s)
 * The sentinel interferometry data has been provided from the University of Cantabria, processes using the ISBAS method to obtain a timeseries. Alternatively, it can be downloaded from the Sentinel-1 website, which is freely available to access.
 * The Cosmo-SKYMed interferometry data must be purchased from TELESPAZIO VEGA UK.
-* The DEM data can be supplied by the user in any resolution. In our case we use the EU-DEM 25 m, which is obtained freely from Copernicus Land Monitoring Service website <https://www.eea.europa.eu/data-and-maps/data/copernicus-land-monitoring-service-eu-dem>.
-* The topographic slope file can be obtained from ...
+* The DEM data can be supplied by the user in any resolution. In our case we use the EU-DEM 25 m, which is obtained freely from the Tinitaly website <http://tinitaly.pi.ingv.it/>.
+* The topographic slope file is derived from the DEM file.
 
 
 1. INCLINOMETERS
@@ -151,6 +151,12 @@ Data Needs:
 * Probability density function and histogram of the temporal distribution of failures both for the modelled and the observed failure events.
 * Violin plot with the temporal distribution of modelled failures split into time intervals (violins) with respect to observed failure time distribution.
 
-`convert_csv_to_shapefile.py`: Converts a .csv file with x,y locations in an array to a raster image of the points and a point shapefile with the desired attributes.
+`map_validation.py`: Generates a map of the validated and calibrated points. The points indicate where failure happens and whether it was predicted before, after or within a 25-day window of the observed failure.
 
-`voronoi_from_point_shp.py`: Uses the shapefile from `convert_csv_to_shapefile.py` as an input. The points from the shapefile are converted into a voronoi cells and saved as a multipolygon shapefile.
+`map_validation_zoom.py`: Generates a zoomed-in version of the map detailed above.
+
+`map_validation_colorbar.py`: Generates a map of validated points with a colourbar indicating the exact number of days between the observed failure events and the modelled failure event.
+
+`convert_csv_to_shapefile.py`: Converts a .csv file with x,y locations in an array to a raster image of the points and a point shapefile with the desired attributes. If the user needs multiple attributes as part of the final multipolygon shapefile, they must be processed separately. A number of shapefiles equal to the number of attributes requires will be produced.
+
+`voronoi_with_attributes.py`: Uses the shapefiles from `convert_csv_to_shapefile.py` as an input. The points from the shapefile are converted into a voronoi cells and saved as a multipolygon shapefile.

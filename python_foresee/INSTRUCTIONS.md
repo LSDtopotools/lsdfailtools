@@ -100,19 +100,25 @@ python Run_validation.py
 
 Modify `file_paths_visualisation.json` to include paths to input and output directories.
 
-Then run the command:
+Then run the commands:
 
 ```bash
 python Final_outputs_visualisation.py
+python map_validation.py
+python map_validation_zoom.py
+python map_validation_colourbar.py
 ```
 
-To convert the .csv output from the validation file into a point shapefile:
+
+
+To convert the .csv output from the validation (or calibration) file into a point shapefile each attribute that needs to be included must be processed separately. In our case we have the `time_of_failure`, `factor_of_safety` and `depth` attributes to include, which correspond to certain columns in the .csv file. The following command must be run in this case 3 times. Each time the `file_paths_visualisation.json` file must be updated with the attribute of interest and its column number in the corresponding .csv file (note this is 0-indexed).
+
 ```bash
 python convert_csv_to_shapefile.py
 ```
 
-To convert from a point shapefile to a multipolygon shapefile using Voronoi tessellation:
+To convert from point shapefiles to a multipolygon shapefile using Voronoi tessellation. This assumes that the attributes are `time_of_failure`, `factor_of_safety` and `depth`.
 
 ```bash
-python voronoi_from_point_shp.py
+python voronoi_with_attributes.py
 ```

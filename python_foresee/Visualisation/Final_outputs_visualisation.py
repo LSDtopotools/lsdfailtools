@@ -122,13 +122,6 @@ ff.plot_failtime_calib_valid(calibrated, validated, rain, 10, 10, fig_out_dir + 
 ff.plot_parameters(calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
 
 ######################
-# Map the validation
-
-depths = np.arange(0.1,3.0,0.1)
-ff.map_validation_arrays(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 10, fig_out_dir + 'Map_validation_with_scale.png')
-ff.map_validation_arrays_zoom(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 10, fig_out_dir + 'Map_validation_zoom_with_scale.png')
-ff.map_validation_colorbar(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_with_colorbar.png')
-######################
 # Plot rain data
 rain = pd.read_csv(rainfile)
 ff.plot_rain(rain, 15, 15, fig_out_dir + 'Rain.png')
