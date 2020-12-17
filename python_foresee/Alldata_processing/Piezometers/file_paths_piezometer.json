@@ -1,0 +1,8 @@
+{
+    "piezo_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Piezometer/",
+     "piezo_data" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Piezometer/data_piezometer.csv",
+     "piezo_location" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Piezometer/coo_piezometer.csv",
+     "world_epsg_initial" : "4326",
+     "italy_epsg_final" : "32633"
+
+   }

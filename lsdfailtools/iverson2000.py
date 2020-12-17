@@ -11,7 +11,7 @@ import gc
 class iverson_model(object):
   """docstring for iverson_model"""
   def __init__(self, alpha = 0.1, D_0 = 5e-6,K_sat = 5e-8, d = 2,Iz_over_K_steady = 0.2,
-      friction_angle = 0.38, cohesion = 12000, weight_of_water = 9800, 
+      friction_angle = 0.38, cohesion = 12000, weight_of_water = 9800,
       weight_of_soil = 19000, depths = "default", **kwargs):
 
     super(iverson_model, self).__init__()
@@ -29,7 +29,7 @@ class iverson_model(object):
     else:
       # Default array
       self.depths  = np.arange(0.1,5,0.2)
-    
+
     # creating the c++ object
     self.min_depth = self.depths.min()
     self.cppmodel = lsdi(alpha,D_0,K_sat,d,Iz_over_K_steady,friction_angle,cohesion,weight_of_water,weight_of_soil,self.min_depth)
@@ -40,7 +40,7 @@ class iverson_model(object):
 
     # first I need to set the duration and intensities of precipitations
     self.cppmodel.set_duration_intensity(durations_of_prec,intensities_of_prec)
-    
+
     # Then I can run the model
     self.cppmodel.ScanTimeseriesForFailure()
 
@@ -61,12 +61,12 @@ class iverson_model(object):
 
     # first I need to set the duration and intensities of precipitations
     self.cppmodel.set_duration_intensity(durations_of_prec,intensities_of_prec)
-    
+
     # Then I can run the model
     self.cppmodel.ScanTimeseriesForFailure()
 
     # to get outputs:
-  
+
     self.cppmodel.output_times
     self.cppmodel.output_depthsFS
     self.cppmodel.output_minFS
@@ -85,9 +85,9 @@ class iverson_model(object):
 class MonteCarlo_Iverson(object):
 
   def __init__(self, alpha_min = 0.1, D_0_min = 5e-6,K_sat_min = 5e-8, d_min = 2,Iz_over_K_steady_min = 0.2,
-      friction_angle_min = 0.38, cohesion_min = 12000, weight_of_water_min = 9800, 
+      friction_angle_min = 0.38, cohesion_min = 12000, weight_of_water_min = 9800,
       weight_of_soil_min = 19000, alpha_max = 0.1, D_0_max = 5e-6,K_sat_max = 5e-8, d_max = 2,Iz_over_K_steady_max = 0.2,
-      friction_angle_max = 0.38, cohesion_max = 12000, weight_of_water_max = 9800, 
+      friction_angle_max = 0.38, cohesion_max = 12000, weight_of_water_max = 9800,
       weight_of_soil_max = 19000, depths = "default"):
 
 
@@ -152,7 +152,7 @@ class MonteCarlo_Iverson(object):
       jobs.append(job)
 
     # collect results from the workers through the pool result queue
-    for job in jobs: 
+    for job in jobs:
         job.get()
 
     #now we are done, kill the listener
@@ -169,6 +169,16 @@ def worker(arg, q):
     this_model.run( arg["durations_of_prec"], arg["intensities_of_prec"])
 
     time = this_model.cppmodel.output_times
+
+    minimum_FS = this_model.cppmodel.output_minFS
+    minimum_depth = this_model.cppmodel.output_depthsFS
+    # Psi and FS below are 2D arrays in depth and time
+    #Psi_timedepth = self.cppmodel.output_Psi_timedepth
+    #FS_timedepth = self.cppmodel.output_FS_timedepth
+    #output_FS_timedepth = this_model.cppmodel.output_FS_timedepth
+
+
+
     failure = np.cumsum(this_model.cppmodel.output_failure_bool.astype(np.int32))
     ToF = time[np.argwhere(failure == 1)]
     if(ToF.shape[0] == 0):
@@ -182,7 +192,7 @@ def worker(arg, q):
       "weight_of_soil": [arg["weight_of_soil"]], "time_of_failure": [ToF]})
 
     q.put(df)
-    
+
     return df
 
 def listener(q):

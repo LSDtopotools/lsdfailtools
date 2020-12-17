@@ -1,7 +1,6 @@
 # Importing the model
 import lsdfailtools.iverson2000 as iverson
 
-# I'll need that to process the outputs
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from itertools import product
@@ -11,33 +10,32 @@ import numpy as np
 import shapefile
 import itertools
 import json
+import os
 
-#MR: i´m assuming for now this is InSAR Insar_functions
-import sys
-sys.path.insert(0,'../Alldata_processing/InSAR')
-import Insar_functions as fn
- #import functions as fn
+import functions as fn
 
 import Figure_functions as ff
 
 
 ######################################################
 ######################################################
-# set up stuff
+# set up directories
 ######################################################
 ######################################################
 
-with open("../file_with_paths.json") as file_with_paths :
+with open("file_paths_visualisation.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
+
+print("The base output directory is {}".format(FILE_PATHS["figures_dir"]))
 
 
 # Model directory
-rundir = FILE_PATHS["rain_intensity_caliv_valid"]
+rundir = FILE_PATHS["input_data_dir"]
 
 # Setting the depth resolution vector
-depths = np.arange(0.2,3.1,0.1)
+depths = np.arange(0.1,3.0,0.1)
 
-#failure threshold
+# failure threshold
 threshold = 80 # mm/yr
 
 
@@ -49,27 +47,20 @@ failfile = faildir + "All_1st_failtime__threshold"+str(threshold)+"mmyr.bil"
 prefailfile = faildir + "All_1st_prefailtime__threshold"+str(threshold)+"mmyr.bil"
 
 # topography files
-topodir = FILE_PATHS["topo_dir"]
-demfile = topodir + "eu_dem_AoI_epsg32633.bil"
-slopefile = topodir + "eu_dem_AoI_epsg32633_SLOPE.bil"
+demfile = FILE_PATHS["dem_file"]
+slopefile = FILE_PATHS["slope_file"]
 
 # road files
-roaddir = FILE_PATHS["road_dir"]
-roadfile = roaddir + "Road_line.shp"
+roadfile = FILE_PATHS["road_file"]
 
 # calibrated points files
-# need to check if this is the right directory
-calibdir = FILE_PATHS["rain_intensity_caliv_valid"]
-calibfile = calibdir + "Calibrated_all.csv"
+calibfile = FILE_PATHS["calibration_file"]
 
-rainfile = FILE_PATHS["rain_dir"]
 fig_out_dir = FILE_PATHS["figures_dir"]
 
-validdir = FILE_PATHS["rain_intensity_caliv_valid"]
-validfile = validdir +"Validated_updated.csv"
+validfile = FILE_PATHS["validation_file"]
 
-Cal_params_dir = FILE_PATHS["rain_intensity_caliv_valid"]
-Cal_params_file = Cal_params_dir+"Calibration_parameters.csv"
+Cal_params_file = FILE_PATHS["calibration_params"]
 
 ######################################################
 ######################################################
@@ -107,7 +98,7 @@ StartDate = Cal_params.at[0,'StartDate']
 EndDate = Cal_params.at[0,'EndDate']
 
 
-rainfile = rundir + StartDate + "_to_" + EndDate + "_Intensity.csv"
+rainfile = FILE_PATHS["rain_file"]
 rain = pd.read_csv(rainfile)
 
 rainlist = [0]
@@ -118,68 +109,35 @@ rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 
 #######################
 # Map calibrated points
-#ff.map_calibrated (demarr, calibrated, line, 10, 15, fig_out_dir + 'Map_calibrated_pixels.png')
+ff.map_calibrated(demarr, calibrated, line, 10, 15, fig_out_dir + 'Map_calibrated_pixels.png')
 
 ######################
-# Map the distribution in terms of failtimes
-#ff.plot_failtime_calib_valid(calibrated, validated, rain, 12, 12, fig_out_dir + 'Failtime_distribution.png')
+# Map the distribution of failtimes (calibrated and validated points) along with precipitation data
+ff.plot_failtime_calib_valid(calibrated, validated, rain, 10, 10, fig_out_dir + 'Failtime_distribution.png')
 
 ######################
 
-# Map the distribution of parameters
-#ff.plot_parameters (calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
+# Map the distribution of parameters wrt with slope and elevation
+
+ff.plot_parameters(calibrated, 7, 18, fig_out_dir + 'Failure_params.png')
 
 ######################
 # Map the validation
 
-
-depths = np.arange(0.2,3.1,0.1)
-#ff.map_validation(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, roadfile, 15, 15, fig_out_dir + 'Map_validation_test.png')
-ff.map_validation_arrays_zoom(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15,'zoom_Map_validation_test_updated.png')
-#ff.map_validation_colorbar(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_with_colorbar_2.png')
-
+depths = np.arange(0.1,3.0,0.1)
+ff.map_validation_arrays(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 10, fig_out_dir + 'Map_validation_with_scale.png')
+ff.map_validation_arrays_zoom(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 10, fig_out_dir + 'Map_validation_zoom_with_scale.png')
+ff.map_validation_colorbar(rain, depths, calibrated, validated, line, demarr, slopearr, failarr, failinterval, 10, 15, fig_out_dir + 'Map_validation_with_colorbar.png')
 ######################
-# Look at some rain data
-#rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
-#ff.plot_rain(rain, 15, 15, fig_out_dir + 'Rain.png')
-
+# Plot rain data
+rain = pd.read_csv(rainfile)
+ff.plot_rain(rain, 15, 15, fig_out_dir + 'Rain.png')
+#  Put the dates on the json file
 ######################
 # Look at some rain data and failures
-#rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
-#ff.plot_rain_failures(rain, calibrated, 15, 15, fig_out_dir + 'Rain_failures.png')
-
+rain = pd.read_csv(rainfile)
+ff.plot_rain_failures(rain, calibrated, 15, 15, fig_out_dir + 'Rain_failures.png')
 ######################
-# Look at some rain data and failures
-# deprecated graph
-#rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
-#depths = np.arange(0.2,3.1,0.1)
-#ff.plot_rain_failures_valid(rain, depths, calibrated, demarr, slopearr, failarr, prefailarr, 15, 15, fig_out_dir + 'Rain_failures_validation.png')
-######################
-#ff.density_plot(validated,10,10)
-#ff.time_split_violin_plot(validated, 10,10)
-'''
-# Try a PCA on calibratd points
-rain = pd.read_csv(rainfile+"2014-01-01_to_2019-12-31_Intensity.csv")
-depths = np.arange(0.2,3.1,0.1)
-ff.plot_rain_parameters_correlation(rain, calibrated, 10, 10, rundir + 'pca_test.png')
-'''
-
-#########
-# What to do next?
-
-# Isolate the function to find the necessary rainfall to cause failure
-
-# Make a function to map limit rainfall for failure.
-# Get an idea of return period for that rainfall.
-# associate to risk of failure. !!!! the groundwater level should be a condition.
-
-# make documentation-ish like thing
-# make a list of the available data and the processed data.
-
-
-#########
-# Groundwork for Marina's takeover
-
-# Essentially: make useful tools and functions
-
-#########
+# need to fix this density plot
+ff.density_plot(validated,10,10, fig_out_dir + "observed_vs_modelled_pdf.png")
+ff.time_split_violin_plot(validated, 10,10, fig_out_dir + "observed_vs_modelled_violin_plot.png")

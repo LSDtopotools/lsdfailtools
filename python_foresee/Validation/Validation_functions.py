@@ -51,26 +51,26 @@ import matplotlib.lines as mlines
 
 def parseArguments():
 
-	parser = argparse.ArgumentParser(prog='Precipitation Processing Tool')
+    parser = argparse.ArgumentParser(prog='Precipitation Processing Tool')
 
-	parser.add_argument('--ProdTP', choices= ['GPM_M','GPM_D','GPM_30min'], default='GPM_30min', dest='ProdTP',  help='GPM_M: GPM Monthly (IMERGM v6);\n GPM_D: GPM Daily (IMERGDF v6); \n GPM_30min: GPM Half-hourly (IMERGHHE v6)\n')
+    parser.add_argument('--ProdTP', choices= ['GPM_M','GPM_D','GPM_30min'], default='GPM_30min', dest='ProdTP',  help='GPM_M: GPM Monthly (IMERGM v6);\n GPM_D: GPM Daily (IMERGDF v6); \n GPM_30min: GPM Half-hourly (IMERGHHE v6)\n')
 
-	StartDF = '01-06-2000'
-	parser.add_argument('--StartDate',dest='StartDate', help='Insert the start date',default=StartDF,type=str)
+    StartDF = '01-06-2000'
+    parser.add_argument('--StartDate',dest='StartDate', help='Insert the start date',default=StartDF,type=str)
 
-	EndDF = str((datetime.datetime.now()).strftime('%Y-%m-%d'))
-	parser.add_argument('--EndDate',dest='EndDate', help='Insert the end date',default=EndDF,type=str)
+    EndDF = str((datetime.datetime.now()).strftime('%Y-%m-%d'))
+    parser.add_argument('--EndDate',dest='EndDate', help='Insert the end date',default=EndDF,type=str)
 
-	parser.add_argument('--ProcessDir',dest='ProcessDir', help='Insert the processing directory path',type=str)
+    parser.add_argument('--ProcessDir',dest='ProcessDir', help='Insert the processing directory path',type=str)
 
-	parser.add_argument('--SptSlc',dest='SptSlc', nargs="?", help='Insert the slice feature path',type=str)
+    parser.add_argument('--SptSlc',dest='SptSlc', nargs="?", help='Insert the slice feature path',type=str)
 
-	parser.add_argument('--OP', dest='OP',action="store_true", help='Call this argument if you only want to process the data. Make sure you have a directory with a raw files subfolder.')
+    parser.add_argument('--OP', dest='OP',action="store_true", help='Call this argument if you only want to process the data. Make sure you have a directory with a raw files subfolder.')
 
-	parser.add_argument('--DirOut', dest='DirOut', help='This is the output directory for the final timeseries file. Defaults to current working directory.', default = os.getcwd(),type=str)
+    parser.add_argument('--DirOut', dest='DirOut', help='This is the output directory for the final timeseries file. Defaults to current working directory.', default = os.getcwd(),type=str)
 
-	args = parser.parse_args();
-	return args
+    args = parser.parse_args();
+    return args
 
 
 ################################################################################
@@ -296,7 +296,7 @@ def run_validation_single_output(rain, depths, calibrated, demarr, slopearr, fai
                     depths = depths)
 
                 mymodel.run_with_outputs(rain['duration_s'].values, rain['intensity_mm_sec'].values)
-                
+
                 print("Getting outputs")
 
                 Times = mymodel.cppmodel.output_times
@@ -310,7 +310,7 @@ def run_validation_single_output(rain, depths, calibrated, demarr, slopearr, fai
                     failures = failures[failures_b ==True][0]
                 else:
                     failures = 0
-                
+
                 if failures != 0:
                     print("Found a failure")
                     index = numpy.where(failures_b ==True)[0]
@@ -322,7 +322,7 @@ def run_validation_single_output(rain, depths, calibrated, demarr, slopearr, fai
                     # Output the FoS
                     FoS_temp = mymodel.cppmodel.output_FS_timedepth
                     FoS.append(FoS_temp)
-    
+
 
                 valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures, 'Time':Times, 'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
     numpy.save(rundir+"Psi", Psi)
@@ -335,7 +335,7 @@ def run_validation_single_output(rain, depths, calibrated, demarr, slopearr, fai
 
 ######################################################
 ######################################################
-# A figure to map validation results 
+# A figure to map validation results
 ######################################################
 ######################################################
 def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
@@ -395,7 +395,7 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
                     depths = depths)
 
                 mymodel.run_with_outputs(rain['duration_s'].values, rain['intensity_mm_sec'].values)
-                
+
                 print("Getting outputs")
 
                 Times = mymodel.cppmodel.output_times
@@ -409,7 +409,7 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
                     failures = failures[failures_b ==True][0]
                 else:
                     failures = 0
-                
+
 
 
                 valid_df = valid_df.append({'alpha':S, 'D_0':mean_df['D_0'], 'K_sat':mean_df['K_sat'], 'd':mean_df['d'],'Iz_over_K_steady':mean_df['Iz_over_K_steady'],'friction_angle':mean_df['friction_angle'],'cohesion':mean_df['cohesion'],'weight_of_water':mean_df['weight_of_water'],'weight_of_soil':mean_df['weight_of_soil'],'time_of_failure':failures, 'Time':Times, 'S':S,'Z':Z,'row':i,'col':j,'observed_failtime':failarr[i,j]}, ignore_index=True)
@@ -426,44 +426,44 @@ def run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir):
 ######################################################################
 
 def maps_to_timeseries(working_dir, arglist, output_dir):
-	# List the .bil files
-	files = sorted(os.listdir(working_dir)); bilfiles = []
-	for i in range(len(files)):
-		ending = files[i][-4:]
-		if ending == '.bil':
-			bilfiles.append(files[i])
+    # List the .bil files
+    files = sorted(os.listdir(working_dir)); bilfiles = []
+    for i in range(len(files)):
+        ending = files[i][-4:]
+        if ending == '.bil':
+            bilfiles.append(files[i])
 
 
-	#Timelist = []
-	#CumTimelist = []
-	#Intlist = []
-	Full_list = []
-	for i in range(len(bilfiles)):
+    #Timelist = []
+    #CumTimelist = []
+    #Intlist = []
+    Full_list = []
+    for i in range(len(bilfiles)):
 
-		print (arglist)
+        print (arglist)
 
-		if arglist[0] == 'GPM_D':
-			timer = datetime.datetime.strptime(bilfiles[i], '3B-DAY_%Y%m%d_S%H%M%S_V06_precipitationCal.bil')
-		elif arglist[0] == 'GPM_30min':
-			timer = datetime.datetime.strptime(bilfiles[i], '3B-HHR-E_%Y%m%d_S%H%M%S_V06B_precipitationCal.bil')
+        if arglist[0] == 'GPM_D':
+            timer = datetime.datetime.strptime(bilfiles[i], '3B-DAY_%Y%m%d_S%H%M%S_V06_precipitationCal.bil')
+        elif arglist[0] == 'GPM_30min':
+            timer = datetime.datetime.strptime(bilfiles[i], '3B-HHR-E_%Y%m%d_S%H%M%S_V06B_precipitationCal.bil')
 
 
 
-		# Add to the rainfall list
-		Rainarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(working_dir + bilfiles[i])
-		Rain = numpy.mean(Rainarr)
-		Intensity = Rain/(30*60) # Intensity of rainfall during the period (mm/sec)
-		#Intlist.append(Intensity)
+        # Add to the rainfall list
+        Rainarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(working_dir + bilfiles[i])
+        Rain = numpy.mean(Rainarr)
+        Intensity = Rain/(30*60) # Intensity of rainfall during the period (mm/sec)
+        #Intlist.append(Intensity)
 
-		# Save it all together
-		Full_list.append([30*60, Intensity])
+        # Save it all together
+        Full_list.append([30*60, Intensity])
 
-	# Now save the stuff
-	with open(output_dir+'/'+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv", "w", newline="") as f:
-	    writer = csv.writer(f)
-	    writer.writerow(['duration_s','intensity_mm_sec'])
-	    writer.writerows(Full_list)
-	print ('saved file:', output_dir+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv")
+    # Now save the stuff
+    with open(output_dir+'/'+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(['duration_s','intensity_mm_sec'])
+        writer.writerows(Full_list)
+    print ('saved file:', output_dir+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv")
 
 
 
@@ -472,33 +472,33 @@ def maps_to_timeseries(working_dir, arglist, output_dir):
 ################################################################################
 
 def process_months(arglist, zero_list, zero_dir, fst_dir, backslh):
-	if zero_list.endswith('.HDF5') > -1 and zero_list.find('.xml') == -1 and zero_list.find('.aux') == -1 and zero_list.find('.tfw') == -1:
-			if 	zero_list.find('.HDF5') > -1:
-				extract_subdata = 'HDF5:"%s%s%s"://Grid/precipitation' % (zero_dir,backslh,zero_list)
-				outfile = '%s%s%s.tif' % (fst_dir,backslh,zero_list[:-5])
+    if zero_list.endswith('.HDF5') > -1 and zero_list.find('.xml') == -1 and zero_list.find('.aux') == -1 and zero_list.find('.tfw') == -1:
+            if     zero_list.find('.HDF5') > -1:
+                extract_subdata = 'HDF5:"%s%s%s"://Grid/precipitation' % (zero_dir,backslh,zero_list)
+                outfile = '%s%s%s.tif' % (fst_dir,backslh,zero_list[:-5])
 
-				process_HDF5(outfile,extract_subdata,arglist)
-				extract_subdata = outfile = None
+                process_HDF5(outfile,extract_subdata,arglist)
+                extract_subdata = outfile = None
 
 
 def process_days(arglist, zero_list, zero_dir, fst_dir, backslh):
-	if zero_list.endswith('.nc4') > -1 and zero_list.find('.xml') == -1 and zero_list.find('.aux') == -1 and zero_list.find('.tfw') == -1:
-			extract_subdata = '%s%s%s' % (zero_dir, backslh, zero_list)
-			outfile = '%s%s%s_precipitationCal.bil' % (fst_dir,backslh, zero_list[:-4])
+    if zero_list.endswith('.nc4') > -1 and zero_list.find('.xml') == -1 and zero_list.find('.aux') == -1 and zero_list.find('.tfw') == -1:
+            extract_subdata = '%s%s%s' % (zero_dir, backslh, zero_list)
+            outfile = '%s%s%s_precipitationCal.bil' % (fst_dir,backslh, zero_list[:-4])
 
-			process_nc4(outfile,extract_subdata,arglist)
-			extract_subdata = outfile = None
+            process_nc4(outfile,extract_subdata,arglist)
+            extract_subdata = outfile = None
 
 
 
 def process_hhs(arglist, zero_list, zero_dir, fst_dir, backslh):
-	if zero_list.endswith('.HDF5') > -1 and zero_list.find('.xml') == -1 and zero_list.find('.aux') == -1 and zero_list.find('.tfw') == -1:
-			if 	zero_list.find('.HDF5') > -1:
-				extract_subdata = "%s%s%s" % (zero_dir,backslh,zero_list)
-				outfile = '%s%s%s_precipitationCal.bil' % (fst_dir,backslh,zero_list[:-5])
+    if zero_list.endswith('.HDF5') > -1 and zero_list.find('.xml') == -1 and zero_list.find('.aux') == -1 and zero_list.find('.tfw') == -1:
+            if     zero_list.find('.HDF5') > -1:
+                extract_subdata = "%s%s%s" % (zero_dir,backslh,zero_list)
+                outfile = '%s%s%s_precipitationCal.bil' % (fst_dir,backslh,zero_list[:-5])
 
-				process_HDF5(outfile,extract_subdata,arglist)
-				extract_subdata = outfile = None
+                process_HDF5(outfile,extract_subdata,arglist)
+                extract_subdata = outfile = None
 
 
 ################################################################################

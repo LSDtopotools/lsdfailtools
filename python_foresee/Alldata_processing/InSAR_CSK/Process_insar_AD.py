@@ -1,3 +1,20 @@
+"""
+Process_insar_AD.py
+
+This is a file to process the Ascending and Descending InSAR data, which are in the same format and seem to have the same dates.
+Here, processing means finding which pixels on our DEM have one or more failures and when.
+
+
+"""
+
+
+
+
+################################################################################
+################################################################################
+#Import packages
+################################################################################
+################################################################################
 
 import json
 import datetime
@@ -8,26 +25,24 @@ import matplotlib.pyplot as plt
 
 import Insar_functions as fn
 
-with open("../../file_with_paths.json") as file_with_paths :
+with open("file_paths_insar_csk.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
-#fail_dir = FILE_PATHS["interferometry_dir"]
-# base_dir
-interferometry_dir = FILE_PATHS["interferometry_dir"]
-out_failure_dir = FILE_PATHS["interferometry_out_dir"]
+print("The base output directory is {}".format(FILE_PATHS["out_failure_dir"]))
 
-ascending_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.shp"
-descending_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.shp"
-ew_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.shp"
-vert_file = interferometry_dir + "FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.shp"
 
-topo_file = FILE_PATHS["topo_dir"] + "eu_dem_AoI_epsg32633.bil"
+out_failure_dir = FILE_PATHS["out_failure_dir"]
+
+ascending_file = FILE_PATHS["interferometry_A_CSK"]
+descending_file = FILE_PATHS["interferometry_D_CSK"]
+
+dem_file = FILE_PATHS["dem_file"]
 
 
 # Figure out direction of movement
 # Line of Sight (LoS) vectors are given in (Easting, Northing, Vertical)
-ascending_LoS = np.array([-0.523362, -0.100137, 0.8462055])
-descending_LoS = np.array([0.481241, -0.091219, 0.871829])
+ascending_LoS = np.array([FILE_PATHS["LoS_asc_easting"], FILE_PATHS["LoS_asc_northing"], FILE_PATHS["LoS_asc_vertical"]])
+descending_LoS = np.array([FILE_PATHS["LoS_desc_easting"], FILE_PATHS["LoS_desc_northing"], FILE_PATHS["LoS_desc_vertical"]])
 
 # Existing axes in data
 ew_axis = np.array([1,0,0])
@@ -64,38 +79,13 @@ for file in [ascending_file, descending_file]:
 	intervals_yr = [ item.days/365 for item in intervals ]
 	velocity_dates = dates[1:]
 
-	# Load the topography file
-	topo_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(topo_file)
+	# Load the topography (DEM) file
+	topo_array, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(dem_file)
 
 	originX = geotransform[0]
 	originY = geotransform[3]
 	pixelWidth = geotransform[1]
 	pixelHeight = geotransform[5]
-
-
-
-	# The approach will be:
-	# 0. Define a failure threshold for velocity. e.g.: 500 mm/yr
-
-	# 1. create 3 nul arrays (Aarr, Darr, and EWVarr) of the shape of topo_array and 10 bands deep, containing float objects.
-	# Note: EW and V have identical point geometries and flyover dates.
-
-	# 2. loop through the points in EW or V
-	#	2.1 assign the point to a pixel
-	#	2.2 calculate the 2D displacement velocity timeseries in the EW-V plane for that point
-	#	2.3 every time velocity > threshold, fill a band with the date of failure observation.
-	#	NB: the date is the time in seconds after simulation start (i.e. after the first measurement with zero displacement).
-	#	NB: actual failure will have occurred before that
-	#	NB if there are more than 10 failures, the threshold might be wrong
-	#	2.4 if there are no failures, mark the date as -1
-
-	# 3. save the time of first, second and third failure (that should be enough)
-
-
-	# 4. repeat for the ascending and descending data
-
-
-
 
 
 	#########################################################################################
@@ -116,7 +106,7 @@ for file in [ascending_file, descending_file]:
 	runstart = datetime.datetime.now()
 
 	for th in range(len(threshold)):
-		print("failure threshold velocity:", threshold[th], 'mm/yr')
+		print("Failure threshold velocity:", threshold[th], 'mm/yr')
 
 
 		# 2. loop through the points in EW or V
@@ -181,8 +171,3 @@ for file in [ascending_file, descending_file]:
 			print ('saving band', i+1)
 			fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_failure_dir+name+"_failtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, Farr[:,:,i])
 			fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), out_failure_dir+name+"_prefailtime_"+str(i+1)+"_threshold"+str(threshold[th])+"mmyr.bil", pixelWidth, preFarr[:,:,i])
-
-
-
-
-quit()

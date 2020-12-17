@@ -105,16 +105,16 @@ def process(out_dir,data_file,dataInfo):
 	# WHY THE SWITCH? WE ROTATED THE TPSGPM ArrAY, REMEMBER?
 
 	# x_min & y_max are like the "top left" corner. In WGS84, these are:
-	x_min = -180; x_max = 180 
+	x_min = -180; x_max = 180
 	y_max = 90; y_min = -90
 
 	# Pixels need to cover the entire extent
-	X_PXL_SIZE = (x_max - x_min) / x_pixels # size of the X pixels       
-	Y_PXL_SIZE = (y_max - y_min) / y_pixels  # size of the Y pixels  
+	X_PXL_SIZE = (x_max - x_min) / x_pixels # size of the X pixels
+	Y_PXL_SIZE = (y_max - y_min) / y_pixels  # size of the Y pixels
 
-	
+
 	#wkt_projection = 'a projection in wkt that you got from other file'
-	
+
 	# Create the dataset
 	dataset = driver.Create(
 		outfile,
@@ -131,7 +131,7 @@ def process(out_dir,data_file,dataInfo):
         0,                      # 2
         y_max,    # 3
         0,                      # 4
-        -Y_PXL_SIZE))  
+        -Y_PXL_SIZE))
 
 
 
@@ -151,19 +151,3 @@ def process(out_dir,data_file,dataInfo):
 
 	# remove the annoying tif file
 	os.system('rm ' + data_file[:-5] + '.tif')
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
