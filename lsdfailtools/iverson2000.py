@@ -6,6 +6,7 @@ import multiprocessing as mp
 import time
 import random
 import os
+import gc
 
 class iverson_model(object):
   """docstring for iverson_model"""
@@ -206,6 +207,7 @@ def listener(q):
 
     if(cpt % 10 ==0):
       df.to_csv(output_name, index = False)
+      gc.collect()
 
 
 
