@@ -27,7 +27,7 @@ To build from DockerHub: ARE WE DOING THIS?
 
 - Create a folder into which to put all the files, then run:
 
-- `docker run --rm -it -v /path/to/your/folder?you?just?made:/LSDTopoTools dockerhub/dockerhub_info`
+- `docker run --rm -it -v /path/to/your/folder/you/just/made:/LSDTopoTools dockerhub/dockerhub_info`
 
 - This should pull the repository along with setting up your Docker container ready for analysis
 
