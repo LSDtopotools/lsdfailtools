@@ -188,10 +188,11 @@ is the day of measure [mm]
 
 Example file:
 
-|D_0|    K_sat|    Iz_over_K_steady    |friction_angle    |cohesion|    weight_of_water|    weight_of_soil|    depth|
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|0.000001    |0.00000001|    0.1|    0.2    |5000|    9800    |15000|    0.1|
-|0.0001    |0.000001|    0.8|    0.5|    20000|    9800    |25000    |3|
+```
+D_0,K_sat,Iz_over_K_steady,friction_angle,cohesion,weight_of_water,weight_of_soil,depth
+0.000001,0.00000001,0.1,0.2,5000,9800,15000,0.1
+0.0001,0.000001,0.8,0.5,20000,9800,25000,3
+```
 
 Variable names and units:
 
@@ -213,10 +214,10 @@ Variable names and units:
 
 Example file:
 
-|Nruns|    itermax    |Num_cal|    StartDate|    EndDate    |failinterval|
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|25    |50    |200    |01/01/2014|    31/12/2019|    25|
-
+```
+Nruns,itermax,Num_cal,StartDate,EndDate,failinterval
+25,50,200,01/01/2014,31/12/2019,25
+```
 
 
 
