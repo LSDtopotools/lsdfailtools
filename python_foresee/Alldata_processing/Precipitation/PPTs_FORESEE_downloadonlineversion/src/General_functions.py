@@ -73,6 +73,26 @@ def parseArguments():
 
 ################################################################################
 ################################################################################
+"""Argument Parser"""
+################################################################################
+################################################################################
+
+def parse_add_rainfall_Arguments():
+
+	parser = argparse.ArgumentParser(prog='Precipitation Processing Tool')
+
+	parser.add_argument('--base_rainfall', dest='base_r', help='Insert the pathway to the base rainfall file',type=str)
+
+	parser.add_argument('--supp_rainfall', dest='supp_r', help='Insert the pathway to the supplemental rainfall file',type=str)
+
+	parser.add_argument('--output_file', dest='output_f', help='Insert the pathway to the output file',type=str)
+
+	args = parser.parse_args();
+	return args
+
+
+################################################################################
+################################################################################
 def ENVI_raster_binary_to_2d_array(file_name):
     """
     This function transforms a raster into a numpy array.
