@@ -3,6 +3,29 @@
 Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure. The main outputs of this model are the identified failure locations, the timing of the failure, depth of failure and factor of safety.
 It makes use of `lsdfailtools`, a set of python-c++ tools that implement the landslide model from Iverson (2000).
 
+
+## Basic overview and workflow
+
+To obtain failure locations and times, the following steps are needed.
+
+1. Download or build the docker container.
+
+2. Run the installation script withing the container.
+
+3. Collect required data: a DEM of the area, a shapefile of the infrastructure corridor of interest, rainfall data (this can be collected using a script provided), peizometer data (where available) and ground motion data derived from radar satellites.
+
+4. Run data pre-processing routines if required.
+
+5. Run calibration step if required.
+
+6. Run validation and/or prediction script.
+
+7. Collect model outputs.
+
+These steps are descrbed in full below.
+
+
+
 ## Installation ##
 ------------
 1. DOCKER INSTRUCTIONS:
@@ -13,6 +36,8 @@ Install Docker on your machine using the following link https://docs.docker.com/
 Install the lsdfailtools software one of two ways:
 
 ### To build from DockerHub (recommended): ###
+
+- Pull the docker container from docker hub: `docker pull lsdtoptools/lsdtt_failtools_docker`
 
 - Create a folder into which to put all the files, then run:
 
@@ -59,6 +84,8 @@ pip install dist/XXX.whl
 
 ## MODEL DATA INPUTS ##
 ------------
+
+You must collect the following data before the model can be run.
 
 * **Piezometer data**: .csv file with piezometer readings and the information about where they are located. They must be obtained from on-site locations or purchased.
 
