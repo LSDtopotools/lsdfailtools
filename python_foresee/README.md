@@ -4,8 +4,7 @@ Python software for predicting landslide failures based on precipitation, ground
 
 ## Installation ##
 1. DOCKER INSTRUCTIONS
-
-
+* You can find the instructions for installation using Docker in the file INSTRUCTIONS.md.
 
 ## Command line instructions ##
 If you want to know how to run the code from the command line, you will find all the instructions in the file INSTRUCTIONS.md.
