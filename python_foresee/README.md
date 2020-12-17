@@ -61,9 +61,30 @@ Example:
 
 
 
-* **Sentinel interferometry** :  Shapefile containing a time series of displacement derived from an ISBAS analysis of Sentinel-1 images. For further information on the data format access the file: FORESEE_D2.3_TimeSeries_sentinel1_CaseStudy2.pdf.
+* **Sentinel interferometry** :  Shapefile containing a time series of displacement derived from an ISBAS analysis of Sentinel-1 images. Projection: UTM Zone 33N Datum WGS84 (EPGS 32633).
 
-* **Cosmo-SKYMed interferometry**: Shapefiles containing a time series of displacement derived from PSP-IfSAR analysis of COSMO-SkyMed images. Ascending, descending, East-West and Vertical components required. For further information on the data format for each of the components, access the files: FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.pdf.
+The fields contained in the shapefile are:
+* EASTING, Easting coordinate in UTM Zone32N Datum WGS84 [m]
+* NORTHING, Northing coordinate in UTM Zone32N Datum WGS84 [m]
+* VEL, mean velocity of displacement [mm/year]
+* STDDEV_VEL, standard deviation of the mean velocity of displacement [mm/year]
+* Dyyyymmdd, displacement per date, where yyyy is the year, mm is the month and dd is
+the day of measure [mm]
+
+* **Cosmo-SKYMed interferometry**: Shapefiles containing a time series of displacement derived from PSP-IfSAR analysis of COSMO-SkyMed images. Ascending, descending, East-West and Vertical components required. Projection: UTM Zone 33N Datum WGS84 (EPGS 32633).
+
+The fields contained in the shapefile are:
+* CODE, unique measure identification
+* HEIGHT, height of the measure [m]
+* H_STDEV, standard deviation of the height [m]
+* VEL, mean velocity of displacement [mm/year]
+* V_STDEV, standard deviation of the mean velocity of displacement [mm/year]
+* ACCEL, acceleration of the time series [mm/year2]
+* COHE, quality of the measure between 0 (low) and 1 (hight)
+* Dyyyymmdd, displacement per date, where yyyy is the year, mm is the month and dd
+is the day of measure [mm]
+
+
 
 * **Area of Interest**: Polygon shapefile outlining the area of interest where the calibration and validation points will be sampled from. Required projection: EPSG 4326
 
@@ -306,7 +327,7 @@ Data input:
 
 Data output:
 
-* Shapefile with Voronoi polygons of the points obtained from the calibration and/or the validation phases. 
+* Shapefile with Voronoi polygons of the points obtained from the calibration and/or the validation phases.
 * Map of calibrated points
 * Distribution of failure times, showing calibration and validation points as well as the precipitation record.
 * Plots showing the distribution of parameters with respect to height and elevation.
