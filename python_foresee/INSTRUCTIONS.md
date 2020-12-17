@@ -37,12 +37,16 @@ INPUTS:
 
 * Piezometer data: must be obtained from on-site locations or purchased.
 
-Table "data_piezometer.csv"
-Fields:
+Data format example:
+
 ID=unique identifier
+
 DATE = reading date
+
 READING NUMBER = progressive number of reading with time
+
 FF = Depth of hole bottom
+
 LIV = Depth of water from ground level - When the reading is 'dry' the number 999 is used
 
 |ID	|DATE|	READ_NUM	|FF1	|LIV1|	FF2	|LIV2|	FF3	|LIV3|	FF4|	LIV4|
@@ -68,13 +72,31 @@ Example:
 
 * Cosmo-SKYMed interferometry: Shapefiles containing a time series of displacement derived from PSP-IfSAR analysis of COSMO-SkyMed images. Ascending, descending, East-West and Vertical components required. For further information on the data format for each of the components, access the files: FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.pdf.
 
-* Digital Elevation Model (DEM):
-* Topographic Slope:
-* Road:
-* Area of Interest:
-* Monte Carlo parameters:
-* Calibration parameters:
+* Area of Interest: Polygon shapefile outlining the area of interest where the calibration and validation points will be sampled from. Required projection: EPSG 4326
 
+* Digital Elevation Model (DEM): .bil raster file containing the elevation of the area of interest with coordinate system in EPSG:32633 (UTM zone 33N). In our case we use the EU-DEM 25 m which is obtained freely from the Copernicus Land Monitoring Service <https://www.eea.europa.eu/data-and-maps/data/copernicus-land-monitoring-service-eu-dem>. Alternatively, a 10m DEM can be found on the Tinitaly website <http://tinitaly.pi.ingv.it/>. However, other resolutions are also accepted by the model, although it will affect the calibration and validation process.
+
+* Topographic Slope: .bil raster file containing the slope of the area of interest with coordinate system in EPSG:32633 (UTM zone 33N). This file can be derived from the DEM using ArcMap or open source software such as LSDTopoTools.
+
+* Road: line shapefile with the outline of the road of interest for the study. Required projection: EPSG:32633 (UTM zone 33N).
+
+* Monte Carlo parameters: .csv file with the ranges of the parameters used in the Monte Carlo simulation. The first row of values corresponds to the minimum values and the second row to the maximum values.
+
+Example file:
+
+|D_0|	K_sat|	Iz_over_K_steady	|friction_angle	|cohesion|	weight_of_water|	weight_of_soil|	depth|
+| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+|0.000001	|0.00000001|	0.1|	0.2	|5000|	9800	|15000|	0.1|
+|0.0001	|0.000001|	0.8|	0.5|	20000|	9800	|25000	|3|
+
+
+* Calibration parameters: .csv file including the number of Monte Carlo runs (Nruns), the maximum number of iterations of the Monte Carlo process (itermax), the number of points to calibrate (Num_cal), the start (StartDate) and end date (EndDate) of the timeseries which correspond to the length of the precipitation record, and the failure interval (failinterval) which is the  accepted time window (in days) to simulate acceptable failure times.
+
+Example file:
+
+|Nruns|	itermax	|Num_cal|	StartDate|	EndDate	|failinterval|
+| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+|25	|50	|200	|01/01/2014|	31/12/2019|	25|
 
 
 1. INCLINOMETERS
