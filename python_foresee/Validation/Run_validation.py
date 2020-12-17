@@ -153,8 +153,7 @@ rain['time_s'] = rainlist
 rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 
 if os.path.isfile(rundir+'Validated_updated.csv') is False:
-    fn.run_validation_single_output(rain, depths, calibrated, demarr, slopearr, failarr,rundir)
-	# fn.run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir)
+    fn.run_validation(rain, depths, calibrated, demarr, slopearr, failarr,rundir)
 validated = pd.read_csv(rundir+'Validated_updated.csv')
 
 #######################
