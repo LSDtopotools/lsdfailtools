@@ -56,14 +56,16 @@ slopefile = FILE_PATHS["slope_file"]
 # road file
 roadfile = FILE_PATHS["road_file"]
 
-# calibrated points files
-calibfile = FILE_PATHS["calibration_file"]
+# input files
 
 fig_out_dir = FILE_PATHS["figures_dir"]
 
-validfile = FILE_PATHS["validation_file"]
+input_file = FILE_PATHS["input_file_voronoi"]
 
+# this selects the values from the column to add as attributes to the shapefile
+column_number_attribute = FILE_PATHS["column_number_attribute"]
 
+attribute_name = FILE_PATHS["attribute_type"]
 ######################################################
 ######################################################
 # See which points were calibrated
@@ -76,23 +78,23 @@ slopearr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(s
 failarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(failfile)
 
 # need to convert the csv into a geodataframe
-valid_df = pd.read_csv(validfile)
-valid_array = 0*demarr
-for i in range (len(valid_df)):
-    x = int(valid_df.iloc[i,-3])
-    y = int(valid_df.iloc[i,-2])
-    valid_array[x,y] = valid_df.iloc[i,-6]
+input_df = pd.read_csv(input_file)
+input_array = 0*demarr
+for i in range (len(input_df)):
+    x = int(input_df.iloc[i,-3])
+    y = int(input_df.iloc[i,-2])
+    input_array[x,y] = input_df.iloc[i,column_number_attribute]
 
-valid_array[valid_array == 0] = 'nan'
+input_array[input_array == 0] = 'nan'
 
 
 
 # convert the csv files with the x,y pixel coordinates into lat, long coordinates in a binary -raster- file
 
-new_geotransform,new_projection,file_out = fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fig_out_dir+"validation_csv_to_raster.bil", pixelWidth, valid_array)
+new_geotransform,new_projection,file_out = fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fig_out_dir+attribute_name+"_csv_to_raster.bil", pixelWidth, input_array)
 
 # convert the raster file into a point shapefile
-filename = fig_out_dir+'validation_csv_to_raster'
+filename = fig_out_dir+attribute_name+'_csv_to_raster'
 inDs = gdal.Open('{}.bil'.format(filename))
 outDs = gdal.Translate('{}.xyz'.format(filename), inDs, format='XYZ', creationOptions=["ADD_HEADER_LINE=YES"], noData = np.nan)
 outDs = None
@@ -106,9 +108,9 @@ os.system('ogr2ogr -f "ESRI Shapefile" -oo X_POSSIBLE_NAMES=X* -oo Y_POSSIBLE_NA
 
 
 # deleta Nan values and change column names in the point shapefile.
-shp_file = gpd.read_file(fig_out_dir+"validation_csv_to_raster.shp")
+shp_file = gpd.read_file(fig_out_dir+attribute_name+"_csv_to_raster.shp")
 shp_file['Z'] = shp_file['Z'].astype('float64')
 shp_file = shp_file[shp_file.Z.notnull()]
 shp_file = shp_file.dropna()
 #shp_file = shp_file.rename({'Z': 'time_of_failure'}, axis=1)
-shp_file.to_file(driver = 'ESRI Shapefile', filename= fig_out_dir+"validation_csv_to_shapefile.shp")
+shp_file.to_file(driver = 'ESRI Shapefile', filename= fig_out_dir+attribute_name+"_csv_to_shapefile.shp")
