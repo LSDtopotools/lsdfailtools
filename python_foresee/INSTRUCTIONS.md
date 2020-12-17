@@ -7,13 +7,12 @@ DOCKER INSTRUCTIONS:
 
 
 
-**ALLDATA_PROCESSING**: Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
 
 
 
 OUTPUTS:
 
-* Calibration .csv file (see table below for example).
+* **Calibration .csv file** (see table below for example).
 Contains the calibrated parameter values for the calibrated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
 
 
@@ -23,7 +22,7 @@ Contains the calibrated parameter values for the calibrated pixels (location giv
 |1|	0.272359937	|7.71E-06|	1.68E-07|	3.236842105	|0.629424281	|0.263523691|	9599.602129	|9800.473225|	11034.71452	|70243200|	0.567260742|	0.100000001	|0.27235994	|441.05658	|431|	648	|71539200|
 |2|	0.170809358	|2.23E-06|	6.16E-08|	3.236842105	|0.232207709|	0.426850153	|11188.8693	|9800|	17405.85364	|114998400|	0.303287506	|0.100000001|	0.17080936|	528.0549|	437	|825|	114393600|
 
-* Validation .csv file (see table below for example).
+* **Validation .csv file** (see table below for example).
 Contains the validated parameter values for the validated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
 
 
@@ -35,7 +34,7 @@ Contains the validated parameter values for the validated pixels (location given
 
 INPUTS:
 
-* Piezometer data: must be obtained from on-site locations or purchased.
+* **Piezometer data**: must be obtained from on-site locations or purchased.
 
 Data format example:
 
@@ -55,7 +54,7 @@ LIV = Depth of water from ground level - When the reading is 'dry' the number 99
 |7|	24/06/2016|	1	|3.5|	3.5	|11.9|	7.4|	18.5	|7.8	|9.8	|3.7|
 |7|	15/05/2017|	2|	3.5	|3.5|	11.8	|7.4	|18.1	|7.4	|9.8	|3.8|
 
-* Precipitation data: obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with columns indicating the duration of precipitation (s) and the precipitation intensity (mm/s).
+* **Precipitation data**: obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with columns indicating the duration of precipitation (s) and the precipitation intensity (mm/s).
 
 Example:
 
@@ -68,19 +67,19 @@ Example:
 
 
 
-* Sentinel interferometry data:  Shapefile containing a time series of displacement derived from an ISBAS analysis of Sentinel-1 images. For further information on the data format access the file: FORESEE_D2.3_TimeSeries_sentinel1_CaseStudy2.pdf.
+* **Sentinel interferometry** :  Shapefile containing a time series of displacement derived from an ISBAS analysis of Sentinel-1 images. For further information on the data format access the file: FORESEE_D2.3_TimeSeries_sentinel1_CaseStudy2.pdf.
 
-* Cosmo-SKYMed interferometry: Shapefiles containing a time series of displacement derived from PSP-IfSAR analysis of COSMO-SkyMed images. Ascending, descending, East-West and Vertical components required. For further information on the data format for each of the components, access the files: FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.pdf.
+* **Cosmo-SKYMed interferometry**: Shapefiles containing a time series of displacement derived from PSP-IfSAR analysis of COSMO-SkyMed images. Ascending, descending, East-West and Vertical components required. For further information on the data format for each of the components, access the files: FORESEE_D2.7_TimeSeries_A_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_D_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_EW_CSK_CaseStudy2.pdf, FORESEE_D2.7_TimeSeries_VERT_CSK_CaseStudy2.pdf.
 
-* Area of Interest: Polygon shapefile outlining the area of interest where the calibration and validation points will be sampled from. Required projection: EPSG 4326
+* **Area of Interest**: Polygon shapefile outlining the area of interest where the calibration and validation points will be sampled from. Required projection: EPSG 4326
 
-* Digital Elevation Model (DEM): .bil raster file containing the elevation of the area of interest with coordinate system in EPSG:32633 (UTM zone 33N). In our case we use the EU-DEM 25 m which is obtained freely from the Copernicus Land Monitoring Service <https://www.eea.europa.eu/data-and-maps/data/copernicus-land-monitoring-service-eu-dem>. Alternatively, a 10m DEM can be found on the Tinitaly website <http://tinitaly.pi.ingv.it/>. However, other resolutions are also accepted by the model, although it will affect the calibration and validation process.
+* **Digital Elevation Model (DEM)**: .bil raster file containing the elevation of the area of interest with coordinate system in EPSG:32633 (UTM zone 33N). In our case we use the EU-DEM 25 m which is obtained freely from the Copernicus Land Monitoring Service <https://www.eea.europa.eu/data-and-maps/data/copernicus-land-monitoring-service-eu-dem>. Alternatively, a 10m DEM can be found on the Tinitaly website <http://tinitaly.pi.ingv.it/>. However, other resolutions are also accepted by the model, although it will affect the calibration and validation process.
 
-* Topographic Slope: .bil raster file containing the slope of the area of interest with coordinate system in EPSG:32633 (UTM zone 33N). This file can be derived from the DEM using ArcMap or open source software such as LSDTopoTools.
+* **Topographic slope**: .bil raster file containing the slope of the area of interest with coordinate system in EPSG:32633 (UTM zone 33N). This file can be derived from the DEM using ArcMap or open source software such as LSDTopoTools.
 
-* Road: line shapefile with the outline of the road of interest for the study. Required projection: EPSG:32633 (UTM zone 33N).
+* **Road**: line shapefile with the outline of the road of interest for the study. Required projection: EPSG:32633 (UTM zone 33N).
 
-* Monte Carlo parameters: .csv file with the ranges of the parameters used in the Monte Carlo simulation. The first row of values corresponds to the minimum values and the second row to the maximum values.
+* **Monte Carlo parameters**: .csv file with the ranges of the parameters used in the Monte Carlo simulation. The first row of values corresponds to the minimum values and the second row to the maximum values.
 
 Example file:
 
@@ -90,13 +89,15 @@ Example file:
 |0.0001	|0.000001|	0.8|	0.5|	20000|	9800	|25000	|3|
 
 
-* Calibration parameters: .csv file including the number of Monte Carlo runs (Nruns), the maximum number of iterations of the Monte Carlo process (itermax), the number of points to calibrate (Num_cal), the start (StartDate) and end date (EndDate) of the timeseries which correspond to the length of the precipitation record, and the failure interval (failinterval) which is the  accepted time window (in days) to simulate acceptable failure times.
+* **Calibration parameters**: .csv file including the number of Monte Carlo runs (Nruns), the maximum number of iterations of the Monte Carlo process (itermax), the number of points to calibrate (Num_cal), the start (StartDate) and end date (EndDate) of the timeseries which correspond to the length of the precipitation record, and the failure interval (failinterval) which is the  accepted time window (in days) to simulate acceptable failure times.
 
 Example file:
 
 |Nruns|	itermax	|Num_cal|	StartDate|	EndDate	|failinterval|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 |25	|50	|200	|01/01/2014|	31/12/2019|	25|
+
+**ALLDATA_PROCESSING**: Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
 
 
 1. INCLINOMETERS
