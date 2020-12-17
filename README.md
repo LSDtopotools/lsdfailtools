@@ -12,20 +12,7 @@ Install Docker on your machine using the following link https://docs.docker.com/
 
 Install the lsdfailtools software one of two ways:
 
-To build locally from a local Dockerfile:
-
-- Download the Dockerfile from INSERT LINK
-
-- Place the Dockerfile in a directory then navigate there via the command line and run:
-
-- `docker build --tag lsdft .`
-
-- Ensure that you have already cloned the lsdfailtools repository somewhere on your machine either using git from the command line or by downloading from the github website directly and unzipping it (https://github.com/LSDtopotools/lsdfailtools.git)
-- `sudo docker run -it -v /path/to/your/cloned/repo:/LSDTopoTools -e NASA_USERNAME="username" -e NASA_PASSWORD="password"`
-
-- Note: this requires a an account on the NASA EartData website (https://urs.earthdata.nasa.gov), make a login and password, click in Applications>Authorized Apps> Approve More Applications and select NASA GESDISC DATA ARCHIVE. This will be used in the PRECIPITATION section for downloading precipitaiton data.
-
-To build from DockerHub:
+### To build from DockerHub (recommended): ###
 
 - Create a folder into which to put all the files, then run:
 
@@ -53,6 +40,23 @@ pip install dist/XXX.whl
 
 - Everything is now ready to run, note you will need to follow these steps everytime you want to use the software.
 
+
+### To build locally from a local Dockerfile: ###
+
+- Download the Dockerfile from https://github.com/LSDtopotools/lsdtt_failtools_docker
+
+- Place the Dockerfile in a directory then navigate there via the command line and run:
+
+- `docker build --tag lsdtt_failtools_docker .`
+
+
+### After you have built the container ###
+
+- Ensure that you have already cloned the lsdfailtools repository somewhere on your machine either using git from the command line or by downloading from the github website directly and unzipping it (https://github.com/LSDtopotools/lsdfailtools.git)
+- `sudo docker run -it -v /path/to/your/cloned/repo:/LSDTopoTools -e NASA_USERNAME="username" -e NASA_PASSWORD="password"`
+
+- Note: this requires a an account on the NASA EartData website (https://urs.earthdata.nasa.gov), make a login and password, click in Applications>Authorized Apps> Approve More Applications and select NASA GESDISC DATA ARCHIVE. This will be used in the PRECIPITATION section for downloading precipitaiton data.
+
 ## MODEL DATA INPUTS ##
 ------------
 
@@ -70,11 +74,11 @@ FF = Depth of hole bottom
 
 LIV = Depth of water from ground level - When the reading is 'dry' the number 999 is used
 
-|ID	|DATE|	READ_NUM	|FF1	|LIV1|	FF2	|LIV2|	FF3	|LIV3|	FF4|	LIV4|
+|ID    |DATE|    READ_NUM    |FF1    |LIV1|    FF2    |LIV2|    FF3    |LIV3|    FF4|    LIV4|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|7|	23/10/2014|	0|	3.7	|3.5|	6.2	|999|	6.1	|999|	9.6	|5.5|
-|7|	24/06/2016|	1	|3.5|	3.5	|11.9|	7.4|	18.5	|7.8	|9.8	|3.7|
-|7|	15/05/2017|	2|	3.5	|3.5|	11.8	|7.4	|18.1	|7.4	|9.8	|3.8|
+|7|    23/10/2014|    0|    3.7    |3.5|    6.2    |999|    6.1    |999|    9.6    |5.5|
+|7|    24/06/2016|    1    |3.5|    3.5    |11.9|    7.4|    18.5    |7.8    |9.8    |3.7|
+|7|    15/05/2017|    2|    3.5    |3.5|    11.8    |7.4    |18.1    |7.4    |9.8    |3.8|
 
 Piezometer location information example (.csv file):
 
@@ -90,26 +94,33 @@ LONGITUDE, LATITUDE = coordinates in decimal degrees in WGS84
 
 ELEVATION = elevation in meters from "Autostrade"
 
-|ID	|NAME|	PROGR_KM|	Carr|	LONGITUDE|	LATITUDE	|ELEVATION	|LENGTH|
+|ID    |NAME|    PROGR_KM|    Carr|    LONGITUDE|    LATITUDE    |ELEVATION    |LENGTH|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|1|	PzA	|89+500|	E|	15.145169|	41.090146|	440|	25.6|
-|2|	Pz4	|89+500|	E	|15.144353|	41.090037|	447	|23.8|
-|3|	Pz23	|89+500	|E	|15.14341	|41.088143	|476|	29.9|
+|1|    PzA    |89+500|    E|    15.145169|    41.090146|    440|    25.6|
+|2|    Pz4    |89+500|    E    |15.144353|    41.090037|    447    |23.8|
+|3|    Pz23    |89+500    |E    |15.14341    |41.088143    |476|    29.9|
 
 
 
 
 
-* **Precipitation data**: obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website. If alternative data sources are to be used instead, they must be in a .csv file, with columns indicating the duration of precipitation (s) and the precipitation intensity (mm/s).
+* **Precipitation data**: obtained from the Global Precipitation Measurement Mission by NASA, which is freely available online but requires the creation of a free account in their website.
+
+
+
+
+
+
+If alternative data sources are to be used instead, they must be in a .csv file, with columns indicating the duration of precipitation (s) and the precipitation intensity (mm/s).
 
 Example:
 
-|duration_s	|intensity_mm_sec|
+|duration_s    |intensity_mm_sec|
 | ----------- | ----------- |
-|86400|	0|
-|86400|	2.26E-07|
-|86400|	1.99E-06|
-|86400|	8.75E-07|
+|86400|    0|
+|86400|    2.26E-07|
+|86400|    1.99E-06|
+|86400|    8.75E-07|
 
 
 
@@ -150,10 +161,10 @@ is the day of measure [mm]
 
 Example file:
 
-|D_0|	K_sat|	Iz_over_K_steady	|friction_angle	|cohesion|	weight_of_water|	weight_of_soil|	depth|
+|D_0|    K_sat|    Iz_over_K_steady    |friction_angle    |cohesion|    weight_of_water|    weight_of_soil|    depth|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|0.000001	|0.00000001|	0.1|	0.2	|5000|	9800	|15000|	0.1|
-|0.0001	|0.000001|	0.8|	0.5|	20000|	9800	|25000	|3|
+|0.000001    |0.00000001|    0.1|    0.2    |5000|    9800    |15000|    0.1|
+|0.0001    |0.000001|    0.8|    0.5|    20000|    9800    |25000    |3|
 
 Variable names and units:
 
@@ -175,9 +186,9 @@ Variable names and units:
 
 Example file:
 
-|Nruns|	itermax	|Num_cal|	StartDate|	EndDate	|failinterval|
+|Nruns|    itermax    |Num_cal|    StartDate|    EndDate    |failinterval|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|25	|50	|200	|01/01/2014|	31/12/2019|	25|
+|25    |50    |200    |01/01/2014|    31/12/2019|    25|
 
 
 
@@ -192,20 +203,20 @@ Contains the calibrated parameter values for the calibrated pixels (location giv
 
 | | alpha  |   D_0 |    K_sat  |d|Iz_over_K_steady|friction_angle|cohesion|weight_of_water|weight_of_soil|time_of_failure|factor_of_safety|min_depth|S|Z|row|col|observed_failtime|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|0|	0.076776527|	1.25E-05|	3.16E-07|	3.236842105	|0.635793647	|0.354652987	|12032.7136	|9800|	19356.08113	|97977600|	-0.74747467|	0.100000001	|0.07677653	|547.6984|	369|	562|	96422400
-|1|	0.272359937	|7.71E-06|	1.68E-07|	3.236842105	|0.629424281	|0.263523691|	9599.602129	|9800.473225|	11034.71452	|70243200|	0.567260742|	0.100000001	|0.27235994	|441.05658	|431|	648	|71539200|
-|2|	0.170809358	|2.23E-06|	6.16E-08|	3.236842105	|0.232207709|	0.426850153	|11188.8693	|9800|	17405.85364	|114998400|	0.303287506	|0.100000001|	0.17080936|	528.0549|	437	|825|	114393600|
+|0|    0.076776527|    1.25E-05|    3.16E-07|    3.236842105    |0.635793647    |0.354652987    |12032.7136    |9800|    19356.08113    |97977600|    -0.74747467|    0.100000001    |0.07677653    |547.6984|    369|    562|    96422400
+|1|    0.272359937    |7.71E-06|    1.68E-07|    3.236842105    |0.629424281    |0.263523691|    9599.602129    |9800.473225|    11034.71452    |70243200|    0.567260742|    0.100000001    |0.27235994    |441.05658    |431|    648    |71539200|
+|2|    0.170809358    |2.23E-06|    6.16E-08|    3.236842105    |0.232207709|    0.426850153    |11188.8693    |9800|    17405.85364    |114998400|    0.303287506    |0.100000001|    0.17080936|    528.0549|    437    |825|    114393600|
 
 * **Validation .csv file** (see table below for example).
 
 Contains the validated parameter values for the validated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
 
 
-|alpha|	D_0	|K_sat|	d|	Iz_over_K_steady|	friction_angle|	cohesion|	weight_of_water|	weight_of_soil|	time_of_failure|	factor_of_safety|	min_depth|	S|	Z|	row	|col|	observed_failtime|
+|alpha|    D_0    |K_sat|    d|    Iz_over_K_steady|    friction_angle|    cohesion|    weight_of_water|    weight_of_soil|    time_of_failure|    factor_of_safety|    min_depth|    S|    Z|    row    |col|    observed_failtime|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|0.050537445|	4.64E-06|	2.21E-08|	3.236842105	|0.241673545|	0.200190446	|12116.30719|	9800.851942	|16740.39976|	100224000|	-0.557540894	|0.100000001|	0.050537445	|652.6312256	|4	|690|	16588800|
-|0.058242787|	4.64E-06|	2.21E-08|	3.236842105	|0.241673545	|0.200190446	|12116.30719|	9800.851942	|16740.39976|	100224000|	-0.467391968|	0.100000001	|0.058242787|	655.8518066	|5	|687|	87091200|
-|0.034425307|	1.45E-05	|8.70E-08|	3.236842105	|0.136849459	|0.291813387	|17356.14574|	9800	|18178.94782|	75254400|	-2.77532959	|0.100000001|	0.034425307	|684.3273315|	14	|770|	91756800|
+|0.050537445|    4.64E-06|    2.21E-08|    3.236842105    |0.241673545|    0.200190446    |12116.30719|    9800.851942    |16740.39976|    100224000|    -0.557540894    |0.100000001|    0.050537445    |652.6312256    |4    |690|    16588800|
+|0.058242787|    4.64E-06|    2.21E-08|    3.236842105    |0.241673545    |0.200190446    |12116.30719|    9800.851942    |16740.39976|    100224000|    -0.467391968|    0.100000001    |0.058242787|    655.8518066    |5    |687|    87091200|
+|0.034425307|    1.45E-05    |8.70E-08|    3.236842105    |0.136849459    |0.291813387    |17356.14574|    9800    |18178.94782|    75254400|    -2.77532959    |0.100000001|    0.034425307    |684.3273315|    14    |770|    91756800|
 
 * **Calibration shapefile**
 
