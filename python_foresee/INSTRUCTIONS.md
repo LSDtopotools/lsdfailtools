@@ -83,6 +83,8 @@ python PPT_CMD_RUN.py --ProdTP GPM_30min --StartDate 2018-01-01 --EndDate 2018-1
 
 NOTE: If the user does not require the Sentinel and the Cosmo-SkyMed data to be combined (as per step 2.) and instead only one of the two data sources are to be included for the calibration and the validation process, follow steps 4. or 5. accordingly. This output data will substitute consequent data inputs where InSAR data is required in Calibration, Validation or Visualisation processes.
 
+The README.md file also contains instructions on how to amend additional data to the precipitation data.
+
 4. InSAR_SENTINEL
 
 Modify `file_paths_insar_sentinel.json` to include paths to input and output directories.
