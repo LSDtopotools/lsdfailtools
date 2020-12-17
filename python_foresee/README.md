@@ -1,4 +1,8 @@
 # FORESEE #
+
+Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure. The main outputs of this model are the identified failure locations, the timing of the failure, depth of failure and factor of safety.
+It makes use of `lsdfailtools`, a set of python-c++ tools that implement the landslide model from Iverson (2000).
+
 ## Installation ##
 ------------
 1. DOCKER INSTRUCTIONS:
@@ -214,6 +218,8 @@ Multipolygon shapefile with the validation points from the .csv file transformed
 
 The analysis can be grouped into 4 main steps (see sections below). This involves processing the input data, calibrating the model, validating it, and finally visualisation of the results.
 
+The analysis scripts are found in the `python_foresee` folder. 
+
 
 **ALLDATA_PROCESSING**: Process all the input data: Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
 
@@ -414,3 +420,12 @@ To convert from point shapefiles to a multipolygon shapefile using Voronoi tesse
 ```bash
 python voronoi_with_attributes.py
 ```
+
+Authors
+-------
+
+Simon M. Mudd - University of Edinburgh
+Boris Gailleton - University of Edinburgh - GFZ Potsdam
+Guillaume ""Will"" Goodwin - University of Edinburgh - University of Padova
+Marina Ruiz Sanchez-Oro - University of Edinburgh
+Louis Kinnear - University of Edinburgh
