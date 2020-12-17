@@ -1,38 +1,8 @@
-# FORESEE development #
-
-Python software for predicting landslide failures based on precipitation, ground motion data and groundwater pressure. The main outputs of this model are the identified failure locations and the timing of the failure. Additional outputs such as depth of failure and factor of safety can also be obtained.
-
+# FORESEE #
 ## Installation ##
 DOCKER INSTRUCTIONS:
 
-
-
-
-
-
-OUTPUTS:
-
-* **Calibration .csv file** (see table below for example).
-Contains the calibrated parameter values for the calibrated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
-
-
-| | alpha  |   D_0 |    K_sat  |d|Iz_over_K_steady|friction_angle|cohesion|weight_of_water|weight_of_soil|time_of_failure|factor_of_safety|min_depth|S|Z|row|col|observed_failtime|
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|0|	0.076776527|	1.25E-05|	3.16E-07|	3.236842105	|0.635793647	|0.354652987	|12032.7136	|9800|	19356.08113	|97977600|	-0.74747467|	0.100000001	|0.07677653	|547.6984|	369|	562|	96422400
-|1|	0.272359937	|7.71E-06|	1.68E-07|	3.236842105	|0.629424281	|0.263523691|	9599.602129	|9800.473225|	11034.71452	|70243200|	0.567260742|	0.100000001	|0.27235994	|441.05658	|431|	648	|71539200|
-|2|	0.170809358	|2.23E-06|	6.16E-08|	3.236842105	|0.232207709|	0.426850153	|11188.8693	|9800|	17405.85364	|114998400|	0.303287506	|0.100000001|	0.17080936|	528.0549|	437	|825|	114393600|
-
-* **Validation .csv file** (see table below for example).
-Contains the validated parameter values for the validated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
-
-
-|alpha|	D_0	|K_sat|	d|	Iz_over_K_steady|	friction_angle|	cohesion|	weight_of_water|	weight_of_soil|	time_of_failure|	factor_of_safety|	min_depth|	S|	Z|	row	|col|	observed_failtime|
-| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
-|0.050537445|	4.64E-06|	2.21E-08|	3.236842105	|0.241673545|	0.200190446	|12116.30719|	9800.851942	|16740.39976|	100224000|	-0.557540894	|0.100000001|	0.050537445	|652.6312256	|4	|690|	16588800|
-|0.058242787|	4.64E-06|	2.21E-08|	3.236842105	|0.241673545	|0.200190446	|12116.30719|	9800.851942	|16740.39976|	100224000|	-0.467391968|	0.100000001	|0.058242787|	655.8518066	|5	|687|	87091200|
-|0.034425307|	1.45E-05	|8.70E-08|	3.236842105	|0.136849459	|0.291813387	|17356.14574|	9800	|18178.94782|	75254400|	-2.77532959	|0.100000001|	0.034425307	|684.3273315|	14	|770|	91756800|
-
-INPUTS:
+**INPUTS**:
 
 * **Piezometer data**: must be obtained from on-site locations or purchased.
 
@@ -88,6 +58,22 @@ Example file:
 |0.000001	|0.00000001|	0.1|	0.2	|5000|	9800	|15000|	0.1|
 |0.0001	|0.000001|	0.8|	0.5|	20000|	9800	|25000	|3|
 
+Variable names and units:
+
+|PARAMETER NAME| UNITS|
+| ----------- | ----------- |
+|HYDRAULIC DIFFUSIVITY (D_0)| $m^{2} s^{-1}$|
+|HYDRAULIC CONDUCTIVITY (K_sat)|$m s^{-1}$ |
+|STEADY STATE (LONG TERM) WATER BALANCE (IZ/KZ) (Iz_over_K_steady)|dimensionless |
+|TANGENT OF FRICTION ANGLE| dimensionless|
+|COHESION |$Pa$|
+|COLUMN WEIGHT OF THE WATER (DENSITY TIME GRAVITATIONAL ACCELERATION)| $m^{-2} kg s^{-2}$ |
+|VOLUME WEIGHT OF THE SOIL (DENSITY TIME GRAVITATIONAL ACCELERATION)| $m^{-2} kg s^{-2}$ |
+|SOIL COLUMN DEPTH |$m$|
+
+
+
+
 
 * **Calibration parameters**: .csv file including the number of Monte Carlo runs (Nruns), the maximum number of iterations of the Monte Carlo process (itermax), the number of points to calibrate (Num_cal), the start (StartDate) and end date (EndDate) of the timeseries which correspond to the length of the precipitation record, and the failure interval (failinterval) which is the  accepted time window (in days) to simulate acceptable failure times.
 
@@ -96,6 +82,33 @@ Example file:
 |Nruns|	itermax	|Num_cal|	StartDate|	EndDate	|failinterval|
 | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
 |25	|50	|200	|01/01/2014|	31/12/2019|	25|
+
+
+
+
+
+**OUTPUTS**:
+
+* **Calibration .csv file** (see table below for example).
+Contains the calibrated parameter values for the calibrated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
+
+
+| | alpha  |   D_0 |    K_sat  |d|Iz_over_K_steady|friction_angle|cohesion|weight_of_water|weight_of_soil|time_of_failure|factor_of_safety|min_depth|S|Z|row|col|observed_failtime|
+| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+|0|	0.076776527|	1.25E-05|	3.16E-07|	3.236842105	|0.635793647	|0.354652987	|12032.7136	|9800|	19356.08113	|97977600|	-0.74747467|	0.100000001	|0.07677653	|547.6984|	369|	562|	96422400
+|1|	0.272359937	|7.71E-06|	1.68E-07|	3.236842105	|0.629424281	|0.263523691|	9599.602129	|9800.473225|	11034.71452	|70243200|	0.567260742|	0.100000001	|0.27235994	|441.05658	|431|	648	|71539200|
+|2|	0.170809358	|2.23E-06|	6.16E-08|	3.236842105	|0.232207709|	0.426850153	|11188.8693	|9800|	17405.85364	|114998400|	0.303287506	|0.100000001|	0.17080936|	528.0549|	437	|825|	114393600|
+
+* **Validation .csv file** (see table below for example).
+Contains the validated parameter values for the validated pixels (location given by row,col) as well as the modelled time of failure, the factor of safety, the depth of failure and the observed failure time.
+
+
+|alpha|	D_0	|K_sat|	d|	Iz_over_K_steady|	friction_angle|	cohesion|	weight_of_water|	weight_of_soil|	time_of_failure|	factor_of_safety|	min_depth|	S|	Z|	row	|col|	observed_failtime|
+| ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- | ----------- |
+|0.050537445|	4.64E-06|	2.21E-08|	3.236842105	|0.241673545|	0.200190446	|12116.30719|	9800.851942	|16740.39976|	100224000|	-0.557540894	|0.100000001|	0.050537445	|652.6312256	|4	|690|	16588800|
+|0.058242787|	4.64E-06|	2.21E-08|	3.236842105	|0.241673545	|0.200190446	|12116.30719|	9800.851942	|16740.39976|	100224000|	-0.467391968|	0.100000001	|0.058242787|	655.8518066	|5	|687|	87091200|
+|0.034425307|	1.45E-05	|8.70E-08|	3.236842105	|0.136849459	|0.291813387	|17356.14574|	9800	|18178.94782|	75254400|	-2.77532959	|0.100000001|	0.034425307	|684.3273315|	14	|770|	91756800|
+
 
 **ALLDATA_PROCESSING**: Process all the input data: Inclinometers, Piezometers, Precipitation, Sentinel and Cosmo-SKYMed interferometry data.
 
