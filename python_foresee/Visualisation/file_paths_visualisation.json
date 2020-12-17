@@ -4,7 +4,6 @@
      "slope_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633_SLOPE.bil",
      "road_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Road/Road_line.shp",
      "rain_file": "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/2014-01-01_to_2019-12-31_Intensity.csv",
-
      "piezo_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Terrestrial/Piezometer/",
      "interferometry_out_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/interferometry_output_files/",
      "input_data_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/",
@@ -12,6 +11,9 @@
      "calibration_params" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibration_parameters.csv",
      "validation_file" :"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Validated_updated.csv",
      "figures_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/figures_output/",
+     "input_file_voronoi" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Validated_updated_FoS_depth.csv",
+     "column_number_attribute": 11,
+     "attribute_type": "depth",
      "failure_threshold": 80,
      "rain_start_day" : 1,
      "rain_start_month" : 1,
