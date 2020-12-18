@@ -1,0 +1,13 @@
+{
+     "AoI_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/AoI.shp",
+     "figures_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/figures_output/",
+     "interferometry_out_dir" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/interferometry_output_files/",
+     "dem_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil",
+
+     "input_file_voronoi" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Validated_updated_FoS_depth.csv",
+     "column_number_attribute": 11,
+     "attribute_type": "depth",
+     "failure_threshold": 80
+
+
+   }

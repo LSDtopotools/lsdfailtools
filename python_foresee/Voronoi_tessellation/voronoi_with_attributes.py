@@ -12,7 +12,7 @@ from shapely.geometry import mapping, Polygon
 from geovoronoi import voronoi_regions_from_coords, points_to_coords
 from geovoronoi.plotting import subplot_for_map, plot_voronoi_polys_with_points_in_area
 
-with open("file_paths_visualisation.json") as file_with_paths :
+with open("file_paths_voronoi.json") as file_with_paths :
     FILE_PATHS = json.load(file_with_paths)
 
 print("The base output directory is {}".format(FILE_PATHS["figures_dir"]))
@@ -46,14 +46,15 @@ boundary_shape = cascaded_union(boundary.geometry)
 coords = points_to_coords(gdf_proj.geometry)
 
 # Calculate Voronoi Regions
-poly_shapes, pts, poly_to_pt_assignments = voronoi_regions_from_coords(coords, boundary_shape)#, farpoints_max_extend_factor=200)
+poly_shapes, pts, poly_to_pt_assignments = voronoi_regions_from_coords(coords, boundary_shape)
+
 
 # plot the voronoi regions in a map
 fig, ax = subplot_for_map()
 plot_voronoi_polys_with_points_in_area(ax, boundary_shape, poly_shapes, pts, poly_to_pt_assignments)
 ax.set_title('Voronoi regions')
 plt.tight_layout()
-plt.savefig(shpdir + 'Voronoi_polygons_validation_attributes.png')
+plt.savefig(shpdir + 'Voronoi_polygons_validation_attributes3.png')
 
 
 # save the polygon objects in a shapefile
@@ -75,7 +76,7 @@ schema = {
 }
 
 # Write a new Shapefile
-with fiona.open(shpdir+'Voronoi_polygons_validation_attributes.shp', 'w', 'ESRI Shapefile', schema) as c:
+with fiona.open(shpdir+'Voronoi_polygons_validation_attributes3.shp', 'w', 'ESRI Shapefile', schema) as c:
     for i in range(len(poly_shapes)):
         c.write({
             'geometry': mapping(poly[i]),
