@@ -60,6 +60,7 @@ input_file = FILE_PATHS["input_file_voronoi"]
 column_number_attribute = FILE_PATHS["column_number_attribute"]
 
 attribute_name = FILE_PATHS["attribute_type"]
+data_source = FILE_PATHS["data_source"]
 ######################################################
 ######################################################
 # See which points were calibrated
@@ -84,10 +85,10 @@ input_array[input_array == 0] = 'nan'
 
 # convert the csv files with the x,y pixel coordinates into lat, long coordinates in a binary -raster- file
 
-new_geotransform,new_projection,file_out = fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fig_out_dir+attribute_name+"_csv_to_raster3.bil", pixelWidth, input_array)
+new_geotransform,new_projection,file_out = fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), fig_out_dir+data_source+ "_" + attribute_name+"_csv_to_raster.bil", pixelWidth, input_array)
 
 # convert the raster file into a point shapefile
-filename = fig_out_dir+attribute_name+'_csv_to_raster3'
+filename = fig_out_dir+data_source+ "_" + attribute_name+'_csv_to_raster'
 inDs = gdal.Open('{}.bil'.format(filename))
 outDs = gdal.Translate('{}.xyz'.format(filename), inDs, format='XYZ', creationOptions=["ADD_HEADER_LINE=YES"], noData = np.nan)
 outDs = None
@@ -101,9 +102,9 @@ os.system('ogr2ogr -f "ESRI Shapefile" -oo X_POSSIBLE_NAMES=X* -oo Y_POSSIBLE_NA
 
 
 # deleta Nan values and change column names in the point shapefile.
-shp_file = gpd.read_file(fig_out_dir+attribute_name+"_csv_to_raster3.shp")
+shp_file = gpd.read_file(fig_out_dir+data_source+"_" + attribute_name+"_csv_to_raster.shp")
 shp_file['Z'] = shp_file['Z'].astype('float64')
 shp_file = shp_file[shp_file.Z.notnull()]
 shp_file = shp_file.dropna()
 #shp_file = shp_file.rename({'Z': 'time_of_failure'}, axis=1)
-shp_file.to_file(driver = 'ESRI Shapefile', filename= fig_out_dir+attribute_name+"_csv_to_shapefile3.shp")
+shp_file.to_file(driver = 'ESRI Shapefile', filename= fig_out_dir+data_source+"_" + attribute_name+"_csv_to_shapefile.shp")
