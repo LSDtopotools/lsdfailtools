@@ -65,7 +65,6 @@ attribute_name = FILE_PATHS["attribute_type"]
 # See which points were calibrated
 ######################################################
 ######################################################
-print("hello")
 
 # 0. Load rasters into arrays for DEM, slope, failtimes for a given failure threshold. Let's use 80mm/yr for now.
 demarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(demfile)
