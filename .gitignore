@@ -21,3 +21,13 @@ tmp/
 
 python_tools/Visualisation/*.png
 python_tools/Visualisation/*.geojson
+
+
+automation/*.npy
+automation/*.csv
+automation/*.bil
+automation/.*hdr
+automation/.*dbf
+automation/.*shp
+automation/.*shx
+
