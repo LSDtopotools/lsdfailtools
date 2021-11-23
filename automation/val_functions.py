@@ -21,7 +21,7 @@ from osgeo.gdalconst import *
 import csv
 import pandas as pd
 import numpy as np
-sys.path.insert(0,'../lsdfailtools_21/')
+sys.path.insert(0,'../lsdfailtools/')
 #Importing the model
 import iverson2000 as iverson
 from itertools import product
@@ -287,22 +287,22 @@ def run_validation_single_output(rain, depths, calibrated, demarr, slopearr, fai
 # A figure to map validation results more extensively using a single point
 ######################################################
 ######################################################
-def get_fos_point_of_interest(rain, depths, calibrated_df, point_to_validate_lat, point_to_validate_lon, demarr_val, slopearr_val, failarr_val,rundir):
+def get_fos_point_of_interest(rain, depths, calibrated_df, point_to_test_lat, point_to_test_lon, demarr_val, slopearr_val, failarr_val,rundir):
 
     #valid_df= pd.DataFrame(columns=['alpha', 'D_0', 'K_sat', 'd','Iz_over_K_steady','friction_angle','cohesion','weight_of_water','weight_of_soil','time_of_failure','factor_of_safety', 'min_depth','S','Z','row','col','observed_failtime'])
     # Set up the arrays to be written to
     Psi = []
     FoS =[]
     time_index = []
-    #calibrated_df = calibrated_point
-    print(calibrated_df.columns)
-    print(calibrated_df.head())
-    print(demarr_val, slopearr_val, failarr_val)
-    print(f'this is the failarr value: {failarr_val}')
 
+    #print(f'this is the failarr value: {failarr_val}')
+    if failarr_val == 1000000.:
+        print(f'The point ({point_to_test_lat}, {point_to_test_lon}) is unlikely to fail.')
 
-
-    if failarr_val > 0.:
+    else:
+        print(f'The point ({point_to_test_lat}, {point_to_test_lon}) is likely to fail.')
+        print('I am now going to get some extra information and plots for you.')
+        print()
 
         # this is our slope
         S = slopearr_val
@@ -337,6 +337,7 @@ def get_fos_point_of_interest(rain, depths, calibrated_df, point_to_validate_lat
         ## 1D array (dim=time) giving the minimum FS of the whole depths column (its depths is given by self.cppmodel.output_depthsFS)
         FoS = mymodel.cppmodel.output_minFS
 
+
         # self.cppmodel.output_FS_timedepth
         ## 2D array (dims = time,depths) of factor of safety values
         FoS_temp = mymodel.cppmodel.output_FS_timedepth
@@ -344,9 +345,12 @@ def get_fos_point_of_interest(rain, depths, calibrated_df, point_to_validate_lat
         ## Might always be the surface that ones!!!
         min_depth = mymodel.cppmodel.output_depthsFS
 
-        numpy.save(rundir+"FoS_temp", FoS_temp)
-        numpy.save(rundir+"FoS", FoS)
-        numpy.save(rundir+"min_depth", min_depth)
+
+        numpy.save(rundir + f"FoS_temp_{int(point_to_test_lat)}_{int(point_to_test_lon)}", FoS_temp)
+        numpy.save(rundir + f"FoS_{int(point_to_test_lat)}_{int(point_to_test_lon)}", FoS)
+        numpy.save(rundir + f"min_depth_{int(point_to_test_lat)}_{int(point_to_test_lon)}", min_depth)
+
+        return point_to_test_lat, point_to_test_lon
 
 
 ######################################################

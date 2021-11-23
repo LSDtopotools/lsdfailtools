@@ -94,17 +94,6 @@ def create_calib_multipoint(calib_csv):
     multipoint = geo_df.geometry.unary_union
     return multipoint, selected_rows
 
-# convert_calib_to_lat_lon('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil',\
-# '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-# './_test_transform.bil')
-#
-# convert_calib_raster_to_csv_shp('./_test_transform.bil')
-#
-multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
-
-
-
-
 
 # test point - need to change this to be the output from the lat_lon_area_check.py script.
 # need to also be able to take a list of points instead of just one.
@@ -112,30 +101,31 @@ multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
 def calib_params_closest_point(lat_lon_file, calib_file):
     points_df = pd.read_csv(lat_lon_file, index_col = None)
     #point_one = points_df['geometry'][0]
-    #closest_points_df =
+
     full_calibration_df = pd.read_csv(calib_file, index_col = None)
 
     closest_points_df = pd.DataFrame(columns=full_calibration_df.columns[1:])
+    # add extra lat lon columns
+    closest_points_df['lat_test'] = ""
+    closest_points_df['lon_test'] = ""
     points_df['geometry'] = points_df['geometry'].apply(wkt.loads)
     points_gdf = gpd.GeoDataFrame(points_df, crs='epsg:4326')
 
     for i in range(len(points_df)):
         #point = Point(515854, 4.551284e+06)
-        point = points_gdf['geometry'][i]
+        wgs84_pt = points_gdf['geometry'][i]
+        print(wgs84_pt.x, wgs84_pt.y)
         # reproject point - MAYBE PUT THIS IN A SEPARATE FUNCTION
-        wgs84_pt = point
         AoI_proj = pyproj.CRS('EPSG:32633')
         wgs84 = pyproj.CRS('EPSG:4326')
         project =  pyproj.Transformer.from_crs(wgs84, AoI_proj, always_xy=True).transform
         AoI_point = transform(project, wgs84_pt)
         print(AoI_point.x, AoI_point.y)
-        point = AoI_point
-        print(point.x, point.y)
 
 
         # this prints out the point closest to our list of points
-        closest_cal_point = nearest_points(multipoint, point)[0]
-        print(closest_cal_point, nearest_points(multipoint, point)[0])
+        closest_cal_point = nearest_points(multipoint, AoI_point)[0]
+        print(closest_cal_point, nearest_points(multipoint, AoI_point)[0])
         #print(closest_cal_point.x)
 
         # note that Z is not the altitude but the row number in the initial dataframe... need to figure out a better way to factor this in.
@@ -148,11 +138,22 @@ def calib_params_closest_point(lat_lon_file, calib_file):
         #calibration_parameters = calibration_parameters.drop[0]
         calibration_parameters = calibration_parameters.drop(calibration_parameters.columns[[0]], axis=1)
 
-
         #calibration_parameters[0]
         print(calibration_parameters.iloc[0])
         closest_points_df.loc[i] = calibration_parameters.iloc[0]
         print(closest_points_df)
-    calibration_parameters.to_csv('./test_closest_calibration_points.csv',index=False)
+        closest_points_df['lat_test'].loc[i]= AoI_point.y
+        closest_points_df['lon_test'].loc[i] = AoI_point.x
+    closest_points_df.to_csv('./test_closest_calibration_points.csv',index=False)
+
+
+# convert_calib_to_lat_lon('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil',\
+# '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
+# './_test_transform.bil')
+#
+# convert_calib_raster_to_csv_shp('./_test_transform.bil')
+#
+multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
+
 
 calib_params_closest_point('./bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv')
