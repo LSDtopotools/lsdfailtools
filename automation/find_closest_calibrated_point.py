@@ -40,7 +40,7 @@ def convert_calib_to_lat_lon(dem_raster, calib_csv, output_calib_raster):
     for i in range (len(input_df)):
         x = int(input_df['row'].iloc[i])
         y = int(input_df['col'].iloc[i])
-        input_array[x,y] = input_df.index[i]
+        input_array[x,y] = input_df.index[i] + 1
 
     input_array[input_array == 0] = 'nan'
 
