@@ -132,3 +132,4 @@ anomaly_failures=all_precip_early.loc[all_precip_early['is_it_failure'] == True]
 
 print(anomaly_failures)
 anomaly_failures.to_csv('anomaly_failures.csv', index=False)
+print('All failure anomalies are now saved to a file.')
