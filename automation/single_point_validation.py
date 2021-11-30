@@ -43,6 +43,7 @@ rundir = './'
 Iverson_MC_params_file = FILE_PATHS["iverson_param"]
 
 # observed failure data files
+# don't need this anymore!
 failfile = FILE_PATHS["ground_motion_failure"]
 
 # topography files
@@ -68,7 +69,7 @@ failarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(fa
 
 # select the point of interest from the raster files.
 #'./test_closest_calibration_points.csv' - this is the new file instead of the one with the single point
-calibrated_multiple_points_path = './test_closest_calibration_points.csv'
+calibrated_multiple_points_path = './test_closest_calibration_points_add_coords.csv'
 calibrated_multiple_point_params = pd.read_csv(calibrated_multiple_points_path, index_col=None)
 
 lons = calibrated_multiple_point_params['lon_test'].to_list()
@@ -145,6 +146,9 @@ np.asarray(lon_failures)
 
 
 ###########################################################
+distance_between_points_file = './test_points_within_buffer_distance.csv'
+distance_between_points = pd.read_csv(distance_between_points_file, index_col=None)
+
 # test some of the graphs and output variables from the validation
 for i in range(len(lat_failures)):
     print(i)
@@ -175,9 +179,13 @@ for i in range(len(lat_failures)):
     seaborn.scatterplot(data=FoS_df['FoS'], x=x_values, y=FoS_df['FoS'], hue=FoS_df['is_it_failure'], s=1)
     FoS_df_to_save = pd.DataFrame(FoS_df['FoS'])
     FoS_df_to_save['days'] = x_values.tolist()
+    FoS_df_to_save['distance_m_from_calib_to_test_point'] = pd.Series(distance_between_points['distance_m_from_calib_to_test_point'].loc[i], index=FoS_df_to_save.index[[0]])
+    FoS_df_to_save['distance_m_from_calib_to_test_point'] = FoS_df_to_save['distance_m_from_calib_to_test_point'].fillna('')
+    FoS_df_to_save['day_of_failure'] = pd.Series(day_of_failure, index=FoS_df_to_save.index[[0]])
+    FoS_df_to_save['day_of_failure'] = FoS_df_to_save['day_of_failure'].fillna('')
     FoS_df_to_save.to_csv(f'fos_timeseries_{lat_failure}_{lon_failure}.csv', index=False)
     print(FoS_df_to_save.head(5))
-    plt.title(f'All precip')
+    plt.title(f'First failure day: {day_of_failure}')
     #plt.show()
     #plt.savefig(f'precip_fos_{lat_failure}_{lon_failure}.png')
     plt.clf()
