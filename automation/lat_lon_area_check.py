@@ -22,28 +22,6 @@ import os
 import rasterio
 import sys
 
-
-def convert_crs_point(point_x, point_y, in_proj, out_proj):
-    in_pt = Point(point_x, point_y)
-    in_proj = pyproj.CRS(in_proj)
-    out_proj = pyproj.CRS(out_proj)
-    project =  pyproj.Transformer.from_crs(in_proj, out_proj, always_xy=True).transform
-    out_point = transform(project, in_pt)
-    return out_point
-
-
-def change_csv_coord_sys(csv_file, coord_sys):
-    csv_df = pd.read_file(csv_file, index=False)
-    test_points_list = []
-    for i in range(len(calib_df)):
-        test_y = test_df['geometry'][i].y
-        test_x = test_df['geometry'][i].x
-        #print(test_x,test_y)
-        test_point = convert_crs_point(test_x, test_y, 'epsg:4326', 'epsg:32633')
-        calib_points.append(calib_point)
-        test_points_list.append(test_point)
-    return test_points_list, calib_points
-
 # input the data file
 ## must have a list of lat lon points
 def is_it_in_aoi(lat_lon_file, output_file, AoI_file):
@@ -54,6 +32,7 @@ def is_it_in_aoi(lat_lon_file, output_file, AoI_file):
 
     # coordinate system of the AoI file
     AoI_crs = AoI_file.crs
+    print(AoI_crs)
 
     # csv file with the points of interest - to check if they are in area of interest.
     # THE COORDINATES MUST BE IN THE SAME CRS AS THE AREA OF INTEREST
@@ -69,8 +48,6 @@ def is_it_in_aoi(lat_lon_file, output_file, AoI_file):
 
     geo_df = geo_df.drop(columns=['lat', 'lon'])
 
-    # aoi_polygon = AoI_file.iloc[0]
-
     for i in range(len(geo_df)):
         test_point = geo_df['geometry'].iloc[i]
         is_in_area = AoI_file.contains(test_point)[0]
@@ -82,14 +59,12 @@ def is_it_in_aoi(lat_lon_file, output_file, AoI_file):
 
     return geo_df
 
-full_file_path = sys.argv[1]+sys.argv[2]
-coord_system = sys.argv[3]
+input_csv_path = sys.argv[1]
+input_csv = sys.argv[2]
+full_input_csv = input_csv_path+input_csv
 
-####### HERE WE ALSO POSSIBLY WANT THE COORDINATE SYSTEM AS AN INPUT
-dataframe_aoi = is_it_in_aoi(full_file_path, f'{sys.argv[1]}bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/AoI.shp')
-
-
-
+dataframe_aoi = is_it_in_aoi(full_input_csv, './bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/AoI.shp')
+print(dataframe_aoi)
 ################################################################################
 ################################################################################
 ################################################################################

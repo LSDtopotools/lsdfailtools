@@ -19,7 +19,8 @@ import os
 import rasterio
 import val_functions as fn
 import seaborn
-
+from shapely import wkt
+import geopandas as gpd
 
 
 ################################################################################
@@ -111,7 +112,8 @@ depths  = np.arange(Iverson_MC_params.at[0,'depth'], Iverson_MC_params.at[1,'dep
 # We are assuming that the rainfall data is the same for all the points
 # the area of interest hasa rough length of 30km which is the resolution of the
 # precipitaiton data we have.
-rainfile = "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/2014-01-01_to_2019-12-31_Intensity.csv"
+rainfile = sys.argv[1]
+#"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/2014-01-01_to_2019-12-31_Intensity.csv"
 #early_late = 'early'
 #rainfile = f"./{early_late}_precip.csv"
 
@@ -190,10 +192,15 @@ distance_between_points_file = './test_points_within_buffer_distance.csv'
 distance_between_points = pd.read_csv(distance_between_points_file, index_col=None)
 
 anomalous_failures_bool = comparison_with_anomalous_failure(lat_failures, lon_failures, 'anomaly_failures.csv')
+### the boolean file is just to load the coordinates in the right coordinate frame
+# this will be the same as the one of the input epsg:4326
+test_points = pd.read_csv('./bool_lat_lon.csv')
+test_points['geometry'] = test_points['geometry'].apply(wkt.loads)
+test_points_gdf = gpd.GeoDataFrame(test_points, crs='epsg:4326')
+
 
 # test some of the graphs and output variables from the validation
 for i in range(len(lat_failures)):
-    #print(i)
     lat_failure = lat_failures[i]
     lon_failure = lon_failures[i]
 
@@ -204,8 +211,7 @@ for i in range(len(lat_failures)):
 
     FoS_df = pd.DataFrame(FoS_temp[0,:])
     FoS_df.columns = ['FoS']
-    #print(FoS_df)
-    #quit()
+
 
     # what is the earliest time where we see the FoS go below zero?
     #FoS_below_zero = FoS['FoS']<1
@@ -227,7 +233,11 @@ for i in range(len(lat_failures)):
     FoS_df_to_save['day_of_failure'] = FoS_df_to_save['day_of_failure'].fillna('')
     FoS_df_to_save['anomalous_failure'] = pd.Series(anomalous_failures_bool[i], index=FoS_df_to_save.index[[0]])
     FoS_df_to_save['anomalous_failure'] = FoS_df_to_save['anomalous_failure'].fillna('')
-    FoS_df_to_save.to_csv(f'{sys.argv[2]}fos_timeseries_{lat_failure}_{lon_failure}.csv', index=False)
+
+    full_point = test_points_gdf['geometry'][i]
+    full_point_x = full_point.x
+    full_point_y = full_point.y
+    FoS_df_to_save.to_csv(f'./fos_timeseries_{full_point_y}_{full_point_x}.csv', index=False)
     #print(FoS_df_to_save.head(5))
     plt.title(f'First failure day: {day_of_failure}')
     #plt.show()

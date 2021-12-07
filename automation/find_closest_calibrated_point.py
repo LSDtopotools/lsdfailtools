@@ -225,7 +225,7 @@ def get_points_in_buffer_distance(in_file, out_file):
     is_it_within_buffer_distance = []
     meters_distance_buffer = []
     for i in range(len(test_points_gdf)):
-        true_or_false, meters_distance = how_close_is_calibrated_point(test_points_list[i], calib_points[i], 360, i)
+        true_or_false, meters_distance = how_close_is_calibrated_point(test_points_list[i], calib_points[i], 1000, i)
         is_it_within_buffer_distance.append(true_or_false)
         meters_distance_buffer.append(meters_distance)
 
@@ -243,8 +243,8 @@ convert_calib_raster_to_csv_shp('./test_transform.bil')
 
 multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
 
-calib_params_closest_point(f'{sys.argv[1]}bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-f'{sys.argv[1]}test_closest_calibration_points_add_coords.csv')
+calib_params_closest_point('./bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
+'./test_closest_calibration_points_add_coords.csv')
 
 get_points_in_buffer_distance('./test_closest_calibration_points_add_coords.csv', './test_points_within_buffer_distance.csv')
 
