@@ -37,12 +37,13 @@ def convert_calib_to_lat_lon(dem_raster, calib_csv, output_calib_raster):
     # need to convert the csv into a geodataframe
     input_df = pd.read_csv(calibration_file)
     input_array = 0*demarr
+    input_array[:] = np.NaN
     for i in range (len(input_df)):
         x = int(input_df['row'].iloc[i])
         y = int(input_df['col'].iloc[i])
-        input_array[x,y] = input_df.index[i] + 1
+        input_array[x,y] = input_df.index[i]
 
-    input_array[input_array == 0] = 'nan'
+    #input_array[input_array == 0] = 'nan'
 
     # convert the row,col of the calibration file into lat, lon coordinates
     new_geotransform,new_projection,file_out = fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), output_calib_raster, pixelWidth, input_array)
@@ -82,12 +83,10 @@ def create_calib_multipoint(calib_csv):
     # remove the rows that are NaN
     selected_rows = input_df[~input_df['Z'].isnull()]
     selected_rows_indices = selected_rows.index
-    #print(selected_rows.index)
 
     # convert the columns into shapely Point Objects
     geometry = [Point(xy) for xy in zip(selected_rows.X, selected_rows.Y)]
     geo_df = gpd.GeoDataFrame(selected_rows, geometry=geometry)
-    #print(geo_df.head)
 
     geo_df = geo_df.drop(columns=['X', 'Y', 'Z'])
     # create a multipoint object - need this to use the nearest_points function
@@ -116,19 +115,19 @@ def calib_params_closest_point(lat_lon_file, calib_file, outfile):
     for i in range(len(points_df)):
         #point = Point(515854, 4.551284e+06)
         wgs84_pt = points_gdf['geometry'][i]
-        print(wgs84_pt.x, wgs84_pt.y)
+        #print(wgs84_pt.x, wgs84_pt.y)
         # reproject point - MAYBE PUT THIS IN A SEPARATE FUNCTION
         AoI_proj = pyproj.CRS('EPSG:32633')
         wgs84 = pyproj.CRS('EPSG:4326')
         project =  pyproj.Transformer.from_crs(wgs84, AoI_proj, always_xy=True).transform
         AoI_point = transform(project, wgs84_pt)
-        print(AoI_point.x, AoI_point.y)
+        #print(AoI_point.x, AoI_point.y)
 
 
         # this prints out the point closest to our list of points
         closest_cal_point = nearest_points(multipoint, AoI_point)[0]
-        print(closest_cal_point, nearest_points(multipoint, AoI_point)[0])
-        print(closest_cal_point.x)
+        #print(closest_cal_point, nearest_points(multipoint, AoI_point)[0])
+        #print(closest_cal_point.x)
 
         # note that Z is not the altitude but the row number in the initial dataframe... need to figure out a better way to factor this in.
         calibration_params_index = list(selected_rows[selected_rows['X']==closest_cal_point.x].index.values)
@@ -141,9 +140,9 @@ def calib_params_closest_point(lat_lon_file, calib_file, outfile):
         calibration_parameters = calibration_parameters.drop(calibration_parameters.columns[[0]], axis=1)
 
         #calibration_parameters[0]
-        print(calibration_parameters.iloc[0])
+        #print(calibration_parameters.iloc[0])
         closest_points_df.loc[i] = calibration_parameters.iloc[0]
-        print(closest_points_df)
+        #print(closest_points_df)
         closest_points_df['lat_test'].loc[i]= AoI_point.y
         closest_points_df['lon_test'].loc[i] = AoI_point.x
         closest_points_df['lat_calib'].loc[i] = closest_cal_point.y
@@ -162,13 +161,13 @@ def convert_crs_point(point_x, point_y, in_proj, out_proj):
     return AoI_point
 
 def how_close_is_calibrated_point(point_1, point_2, buffer_distance, point_number):
-    print(point_1, point_2)
+    #rint(point_1, point_2)
     # create your circle buffer from one of the points - is this in km?
     distance = buffer_distance
     circle_buffer = point_1.buffer(distance)
     # but a simpler method is to simply check the distance
     meters_distance = point_1.distance(point_2)
-    print(meters_distance)
+    #print(meters_distance)
     if point_1.distance(point_2) < distance:
         print(f'Test Point {point_number} is within {distance} m of calibrated Point {point_number}')
         return True, meters_distance
@@ -181,7 +180,7 @@ def find_points_within_buffer_distance(point_to_test, calib_multipoints, buffer_
     points_in_buffer = []
     for p in calib_multipoints:
         if circle.covers(p):
-            print(p.x, p.y)
+            #print(p.x, p.y)
             point_in_buffer = Point(p.x,p.y)
             points_in_buffer.append(point_in_buffer)
     return points_in_buffer
@@ -197,57 +196,57 @@ def create_list_test_calib_test_points(calib_df, test_df):
         calib_point = convert_crs_point(calib_x, calib_y, 'epsg:32633', 'epsg:32633')
         test_y = test_df['geometry'][i].y
         test_x = test_df['geometry'][i].x
-        print(test_x,test_y)
+        #print(test_x,test_y)
         test_point = convert_crs_point(test_x, test_y, 'epsg:4326', 'epsg:32633')
         calib_points.append(calib_point)
         test_points_list.append(test_point)
     return test_points_list, calib_points
 
+def get_points_in_buffer_distance(in_file, out_file):
+    #########
+    # need the following conversion as the input of the create_list_test_calib_test_points function
+    # the x,y test points are taken from the bool_lat_lon file which has the
+    # geometry column in POINT geometry form.
+    test_points = pd.read_csv('./bool_lat_lon.csv')
+    test_points['geometry'] = test_points['geometry'].apply(wkt.loads)
+    test_points_gdf = gpd.GeoDataFrame(test_points, crs='epsg:4326')
+    #print(test_points_gdf['geometry'][0])
+
+    calib_points_df = pd.read_csv(in_file)#, index=None)
+    #########
+
+    test_points_list, calib_points = create_list_test_calib_test_points(calib_points_df, test_points_gdf)
+
+    # checks if the closest point is within the buffer distance
+    # if if isnt within the buffer distance, we don't care about that point
+    # if it is within the buffer distance, then we calculate if there are other points
+    # within that buffer distance
+
+    is_it_within_buffer_distance = []
+    meters_distance_buffer = []
+    for i in range(len(test_points_gdf)):
+        true_or_false, meters_distance = how_close_is_calibrated_point(test_points_list[i], calib_points[i], 360, i)
+        is_it_within_buffer_distance.append(true_or_false)
+        meters_distance_buffer.append(meters_distance)
+
+    meters_distance_buffer = np.asarray(meters_distance_buffer)
+
+    pd.DataFrame(meters_distance_buffer, columns=['distance_m_from_calib_to_test_point']).to_csv(out_file, index = None)
+
+
+
 convert_calib_to_lat_lon('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil',\
 '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-'./_test_transform.bil')
+'./test_transform.bil')
 
-convert_calib_raster_to_csv_shp('./_test_transform.bil')
+convert_calib_raster_to_csv_shp('./test_transform.bil')
 
 multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
 
+calib_params_closest_point(f'{sys.argv[1]}bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
+f'{sys.argv[1]}test_closest_calibration_points_add_coords.csv')
 
-calib_params_closest_point('./bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-'./test_closest_calibration_points_add_coords.csv')
-
-
-#########
-# need the following conversion as the input of the create_list_test_calib_test_points function
-# the x,y test points are taken from the bool_lat_lon file which has the
-# geometry column in POINT geometry form.
-test_points = pd.read_csv('./bool_lat_lon.csv')
-test_points['geometry'] = test_points['geometry'].apply(wkt.loads)
-test_points_gdf = gpd.GeoDataFrame(test_points, crs='epsg:4326')
-print(test_points_gdf['geometry'][0])
-
-calib_points_df = pd.read_csv('./test_closest_calibration_points_add_coords.csv')#, index=None)
-#########
-
-test_points_list, calib_points = create_list_test_calib_test_points(calib_points_df, test_points_gdf)
-
-# checks if the closest point is within the buffer distance
-# if if isnt within the buffer distance, we don't care about that point
-# if it is within the buffer distance, then we calculate if there are other points
-# within that buffer distance
-
-is_it_within_buffer_distance = []
-meters_distance_buffer = []
-for i in range(len(test_points_gdf)):
-    true_or_false, meters_distance = how_close_is_calibrated_point(test_points_list[i], calib_points[i], 360, i)
-    is_it_within_buffer_distance.append(true_or_false)
-    meters_distance_buffer.append(meters_distance)
-
-meters_distance_buffer = np.asarray(meters_distance_buffer)
-
-pd.DataFrame(meters_distance_buffer, columns=['distance_m_from_calib_to_test_point']).to_csv('./test_points_within_buffer_distance.csv', index = None)
-
-
-
+get_points_in_buffer_distance('./test_closest_calibration_points_add_coords.csv', './test_points_within_buffer_distance.csv')
 
 '''
 # All of the code below is for the development of a system to calculate error on

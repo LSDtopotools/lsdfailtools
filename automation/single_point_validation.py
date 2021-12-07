@@ -123,20 +123,60 @@ for i in range(1,len(rain)):
 rain['time_s'] = rainlist
 rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 
+############################################################
+def comparison_with_anomalous_failure(lat, lon, anomalies_csv):
+    anomalies = pd.read_csv(anomalies_csv)
+    #lat_anomalies = pd.DataFrame(anomalies['Y'])
+    lat_anomalies = anomalies['Y']
+    lon_anomalies = anomalies['X']
+    anomalies_list = []
+    #lon_anomalies = pd.DataFrame(anomalies['X'])
+    #print()
+
+    for i in range(len(lat_failures)):
+        lat_failure = lat_failures[i]
+        lon_failure = lon_failures[i]
+        # find the lat in the full anomalies lat, lon list
+        is_lat_anomalous = lat_anomalies.isin([lat_failure]).any()
+        #print(is_lat_anomalous)
+
+        if is_lat_anomalous == False:
+            print('Your failure is not anomalous')
+            failure = False
+            anomalies_list.append(failure)
+        else:
+            # find the index
+            lat_anomalies_df = pd.DataFrame(anomalies['Y'])
+            lon_anomalies_df = pd.DataFrame(anomalies['X'])
+            index_lat_anomaly = lat_anomalies.index[lat_anomalies_df['Y'] == lat_failure]
+            # is the lon also the same? Let's check
+            #print(index_lat_anomaly)
+            check_lon_anomaly = lon_anomalies.iloc[index_lat_anomaly]
+            #print(check_lon_anomaly[0])
+            #print(lon_failure)
+            if check_lon_anomaly[0] == lon_failure:
+                print(' Your point is anomalous and it will always fail. DONT TRUST THE PREDICTED TIME.')
+                failure = True
+                anomalies_list.append(failure)
+            else:
+                print('Your failure is not anomalous')
+                failure = False
+                anomalies_list.append(failure)
+    return anomalies_list
 
 ############################################################
 print('I am now finding the time of failure for your test points. Hold on tight.')
 lat_failures = []
 lon_failures = []
 for i in range(len(lats)):
-    print(lats[i], lons[i], demval_point[i][0], slopeval_point[i][0], failval_point[i][0])
+    #print(lats[i], lons[i], demval_point[i][0], slopeval_point[i][0], failval_point[i][0])
     #quit()
 
     lat, lon = fn.get_fos_point_of_interest(rain, depths, calibrated_multiple_point_params.loc[i], lats[i], lons[i], demval_point[i][0], slopeval_point[i][0], failval_point[i][0], rundir)
     lat_failures.append(int(lat))
     lon_failures.append(int(lon))
 
-print(lat_failures, lon_failures)
+#print(lat_failures, lon_failures)
 
 np.asarray(lat_failures)
 np.asarray(lon_failures)
@@ -149,9 +189,11 @@ np.asarray(lon_failures)
 distance_between_points_file = './test_points_within_buffer_distance.csv'
 distance_between_points = pd.read_csv(distance_between_points_file, index_col=None)
 
+anomalous_failures_bool = comparison_with_anomalous_failure(lat_failures, lon_failures, 'anomaly_failures.csv')
+
 # test some of the graphs and output variables from the validation
 for i in range(len(lat_failures)):
-    print(i)
+    #print(i)
     lat_failure = lat_failures[i]
     lon_failure = lon_failures[i]
 
@@ -162,7 +204,7 @@ for i in range(len(lat_failures)):
 
     FoS_df = pd.DataFrame(FoS_temp[0,:])
     FoS_df.columns = ['FoS']
-    print(FoS_df)
+    #print(FoS_df)
     #quit()
 
     # what is the earliest time where we see the FoS go below zero?
@@ -175,7 +217,7 @@ for i in range(len(lat_failures)):
     y_values = np.arange(0,np.shape(FoS_temp)[0])
 
     FoS_df['is_it_failure'] = np.where((FoS_df['FoS']>=1),0,1)
-    print(FoS_df)
+    #print(FoS_df)
     seaborn.scatterplot(data=FoS_df['FoS'], x=x_values, y=FoS_df['FoS'], hue=FoS_df['is_it_failure'], s=1)
     FoS_df_to_save = pd.DataFrame(FoS_df['FoS'])
     FoS_df_to_save['days'] = x_values.tolist()
@@ -183,49 +225,20 @@ for i in range(len(lat_failures)):
     FoS_df_to_save['distance_m_from_calib_to_test_point'] = FoS_df_to_save['distance_m_from_calib_to_test_point'].fillna('')
     FoS_df_to_save['day_of_failure'] = pd.Series(day_of_failure, index=FoS_df_to_save.index[[0]])
     FoS_df_to_save['day_of_failure'] = FoS_df_to_save['day_of_failure'].fillna('')
-    FoS_df_to_save.to_csv(f'fos_timeseries_{lat_failure}_{lon_failure}.csv', index=False)
-    print(FoS_df_to_save.head(5))
+    FoS_df_to_save['anomalous_failure'] = pd.Series(anomalous_failures_bool[i], index=FoS_df_to_save.index[[0]])
+    FoS_df_to_save['anomalous_failure'] = FoS_df_to_save['anomalous_failure'].fillna('')
+    FoS_df_to_save.to_csv(f'{sys.argv[2]}fos_timeseries_{lat_failure}_{lon_failure}.csv', index=False)
+    #print(FoS_df_to_save.head(5))
     plt.title(f'First failure day: {day_of_failure}')
     #plt.show()
     #plt.savefig(f'precip_fos_{lat_failure}_{lon_failure}.png')
     plt.clf()
 
 
-def comparison_with_anomalous_failure(lat, lon, anomalies_csv):
-    anomalies = pd.read_csv(anomalies_csv)
-    #lat_anomalies = pd.DataFrame(anomalies['Y'])
-    lat_anomalies = anomalies['Y']
-    lon_anomalies = anomalies['X']
-    #lon_anomalies = pd.DataFrame(anomalies['X'])
-    #print()
-
-    for i in range(len(lat_failures)):
-        lat_failure = lat_failures[i]
-        lon_failure = lon_failures[i]
-        # find the lat in the full anomalies lat, lon list
-        is_lat_anomalous = lat_anomalies.isin([lat_failure]).any()
-        print(is_lat_anomalous)
-
-        if is_lat_anomalous == False:
-            print('Your failure is not anomalous')
-        else:
-            # find the index
-            lat_anomalies_df = pd.DataFrame(anomalies['Y'])
-            lon_anomalies_df = pd.DataFrame(anomalies['X'])
-            index_lat_anomaly = lat_anomalies.index[lat_anomalies_df['Y'] == lat_failure]
-            # is the lon also the same? Let's check
-            print(index_lat_anomaly)
-            check_lon_anomaly = lon_anomalies.iloc[index_lat_anomaly]
-            print(check_lon_anomaly[0])
-            print(lon_failure)
-            if check_lon_anomaly[0] == lon_failure:
-                print(' Your point is anomalous and it will always fail. DONT TRUST THE PREDICTED TIME.')
-            else:
-                print('Your failure is not anomalous')
 
 
 
-comparison_with_anomalous_failure(lat_failures, lon_failures, 'anomaly_failures.csv')
+
 
 #plt.plot(FoS_temp[-1,:], label = 'Deep')
 # plt.plot()
