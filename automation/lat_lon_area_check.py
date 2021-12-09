@@ -59,12 +59,12 @@ def is_it_in_aoi(lat_lon_file, output_file, AoI_file):
 
     return geo_df
 
-input_csv_path = sys.argv[1]
-input_csv = sys.argv[2]
-full_input_csv = input_csv_path+input_csv
+# input_csv_path = sys.argv[1]
+# input_csv = sys.argv[2]
+# full_input_csv = input_csv_path+input_csv
 
-dataframe_aoi = is_it_in_aoi(full_input_csv, './bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/AoI.shp')
-print(dataframe_aoi)
+# dataframe_aoi = is_it_in_aoi(full_input_csv, './bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/AoI.shp')
+# print(dataframe_aoi)
 ################################################################################
 ################################################################################
 ################################################################################

@@ -97,7 +97,7 @@ def create_calib_multipoint(calib_csv):
 # test point - need to change this to be the output from the lat_lon_area_check.py script.
 # need to also be able to take a list of points instead of just one.
 
-def calib_params_closest_point(lat_lon_file, calib_file, outfile):
+def calib_params_closest_point(multipoint, selected_rows, lat_lon_file, calib_file, outfile):
     points_df = pd.read_csv(lat_lon_file, index_col = None)
     #point_one = points_df['geometry'][0]
 
@@ -235,18 +235,18 @@ def get_points_in_buffer_distance(in_file, out_file):
 
 
 
-convert_calib_to_lat_lon('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil',\
-'/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-'./test_transform.bil')
-
-convert_calib_raster_to_csv_shp('./test_transform.bil')
-
-multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
-
-calib_params_closest_point('./bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-'./test_closest_calibration_points_add_coords.csv')
-
-get_points_in_buffer_distance('./test_closest_calibration_points_add_coords.csv', './test_points_within_buffer_distance.csv')
+# convert_calib_to_lat_lon('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil',\
+# '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
+# './test_transform.bil')
+#
+# convert_calib_raster_to_csv_shp('./test_transform.bil')
+#
+# multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
+#
+# calib_params_closest_point('./bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
+# './test_closest_calibration_points_add_coords.csv')
+#
+# get_points_in_buffer_distance('./test_closest_calibration_points_add_coords.csv', './test_points_within_buffer_distance.csv')
 
 '''
 # All of the code below is for the development of a system to calculate error on

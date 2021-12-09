@@ -30,31 +30,27 @@ import geopandas as gpd
 ################################################################################
 
 
-with open("file_paths_validation.json") as file_with_paths :
-    FILE_PATHS = json.load(file_with_paths)
+# with open("file_paths_validation.json") as file_with_paths :
+#     FILE_PATHS = json.load(file_with_paths)
+#
+# print("The base output directory is {}".format(FILE_PATHS["output_validation_dir"]))
+#
+#
+# # Model directory
+# rundir = './'
+#
+# # parameter files
+# # the params used to define the physical soil properties in the iverson MC runs
+# Iverson_MC_params_file = FILE_PATHS["iverson_param"]
+#
+# # observed failure data files
+# # don't need this anymore!
+# failfile = FILE_PATHS["ground_motion_failure"]
+#
+# # topography files
+# demfile = FILE_PATHS["dem_file"]
+# slopefile = FILE_PATHS["slope_file"]
 
-print("The base output directory is {}".format(FILE_PATHS["output_validation_dir"]))
-
-
-# Model directory
-rundir = './'
-
-# parameter files
-# the params used to define the physical soil properties in the iverson MC runs
-Iverson_MC_params_file = FILE_PATHS["iverson_param"]
-
-# observed failure data files
-# don't need this anymore!
-failfile = FILE_PATHS["ground_motion_failure"]
-
-# topography files
-demfile = FILE_PATHS["dem_file"]
-slopefile = FILE_PATHS["slope_file"]
-
-
-# calibrated points files
-#calibfile = '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv'
-#calibfile = './test_closest_calibration_points.csv'
 
 ######################################################
 ######################################################
@@ -63,18 +59,18 @@ slopefile = FILE_PATHS["slope_file"]
 ######################################################
 
 
-# 0. Load rasters into arrays for DEM, slope, failtimes and prefailtimes for a given failure threshold. Let's use 80mm/yr for now.
-demarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(demfile)
-slopearr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(slopefile)
-failarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(failfile)
-
-# select the point of interest from the raster files.
-#'./test_closest_calibration_points.csv' - this is the new file instead of the one with the single point
-calibrated_multiple_points_path = './test_closest_calibration_points_add_coords.csv'
-calibrated_multiple_point_params = pd.read_csv(calibrated_multiple_points_path, index_col=None)
-
-lons = calibrated_multiple_point_params['lon_test'].to_list()
-lats = calibrated_multiple_point_params['lat_test'].to_list()
+# # 0. Load rasters into arrays for DEM, slope, failtimes and prefailtimes for a given failure threshold. Let's use 80mm/yr for now.
+# demarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(demfile)
+# slopearr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(slopefile)
+# failarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(failfile)
+#
+# # select the point of interest from the raster files.
+# #'./test_closest_calibration_points.csv' - this is the new file instead of the one with the single point
+# calibrated_multiple_points_path = './test_closest_calibration_points_add_coords.csv'
+# calibrated_multiple_point_params = pd.read_csv(calibrated_multiple_points_path, index_col=None)
+#
+# lons = calibrated_multiple_point_params['lon_test'].to_list()
+# lats = calibrated_multiple_point_params['lat_test'].to_list()
 
 # test point: the point below should fail.
 # let's add it to the list so that we know if things work properly.
@@ -90,43 +86,43 @@ lats = calibrated_multiple_point_params['lat_test'].to_list()
 # select from the full DEMs the pixel corresponding to the test pixels
 def select_topo_data(topo_file, lons_list, lats_list):
     with rasterio.open(topo_file) as src:
-        vals = [x for x in src.sample(zip(lons, lats))]
+        vals = [x for x in src.sample(zip(lons_list, lats_list))]
     return vals
 
 # values of the corresponding points
-demval_point = select_topo_data(demfile, lons, lats)
-slopeval_point = select_topo_data(slopefile, lons, lats)
-failval_point = select_topo_data(failfile, lons, lats)
-
-
-print('Now we have all the points we need for our analysis.')
+# demval_point = select_topo_data(demfile, lons, lats)
+# slopeval_point = select_topo_data(slopefile, lons, lats)
+# failval_point = select_topo_data(failfile, lons, lats)
+#
+#
+# print('Now we have all the points we need for our analysis.')
+#
+# ############################################################
+#
+# # Read the Iverson params
+# Iverson_MC_params = pd.read_csv(Iverson_MC_params_file)
+# depths  = np.arange(Iverson_MC_params.at[0,'depth'], Iverson_MC_params.at[1,'depth'], 0.2)
+#
+#
+# ###################### RAINFALL DATA #######################
+# # We are assuming that the rainfall data is the same for all the points
+# # the area of interest hasa rough length of 30km which is the resolution of the
+# # precipitaiton data we have.
+# rainfile = sys.argv[1]
+# #"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/2014-01-01_to_2019-12-31_Intensity.csv"
+# #early_late = 'early'
+# #rainfile = f"./{early_late}_precip.csv"
+#
+# rain = pd.read_csv(rainfile)
+#
+# rainlist = [0]
+# for i in range(1,len(rain)):
+# 	rainlist.append(rainlist[-1]+ int(rain['duration_s'].iloc[i]))
+# rain['time_s'] = rainlist
+# rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
 
 ############################################################
-
-# Read the Iverson params
-Iverson_MC_params = pd.read_csv(Iverson_MC_params_file)
-depths  = np.arange(Iverson_MC_params.at[0,'depth'], Iverson_MC_params.at[1,'depth'], 0.2)
-
-
-###################### RAINFALL DATA #######################
-# We are assuming that the rainfall data is the same for all the points
-# the area of interest hasa rough length of 30km which is the resolution of the
-# precipitaiton data we have.
-rainfile = sys.argv[1]
-#"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/2014-01-01_to_2019-12-31_Intensity.csv"
-#early_late = 'early'
-#rainfile = f"./{early_late}_precip.csv"
-
-rain = pd.read_csv(rainfile)
-
-rainlist = [0]
-for i in range(1,len(rain)):
-	rainlist.append(rainlist[-1]+ int(rain['duration_s'].iloc[i]))
-rain['time_s'] = rainlist
-rain['rainfall_mm'] = rain['duration_s']*rain['intensity_mm_sec']
-
-############################################################
-def comparison_with_anomalous_failure(lat, lon, anomalies_csv):
+def comparison_with_anomalous_failure(lat_failures, lon_failures, anomalies_csv):
     anomalies = pd.read_csv(anomalies_csv)
     #lat_anomalies = pd.DataFrame(anomalies['Y'])
     lat_anomalies = anomalies['Y']
@@ -168,92 +164,80 @@ def comparison_with_anomalous_failure(lat, lon, anomalies_csv):
 
 ############################################################
 print('I am now finding the time of failure for your test points. Hold on tight.')
-lat_failures = []
-lon_failures = []
-for i in range(len(lats)):
-    #print(lats[i], lons[i], demval_point[i][0], slopeval_point[i][0], failval_point[i][0])
-    #quit()
+def find_lon_lat_failures(lats, lons, rain, depths,calibrated_multiple_point_params,demval_point,slopeval_point,failval_point,rundir ):
+    lat_failures = []
+    lon_failures = []
+    for i in range(len(lats)):
+        lat, lon = fn.get_fos_point_of_interest(rain, depths, calibrated_multiple_point_params.loc[i], lats[i], lons[i], demval_point[i][0], slopeval_point[i][0], failval_point[i][0], rundir)
+        lat_failures.append(int(lat))
+        lon_failures.append(int(lon))
 
-    lat, lon = fn.get_fos_point_of_interest(rain, depths, calibrated_multiple_point_params.loc[i], lats[i], lons[i], demval_point[i][0], slopeval_point[i][0], failval_point[i][0], rundir)
-    lat_failures.append(int(lat))
-    lon_failures.append(int(lon))
+    #print(lat_failures, lon_failures)
 
-#print(lat_failures, lon_failures)
+    lat_failures = np.asarray(lat_failures)
+    lon_failures = np.asarray(lon_failures)
+    return lat_failures, lon_failures
 
-np.asarray(lat_failures)
-np.asarray(lon_failures)
 # lat_failures.append(int(4558367))
 # lon_failures.append(int(511315))
 # print(lat_failures, lon_failures)
 
 
 ###########################################################
-distance_between_points_file = './test_points_within_buffer_distance.csv'
-distance_between_points = pd.read_csv(distance_between_points_file, index_col=None)
-
-anomalous_failures_bool = comparison_with_anomalous_failure(lat_failures, lon_failures, 'anomaly_failures.csv')
+# distance_between_points_file = './test_points_within_buffer_distance.csv'
+# distance_between_points = pd.read_csv(distance_between_points_file, index_col=None)
+#
+# anomalous_failures_bool = comparison_with_anomalous_failure(lat_failures, lon_failures, 'anomaly_failures.csv')
 ### the boolean file is just to load the coordinates in the right coordinate frame
 # this will be the same as the one of the input epsg:4326
-test_points = pd.read_csv('./bool_lat_lon.csv')
-test_points['geometry'] = test_points['geometry'].apply(wkt.loads)
-test_points_gdf = gpd.GeoDataFrame(test_points, crs='epsg:4326')
+
+def get_output_csv(lat_failures, lon_failures, distance_between_points,anomalous_failures_bool):
+    test_points = pd.read_csv('./bool_lat_lon.csv')
+    test_points['geometry'] = test_points['geometry'].apply(wkt.loads)
+    test_points_gdf = gpd.GeoDataFrame(test_points, crs='epsg:4326')
 
 
-# test some of the graphs and output variables from the validation
-for i in range(len(lat_failures)):
-    lat_failure = lat_failures[i]
-    lon_failure = lon_failures[i]
+    # test some of the graphs and output variables from the validation
+    for i in range(len(lat_failures)):
+        lat_failure = lat_failures[i]
+        lon_failure = lon_failures[i]
 
 
-    FoS = np.load(f'FoS_{lat_failure}_{lon_failure}.npy')
-    FoS_temp = np.load(f'FoS_temp_{lat_failure}_{lon_failure}.npy')
-    min_depth = np.load(f'min_depth_{lat_failure}_{lon_failure}.npy')
+        FoS = np.load(f'FoS_{lat_failure}_{lon_failure}.npy')
+        FoS_temp = np.load(f'FoS_temp_{lat_failure}_{lon_failure}.npy')
+        min_depth = np.load(f'min_depth_{lat_failure}_{lon_failure}.npy')
 
-    FoS_df = pd.DataFrame(FoS_temp[0,:])
-    FoS_df.columns = ['FoS']
-
-
-    # what is the earliest time where we see the FoS go below zero?
-    #FoS_below_zero = FoS['FoS']<1
-    #print(FoS_df[165:170])
-    day_of_failure = (FoS_df['FoS'] < 1.0).idxmax()
-    print(f'The first failure is predicted on day {day_of_failure} after the start of the rainfall timeseries.')
-
-    x_values = np.arange(0,np.shape(FoS_temp)[1])
-    y_values = np.arange(0,np.shape(FoS_temp)[0])
-
-    FoS_df['is_it_failure'] = np.where((FoS_df['FoS']>=1),0,1)
-    #print(FoS_df)
-    seaborn.scatterplot(data=FoS_df['FoS'], x=x_values, y=FoS_df['FoS'], hue=FoS_df['is_it_failure'], s=1)
-    FoS_df_to_save = pd.DataFrame(FoS_df['FoS'])
-    FoS_df_to_save['days'] = x_values.tolist()
-    FoS_df_to_save['distance_m_from_calib_to_test_point'] = pd.Series(distance_between_points['distance_m_from_calib_to_test_point'].loc[i], index=FoS_df_to_save.index[[0]])
-    FoS_df_to_save['distance_m_from_calib_to_test_point'] = FoS_df_to_save['distance_m_from_calib_to_test_point'].fillna('')
-    FoS_df_to_save['day_of_failure'] = pd.Series(day_of_failure, index=FoS_df_to_save.index[[0]])
-    FoS_df_to_save['day_of_failure'] = FoS_df_to_save['day_of_failure'].fillna('')
-    FoS_df_to_save['anomalous_failure'] = pd.Series(anomalous_failures_bool[i], index=FoS_df_to_save.index[[0]])
-    FoS_df_to_save['anomalous_failure'] = FoS_df_to_save['anomalous_failure'].fillna('')
-
-    full_point = test_points_gdf['geometry'][i]
-    full_point_x = full_point.x
-    full_point_y = full_point.y
-    FoS_df_to_save.to_csv(f'./fos_timeseries_{full_point_y}_{full_point_x}.csv', index=False)
-    #print(FoS_df_to_save.head(5))
-    plt.title(f'First failure day: {day_of_failure}')
-    #plt.show()
-    #plt.savefig(f'precip_fos_{lat_failure}_{lon_failure}.png')
-    plt.clf()
+        FoS_df = pd.DataFrame(FoS_temp[0,:])
+        FoS_df.columns = ['FoS']
 
 
+        # what is the earliest time where we see the FoS go below zero?
+        #FoS_below_zero = FoS['FoS']<1
+        #print(FoS_df[165:170])
+        day_of_failure = (FoS_df['FoS'] < 1.0).idxmax()
+        print(f'The first failure is predicted on day {day_of_failure} after the start of the rainfall timeseries.')
 
+        x_values = np.arange(0,np.shape(FoS_temp)[1])
+        y_values = np.arange(0,np.shape(FoS_temp)[0])
 
+        FoS_df['is_it_failure'] = np.where((FoS_df['FoS']>=1),0,1)
+        #print(FoS_df)
+        seaborn.scatterplot(data=FoS_df['FoS'], x=x_values, y=FoS_df['FoS'], hue=FoS_df['is_it_failure'], s=1)
+        FoS_df_to_save = pd.DataFrame(FoS_df['FoS'])
+        FoS_df_to_save['days'] = x_values.tolist()
+        FoS_df_to_save['distance_m_from_calib_to_test_point'] = pd.Series(distance_between_points['distance_m_from_calib_to_test_point'].loc[i], index=FoS_df_to_save.index[[0]])
+        FoS_df_to_save['distance_m_from_calib_to_test_point'] = FoS_df_to_save['distance_m_from_calib_to_test_point'].fillna('')
+        FoS_df_to_save['day_of_failure'] = pd.Series(day_of_failure, index=FoS_df_to_save.index[[0]])
+        FoS_df_to_save['day_of_failure'] = FoS_df_to_save['day_of_failure'].fillna('')
+        FoS_df_to_save['anomalous_failure'] = pd.Series(anomalous_failures_bool[i], index=FoS_df_to_save.index[[0]])
+        FoS_df_to_save['anomalous_failure'] = FoS_df_to_save['anomalous_failure'].fillna('')
 
-
-
-#plt.plot(FoS_temp[-1,:], label = 'Deep')
-# plt.plot()
-# #plt.legend()
-# plt.xlabel('Time (days)')
-# plt.ylabel('FoS')
-# plt.show()
-#fn.oS_vs_failure_depth(factor_of_safety, depth, points, fig_height, fig_width, fig_name)
+        full_point = test_points_gdf['geometry'][i]
+        full_point_x = full_point.x
+        full_point_y = full_point.y
+        FoS_df_to_save.to_csv(f'./fos_timeseries_{full_point_y}_{full_point_x}.csv', index=False)
+        #print(FoS_df_to_save.head(5))
+        plt.title(f'First failure day: {day_of_failure}')
+        #plt.show()
+        #plt.savefig(f'precip_fos_{lat_failure}_{lon_failure}.png')
+        plt.clf()

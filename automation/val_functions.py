@@ -21,7 +21,8 @@ from osgeo.gdalconst import *
 import csv
 import pandas as pd
 import numpy as np
-sys.path.insert(0,'../lsdfailtools/')
+#sys.path.insert(0,'../lsdfailtools/')
+sys.path.insert(0,'/exports/csce/datastore/geos/users/s1440040/projects/lsdfailtools/lsdfailtools/')
 #Importing the model
 import iverson2000 as iverson
 from itertools import product
@@ -287,6 +288,7 @@ def run_validation_single_output(rain, depths, calibrated, demarr, slopearr, fai
 # A figure to map validation results more extensively using a single point
 ######################################################
 ######################################################
+# need to clear thisup - we don't need failarr_val file.
 def get_fos_point_of_interest(rain, depths, calibrated_df, point_to_test_lat, point_to_test_lon, demarr_val, slopearr_val, failarr_val,rundir):
 
     #valid_df= pd.DataFrame(columns=['alpha', 'D_0', 'K_sat', 'd','Iz_over_K_steady','friction_angle','cohesion','weight_of_water','weight_of_soil','time_of_failure','factor_of_safety', 'min_depth','S','Z','row','col','observed_failtime'])
