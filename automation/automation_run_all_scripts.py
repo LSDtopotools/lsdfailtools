@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-sys.path.append( '/exports/csce/datastore/geos/users/s1440040/projects/lsdfailtools/automation/test_automation_scripts' )
+sys.path.append( '/exports/csce/datastore/geos/users/s1440040/projects/lsdfailtools/automation' )
 
 from automation_run_module import *
 
