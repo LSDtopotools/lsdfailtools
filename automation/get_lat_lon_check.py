@@ -11,9 +11,15 @@ import geopandas as gpd
 
 from lat_lon_area_check import *
 
+############################################
+# Script with function that will run functions needed to calculate the points
+# that are in the area of interest. The inputs are the path and the file give by the user.
+# Marina Ruiz Sanchez-Oro
+# 10/12/2021
+############################################
+
+
 def run_lat_lon_area_check(input_csv_path, input_csv_name):
-    # input_csv_path = sys.argv[1]
-    # input_csv_name = sys.argv[2]
     full_input_csv = input_csv_path+input_csv_name
 
     # lat_lon_area_check

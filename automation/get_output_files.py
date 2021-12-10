@@ -13,15 +13,16 @@ import rasterio
 import seaborn
 from shapely import wkt
 import geopandas as gpd
-from single_point_validation import *
+from prediction_landslide_outputs import *
 
-################################################################################
-################################################################################
-# Set the path variables
-################################################################################
-################################################################################
-
-def run_single_point_validation(rainfall_file):
+############################################
+# Script with function that will run functions needed to get the outputs from
+# the simulation. It will use the files created in get_closest_calib_point.py
+# The output is the timeseries with the Factor of safety for each point
+# Marina Ruiz Sanchez-Oro
+# 10/12/2021
+############################################
+def landslide_output_from_rain(rainfall_file):
     with open("/exports/csce/datastore/geos/users/s1440040/projects/lsdfailtools/automation/file_paths_validation.json") as file_with_paths :
         FILE_PATHS = json.load(file_with_paths)
 

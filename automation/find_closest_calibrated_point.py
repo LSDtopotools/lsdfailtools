@@ -49,7 +49,6 @@ def convert_calib_to_lat_lon(dem_raster, calib_csv, output_calib_raster):
     new_geotransform,new_projection,file_out = fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), output_calib_raster, pixelWidth, input_array)
     print('I am done. The calibration file now has lon, lat coordinates.')
 
-# The following is useful code. KEEP IT!! - just need to uncomment it
 # Convert the raster file with the calibrated points to a shapefile + csv file
 
 # get the name of the file from the full filepath and extension
@@ -72,13 +71,13 @@ def convert_calib_raster_to_csv_shp(calib_raster):
 # This has converted the raster to a csv with the xy coordinates and the Z values at the calibrated points.
 ## We want to split the data now so that we have a lat, lon, Z column and it's easier to sort the data that is not NaN.
 
-def create_calib_multipoint(calib_csv):
+def create_calib_multipoint(calib_csv_point_transformed):
     # Load the .csv file with all the calibrated points in point geometry
-    file_path = os.path.dirname(calib_csv)
-    filename_full = os.path.basename(calib_csv)
+    #file_path = os.path.dirname(calib_csv_point_transformed)
+    #filename_full = os.path.basename(calib_csv_point_transformed)
 
-    #input_df = pd.read_csv('./test_transform.csv', ' ')
-    input_df = pd.read_csv(file_path + '/' + filename_full, ' ')
+    input_df = pd.read_csv(calib_csv_point_transformed, ' ')
+    #input_df = pd.read_csv(file_path + '/' + filename_full, ' ')
 
     # remove the rows that are NaN
     selected_rows = input_df[~input_df['Z'].isnull()]
@@ -94,12 +93,8 @@ def create_calib_multipoint(calib_csv):
     return multipoint, selected_rows
 
 
-# test point - need to change this to be the output from the lat_lon_area_check.py script.
-# need to also be able to take a list of points instead of just one.
-
 def calib_params_closest_point(multipoint, selected_rows, lat_lon_file, calib_file, outfile):
     points_df = pd.read_csv(lat_lon_file, index_col = None)
-    #point_one = points_df['geometry'][0]
 
     full_calibration_df = pd.read_csv(calib_file, index_col = None)
 
@@ -115,19 +110,14 @@ def calib_params_closest_point(multipoint, selected_rows, lat_lon_file, calib_fi
     for i in range(len(points_df)):
         #point = Point(515854, 4.551284e+06)
         wgs84_pt = points_gdf['geometry'][i]
-        #print(wgs84_pt.x, wgs84_pt.y)
-        # reproject point - MAYBE PUT THIS IN A SEPARATE FUNCTION
+        # reproject point
         AoI_proj = pyproj.CRS('EPSG:32633')
         wgs84 = pyproj.CRS('EPSG:4326')
         project =  pyproj.Transformer.from_crs(wgs84, AoI_proj, always_xy=True).transform
         AoI_point = transform(project, wgs84_pt)
-        #print(AoI_point.x, AoI_point.y)
-
 
         # this prints out the point closest to our list of points
         closest_cal_point = nearest_points(multipoint, AoI_point)[0]
-        #print(closest_cal_point, nearest_points(multipoint, AoI_point)[0])
-        #print(closest_cal_point.x)
 
         # note that Z is not the altitude but the row number in the initial dataframe... need to figure out a better way to factor this in.
         calibration_params_index = list(selected_rows[selected_rows['X']==closest_cal_point.x].index.values)
@@ -136,13 +126,9 @@ def calib_params_closest_point(multipoint, selected_rows, lat_lon_file, calib_fi
         calibration_parameters = full_calibration_df.iloc[[calibration_parameters_selection]]
 
         # save the parameters to a new file with only the point we want
-        #calibration_parameters = calibration_parameters.drop[0]
         calibration_parameters = calibration_parameters.drop(calibration_parameters.columns[[0]], axis=1)
 
-        #calibration_parameters[0]
-        #print(calibration_parameters.iloc[0])
         closest_points_df.loc[i] = calibration_parameters.iloc[0]
-        #print(closest_points_df)
         closest_points_df['lat_test'].loc[i]= AoI_point.y
         closest_points_df['lon_test'].loc[i] = AoI_point.x
         closest_points_df['lat_calib'].loc[i] = closest_cal_point.y
@@ -152,8 +138,7 @@ def calib_params_closest_point(multipoint, selected_rows, lat_lon_file, calib_fi
 def convert_crs_point(point_x, point_y, in_proj, out_proj):
     in_pt = Point(point_x, point_y)
     #wgs84_pt = points_gdf['geometry'][i]
-    #print(wgs84_pt.x, wgs84_pt.y)
-    # reproject point - MAYBE PUT THIS IN A SEPARATE FUNCTION
+    # reproject point
     in_proj = pyproj.CRS(in_proj)
     out_proj = pyproj.CRS(out_proj)
     project =  pyproj.Transformer.from_crs(in_proj, out_proj, always_xy=True).transform
@@ -161,13 +146,11 @@ def convert_crs_point(point_x, point_y, in_proj, out_proj):
     return AoI_point
 
 def how_close_is_calibrated_point(point_1, point_2, buffer_distance, point_number):
-    #rint(point_1, point_2)
     # create your circle buffer from one of the points - is this in km?
     distance = buffer_distance
     circle_buffer = point_1.buffer(distance)
     # but a simpler method is to simply check the distance
     meters_distance = point_1.distance(point_2)
-    #print(meters_distance)
     if point_1.distance(point_2) < distance:
         print(f'Test Point {point_number} is within {distance} m of calibrated Point {point_number}')
         return True, meters_distance
@@ -180,7 +163,6 @@ def find_points_within_buffer_distance(point_to_test, calib_multipoints, buffer_
     points_in_buffer = []
     for p in calib_multipoints:
         if circle.covers(p):
-            #print(p.x, p.y)
             point_in_buffer = Point(p.x,p.y)
             points_in_buffer.append(point_in_buffer)
     return points_in_buffer
@@ -196,23 +178,21 @@ def create_list_test_calib_test_points(calib_df, test_df):
         calib_point = convert_crs_point(calib_x, calib_y, 'epsg:32633', 'epsg:32633')
         test_y = test_df['geometry'][i].y
         test_x = test_df['geometry'][i].x
-        #print(test_x,test_y)
         test_point = convert_crs_point(test_x, test_y, 'epsg:4326', 'epsg:32633')
         calib_points.append(calib_point)
         test_points_list.append(test_point)
     return test_points_list, calib_points
 
-def get_points_in_buffer_distance(in_file, out_file):
+def get_points_in_buffer_distance(in_file_calib, out_file, boolean_file_test):
     #########
     # need the following conversion as the input of the create_list_test_calib_test_points function
     # the x,y test points are taken from the bool_lat_lon file which has the
     # geometry column in POINT geometry form.
-    test_points = pd.read_csv('./bool_lat_lon.csv')
+    test_points = pd.read_csv(boolean_file_test)
     test_points['geometry'] = test_points['geometry'].apply(wkt.loads)
     test_points_gdf = gpd.GeoDataFrame(test_points, crs='epsg:4326')
-    #print(test_points_gdf['geometry'][0])
 
-    calib_points_df = pd.read_csv(in_file)#, index=None)
+    calib_points_df = pd.read_csv(in_file_calib)#, index=None)
     #########
 
     test_points_list, calib_points = create_list_test_calib_test_points(calib_points_df, test_points_gdf)
@@ -232,66 +212,3 @@ def get_points_in_buffer_distance(in_file, out_file):
     meters_distance_buffer = np.asarray(meters_distance_buffer)
 
     pd.DataFrame(meters_distance_buffer, columns=['distance_m_from_calib_to_test_point']).to_csv(out_file, index = None)
-
-
-
-# convert_calib_to_lat_lon('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil',\
-# '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-# './test_transform.bil')
-#
-# convert_calib_raster_to_csv_shp('./test_transform.bil')
-#
-# multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
-#
-# calib_params_closest_point('./bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-# './test_closest_calibration_points_add_coords.csv')
-#
-# get_points_in_buffer_distance('./test_closest_calibration_points_add_coords.csv', './test_points_within_buffer_distance.csv')
-
-'''
-# All of the code below is for the development of a system to calculate error on
-# the values taken for the calibration.
-# I will finish it eventually but now it is in development.
-
-all_calib_points_in_extended_buffer = []
-# add this boolean list with buffer distances to the test_points dataframe
-
-for i in range(len(test_points_list)):
-    # find if there are other points within the buffer distance
-    # these points may not be the closest ones to the point of interest
-    points_in_buffer = find_points_within_buffer_distance(test_points_list[i], multipoint, 1000)
-    print(test_points_list[i])
-    #print(points_in_buffer[])
-    #all_calib_points_in_extended_buffer[i] = Point(test_points_list[i].x, test_points_list[i].y)
-    all_calib_points_in_extended_buffer.append(points_in_buffer)
-
-
-print(all_calib_points_in_extended_buffer[0][0].x)
-print(all_calib_points_in_extended_buffer)
-full_calibration_df = pd.read_csv('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv', index_col = None)
-print(selected_rows)
-
-columns_df = ['alpha', 'D_0', 'K_sat', 'd', 'Iz_over_K_steady', 'friction_angle','cohesion', 'weight_of_water', 'weight_of_soil']
-avg_calib_params = pd.DataFrame(columns = columns_df)
-
-for i in range(len(test_points_list)):
-    indices_to_average = []
-    for j in range(len(all_calib_points_in_extended_buffer[i])):
-        calibration_params_index = list(selected_rows[selected_rows['X']==all_calib_points_in_extended_buffer[i][j].x].index.values)
-        calibration_parameters_selection = int(selected_rows['Z'][calibration_params_index])
-        calibration_parameters = full_calibration_df.iloc[[calibration_parameters_selection]]
-        index_to_avg = full_calibration_df.iloc[[calibration_parameters_selection]].index[0]
-        indices_to_average.append(index_to_avg)
-    calibration_parameters = full_calibration_df.iloc[[calibration_parameters_selection]]
-    print(calibration_parameters)
-    #print(full_calibration_df[['alpha', 'D_0', 'K_sat', 'd', 'Iz_over_K_steady', 'friction_angle','cohesion', 'weight_of_water', 'weight_of_soil']].iloc[indices_to_average].mean(axis=1))
-    avg_calib_params.append(full_calibration_df[['alpha', 'D_0', 'K_sat', 'd', 'Iz_over_K_steady', 'friction_angle','cohesion', 'weight_of_water', 'weight_of_soil']].iloc[indices_to_average].mean(axis=0), ignore_index=True)
-
-# need to find the location of these points in the calibration array so that we can average the values.
-print(avg_calib_params)
-
-'''
-##################
-
-#find_points_within_buffer_distance(Point(502133, 4547372), multipoint, 1000)
-#how_close_is_calibrated_point(Point(502133, 4547372), Point(502386, 4547119))
