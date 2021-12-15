@@ -22,7 +22,7 @@ import csv
 import pandas as pd
 import numpy as np
 #sys.path.insert(0,'../lsdfailtools/')
-sys.path.insert(0,'/exports/csce/datastore/geos/users/s1440040/projects/lsdfailtools/lsdfailtools/')
+#sys.path.insert(0,'/exports/csce/datastore/geos/users/s1440040/projects/lsdfailtools/lsdfailtools/')
 #Importing the model
 import iverson2000 as iverson
 from itertools import product
