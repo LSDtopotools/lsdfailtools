@@ -5,7 +5,6 @@ import numpy as np
 import json
 import os
 import rasterio
-import seaborn
 from shapely import wkt
 import geopandas as gpd
 

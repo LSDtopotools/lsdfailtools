@@ -18,7 +18,6 @@ import json
 import os
 import rasterio
 import val_functions as fn
-import seaborn
 from shapely import wkt
 import geopandas as gpd
 
