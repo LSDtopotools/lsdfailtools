@@ -10,4 +10,4 @@ Landslide detection module.
 * Script that prints out a time series of factor of safety and time of failure (if any).
 
 Usage:
-* `python automation_run_all_scripts.py input_dir coords_input_file rainfall_input_file`
+* `python run_full_landslide_simulation.py input_dir coords_input_file rainfall_input_file`
