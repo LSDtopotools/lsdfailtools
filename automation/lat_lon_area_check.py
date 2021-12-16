@@ -18,6 +18,7 @@ import json
 import os
 import rasterio
 import sys
+from run_json import *
 
 # input the data file
 ## must have a list of lat lon points

@@ -20,8 +20,10 @@ import rasterio
 import val_functions as fn
 from shapely import wkt
 import geopandas as gpd
+from run_json import *
 
-
+FILE_PATHS = read_paths_file()
+bool_lat_lon = FILE_PATHS["bool_lat_lon"]
 
 # select from the full DEMs the pixel corresponding to the test pixels
 def select_topo_data(topo_file, lons_list, lats_list):
@@ -89,8 +91,8 @@ def find_lon_lat_failures(lats, lons, rain, depths,calibrated_multiple_point_par
 ### the boolean file is just to load the coordinates in the right coordinate frame
 # this will be the same as the one of the input epsg:4326
 
-def get_output_csv(lat_failures, lon_failures, distance_between_points,anomalous_failures_bool):
-    test_points = pd.read_csv('./bool_lat_lon.csv')
+def get_output_csv(lat_failures, lon_failures, distance_between_points,anomalous_failures_bool, rundir):
+    test_points = pd.read_csv(bool_lat_lon)
     test_points['geometry'] = test_points['geometry'].apply(wkt.loads)
     test_points_gdf = gpd.GeoDataFrame(test_points, crs='epsg:4326')
 
@@ -131,7 +133,7 @@ def get_output_csv(lat_failures, lon_failures, distance_between_points,anomalous
         full_point = test_points_gdf['geometry'][i]
         full_point_x = full_point.x
         full_point_y = full_point.y
-        FoS_df_to_save.to_csv(f'./fos_timeseries_{full_point_y}_{full_point_x}.csv', index=False)
+        FoS_df_to_save.to_csv(f'{rundir}_fos_timeseries_{full_point_y}_{full_point_x}.csv', index=False)
         #print(FoS_df_to_save.head(5))
         #plt.title(f'First failure day: {day_of_failure}')
         #plt.show()

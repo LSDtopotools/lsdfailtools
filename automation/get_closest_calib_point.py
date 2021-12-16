@@ -8,6 +8,8 @@ import rasterio
 from shapely import wkt
 import geopandas as gpd
 
+from run_json import *
+
 from find_closest_calibrated_point import *
 
 ############################################
@@ -16,19 +18,26 @@ from find_closest_calibrated_point import *
 # Marina Ruiz Sanchez-Oro
 # 10/12/2021
 ############################################
-
+FILE_PATHS = read_paths_file()
+dem_file = FILE_PATHS["dem_file"]
+calibration_file = FILE_PATHS["calibration_file"]
+transform_bil = FILE_PATHS["transform_bil"]
+transform_csv = FILE_PATHS["transform_csv"]
+bool_lat_lon = FILE_PATHS["bool_lat_lon"]
+closest_cal_points = FILE_PATHS["closest_cal_points"]
+points_in_buffer = FILE_PATHS["points_in_buffer"]
 
 def run_find_closest_calibrated_point():
     # find_closest_calibrated_point
-    convert_calib_to_lat_lon('/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633.bil',\
-    '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-    './test_transform.bil')
+    convert_calib_to_lat_lon(dem_file,\
+    calibration_file,\
+    transform_bil)
 
-    convert_calib_raster_to_csv_shp('./test_transform.bil')
+    convert_calib_raster_to_csv_shp(transform_bil)
 
-    multipoint, selected_rows = create_calib_multipoint('./test_transform.csv')
+    multipoint, selected_rows = create_calib_multipoint(transform_csv)
 
-    calib_params_closest_point(multipoint,selected_rows,'./bool_lat_lon.csv', '/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Calibrated_FoS_depth.csv',\
-    './test_closest_calibration_points_add_coords.csv')
+    calib_params_closest_point(multipoint,selected_rows,bool_lat_lon, calibration_file,\
+    closest_cal_points)
 
-    get_points_in_buffer_distance('./test_closest_calibration_points_add_coords.csv', './test_points_within_buffer_distance.csv', './bool_lat_lon.csv')
+    get_points_in_buffer_distance(closest_cal_points, points_in_buffer, bool_lat_lon)

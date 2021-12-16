@@ -1,8 +1,13 @@
 import json
 import os
 import sys
+
+from run_json import *
 # path to where the python code is in the server
-sys.path.append( '/exports/csce/datastore/geos/users/s1440040/projects/lsdfailtools/automation' )
+FILE_PATHS = read_paths_file()
+path_to_module = FILE_PATHS["path_to_simulation_repo"]
+
+sys.path.append(path_to_module)
 
 from run_individual_landslide_modules import *
 # sys.argv1 is the directory where the data will be stored
