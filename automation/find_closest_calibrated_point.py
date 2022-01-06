@@ -28,6 +28,18 @@ from run_json import *
 ### THE NUMBER OF ROWS IN THE CALIBRATION FILE DOESN'T MATCH THE NUMBER OF
 ### COORDINATE POINTS
 def convert_calib_to_lat_lon(dem_raster, calib_csv, output_calib_raster):
+    """
+    convert_calib_to_lat_lon creates a raster image from the points of a numpy
+    array corresponding to lat, lon coordinates of the calibrated points. Non-calibrated
+    points have nan values.
+    :dem_raster: raster used to extract parameters and coordinates for transformation
+    and projection of array points
+    :calib_csv: csv with the parameters for the calibrated points. Has a column with the x,y array
+    position of the points.
+    :output_calib_raster: raster with the calibrated points projected onto the
+    dem_raster. Non-calibrated points have nan values.
+    """
+
     dem_file = dem_raster
 
     # 0. Load rasters into arrays
@@ -54,6 +66,11 @@ def convert_calib_to_lat_lon(dem_raster, calib_csv, output_calib_raster):
 
 # get the name of the file from the full filepath and extension
 def convert_calib_raster_to_csv_shp(calib_raster):
+    """
+    convert_calib_raster_to_csv_shp converts the raster to a XYZ point geometry
+    shapefile/csv object
+    :calib_raster: raster file to be converted
+    """
     filename_full = os.path.basename(calib_raster)
     filename = filename_full.split('.')
     filename = filename[0]
@@ -73,6 +90,16 @@ def convert_calib_raster_to_csv_shp(calib_raster):
 ## We want to split the data now so that we have a lat, lon, Z column and it's easier to sort the data that is not NaN.
 
 def create_calib_multipoint(calib_csv_point_transformed):
+    """
+    create_calib_multipoint converts XYZ point geometry object into a multipoint
+    object with only calibrated points
+    :param calib_csv_point_transformed: csv with the point geometry geometry objects
+    of the raster file containing the calibrated points
+    :returns:
+        - multipoint - shapely multipoint object of the calibrated points
+        - selected_rows - row numbers of calibrated points (based on input csv file)
+    """
+
     # Load the .csv file with all the calibrated points in point geometry
     #file_path = os.path.dirname(calib_csv_point_transformed)
     #filename_full = os.path.basename(calib_csv_point_transformed)
@@ -95,6 +122,17 @@ def create_calib_multipoint(calib_csv_point_transformed):
 
 
 def calib_params_closest_point(multipoint, selected_rows, lat_lon_file, calib_file, outfile):
+    """
+    calib_params_closest_point finds the closest calibration points to the lat,lon
+    test points in the area of interest.
+    :param multipoint: shapely multipoint object of the calibrated points
+    :param selected_rows: row numbers of calibrated points (based on input csv file)
+    :param lat_lon_file: csv file with the point geometry objects of the test points in
+    the area of interest
+    :param calib_file: csv file with the parameters for each calibrated point
+    :param outfile: name of csv file with the parameters of the closest calibration points
+    to the test points
+    """
     points_df = pd.read_csv(lat_lon_file, index_col = None)
 
     full_calibration_df = pd.read_csv(calib_file, index_col = None)
@@ -137,6 +175,15 @@ def calib_params_closest_point(multipoint, selected_rows, lat_lon_file, calib_fi
     closest_points_df.to_csv(outfile,index=False)
 
 def convert_crs_point(point_x, point_y, in_proj, out_proj):
+    """
+    convert_crs_point reprojects a point into a different coordinate system
+    :param point_x: latitude value of the point
+    :param point_y: longitude value of the point
+    :param in_proj: input coordinate system
+    :param out_proj: output coordinate system
+    :returns:
+        - AoI_point - point object in the new coordinate system
+    """
     in_pt = Point(point_x, point_y)
     #wgs84_pt = points_gdf['geometry'][i]
     # reproject point
@@ -147,6 +194,18 @@ def convert_crs_point(point_x, point_y, in_proj, out_proj):
     return AoI_point
 
 def how_close_is_calibrated_point(point_1, point_2, buffer_distance, point_number):
+    """
+    how_close_is_calibrated_point calculates whether 2 points are within a
+    certain distance of each other
+    :param point_1: first point object
+    :param point_2: second point object
+    :param buffer_distance: distance (meters) for the buffer area starting from
+    point 1
+    :param point_number: number of the point to evaluate
+    :returns:
+        - bool - True if point_2 is within buffer distance of point_1. False otherwise.
+        - meters_distance - distance between point_1 and point_2.
+    """
     # create your circle buffer from one of the points - is this in km?
     distance = buffer_distance
     circle_buffer = point_1.buffer(distance)
@@ -160,6 +219,16 @@ def how_close_is_calibrated_point(point_1, point_2, buffer_distance, point_numbe
         return False, meters_distance
 
 def find_points_within_buffer_distance(point_to_test, calib_multipoints, buffer_distance_meters):
+    """
+    find_points_within_buffer_distance calculates which points from a multipoint
+    object are within a certain buffer distance of a given point
+    :param point_to_test: point to take the buffer distance from
+    :param calib_multipoints: multipoint object with the location of the points to test
+    :param buffer_distance_meters: distance (meters) for the buffer area starting from point_to_test
+    :returns:
+        - points_in_buffer - points with from the calib_multipoints object that lie within
+        the buffer distance of point_to_test
+    """
     circle = point_to_test.buffer(buffer_distance_meters)
     points_in_buffer = []
     for p in calib_multipoints:
@@ -171,6 +240,18 @@ def find_points_within_buffer_distance(point_to_test, calib_multipoints, buffer_
 
 # convert calib_points to the same coord system as the test points
 def create_list_test_calib_test_points(calib_df, test_df):
+    """
+    create_list_test_calib_test_points convert the dataframes of points to list
+    shapely point objects
+    :param calib_df: pandas dataframe with the parameters of the closest calibration points
+    to the test points
+    :param test_df: pandas geodataframe with the point locations of the test points in the
+    area of interest
+    :returns:
+        - test_points_list - list of point objects corresponding to the test points
+        - calib_points - list of point objects corresponding to the calibrated points
+
+    """
     calib_points = []
     test_points_list = []
     for i in range(len(calib_df)):
@@ -185,7 +266,17 @@ def create_list_test_calib_test_points(calib_df, test_df):
     return test_points_list, calib_points
 
 def get_points_in_buffer_distance(in_file_calib, out_file, boolean_file_test):
+    """
+    get_points_in_buffer_distance creates a csv file with the distances between the
+    test point and the calibrated points **UNFINISHED**
+    :param in_file_calib: csv file with the parameters of the closest calibration points
+    to the test points
+    :param out_file: name of csv file to save the distance (m) from the calibrated
+    to the test point
+    :param boolean_file_test: point object csv file for the test points in the area of interest
+    """
     #########
+    ##### UNFINISHED????? #####
     # need the following conversion as the input of the create_list_test_calib_test_points function
     # the x,y test points are taken from the bool_lat_lon file which has the
     # geometry column in POINT geometry form.

@@ -23,6 +23,15 @@ from run_json import *
 # input the data file
 ## must have a list of lat lon points
 def is_it_in_aoi(lat_lon_file, output_file, AoI_file):
+    """
+    is_it_in_aoi checks that the given lat, lon test points are in the area of
+    interest.
+
+    :lat_lon_file: lat, lon coords of the points to test. Must be in EPSG:4326.
+    :output_file: name of .csv output file
+    :AoI_file: shapefile of the area of interest
+    :return: file with geometry point objects of the points in the area of interest
+    """
     # shapefile with the area of interest
     AoI_file = gpd.read_file(AoI_file, index=False)
     AoI_file = gpd.GeoDataFrame(AoI_file)

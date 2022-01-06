@@ -28,6 +28,9 @@ closest_cal_points = FILE_PATHS["closest_cal_points"]
 points_in_buffer = FILE_PATHS["points_in_buffer"]
 
 def run_find_closest_calibrated_point():
+    """
+    run_find_closest_calibrated_point finds the calibrated points closest to the test points.
+    """
     # find_closest_calibrated_point
     convert_calib_to_lat_lon(dem_file,\
     calibration_file,\
