@@ -4,6 +4,11 @@ dependencies:
   - numpy
   - pybind11
   - xtensor-python
+  - matplotlib
+  - pandas
+  - rasterio
+  - shapely
+  - geopandas
 channels:
   - defaults
   - conda-forge
