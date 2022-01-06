@@ -11,7 +11,6 @@
      "transform_csv" : "./test_transform.csv",
      "slope_file" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Topography/eu_dem_AoI_epsg32633_SLOPE.bil",
      "ground_motion_failure" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/GroundMotion/Failure/Failtime_1_since_20141020.bil",
-     "iverson_param" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Iverson_MC_parameters.csv",
-     "path_to_simulation_repo" : "/exports/csce/datastore/geos/users/s1440040/projects/lsdfailtools/automation"
+     "iverson_param" : "/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/Iverson_MC_parameters.csv"
 
    }
