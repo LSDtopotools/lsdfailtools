@@ -34,12 +34,12 @@ def is_it_in_aoi(lat_lon_file, output_file, AoI_file):
     """
     # shapefile with the area of interest
     AoI_file = gpd.read_file(AoI_file, index=False)
-    AoI_file = gpd.GeoDataFrame(AoI_file)
+    #AoI_file = gpd.GeoDataFrame(AoI_file)
     AoI_file = AoI_file.drop(columns=['id'])
 
     # coordinate system of the AoI file
     AoI_crs = AoI_file.crs
-    print(AoI_crs)
+    print('CRS:',AoI_crs)
 
     # csv file with the points of interest - to check if they are in area of interest.
     # THE COORDINATES MUST BE IN THE SAME CRS AS THE AREA OF INTEREST

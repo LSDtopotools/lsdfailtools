@@ -84,7 +84,7 @@ def comparison_with_anomalous_failure(lat_failures, lon_failures, anomalies_csv)
     :returns:
         - anomalies_list - Boolean list. Elements are True if failure is anomalous, False otherwise.
     """
-    anomalies = pd.read_csv(anomalies_csv)
+    anomalies = pd.read_csv(anomalies_csv,engine='python',sep=None)
     lat_anomalies = anomalies['Y']
     lon_anomalies = anomalies['X']
     anomalies_list = []
@@ -143,9 +143,9 @@ def get_output_csv(lat_failures, lon_failures, distance_between_points, anomalou
         lon_failure = lon_failures[i]
 
 
-        FoS = np.load(f'FoS_{lat_failure}_{lon_failure}.npy')
-        FoS_temp = np.load(f'FoS_temp_{lat_failure}_{lon_failure}.npy')
-        min_depth = np.load(f'min_depth_{lat_failure}_{lon_failure}.npy')
+        FoS = np.load(f'{rundir}FoS_{lat_failure}_{lon_failure}.npy')
+        FoS_temp = np.load(f'{rundir}FoS_temp_{lat_failure}_{lon_failure}.npy')
+        min_depth = np.load(f'{rundir}min_depth_{lat_failure}_{lon_failure}.npy')
 
         FoS_df = pd.DataFrame(FoS_temp[0,:])
         FoS_df.columns = ['FoS']
