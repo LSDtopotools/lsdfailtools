@@ -23,6 +23,11 @@ aoi_shapefile = FILE_PATHS["aoi_shapefile"]
 
 
 def run_lat_lon_area_check(input_csv_path, input_csv_name):
+    """
+    run_lat_lon_area_check checks if the test points are in area of interest and creates a file with the points in the area of interest.
+    :param input_csv_path: path to the location of the csv file with the test points
+    :param input_csv_name: name of csv file with the test points
+    """
     full_input_csv = input_csv_path+input_csv_name
 
     # lat_lon_area_check

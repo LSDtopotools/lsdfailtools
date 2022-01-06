@@ -41,6 +41,12 @@ points_in_buffer = FILE_PATHS["points_in_buffer"]
 anomaly_failures = FILE_PATHS["anomaly_failures"]
 
 def landslide_output_from_rain(rainfall_file, rundir):
+    """
+    landslide_output_from_rain runs the iverson model on the test points given the rainfall timeseries. It finds the failures
+    and generates the output csv file with the factor of safety timseries. 
+    :param rainfall_file: csv file with the precipitation timeseries
+    :param rundir: directory where output files will be saved
+    """
     ##########################################################################
     # 0. Load rasters into arrays for DEM, slope, failtimes and prefailtimes for a given failure threshold. Let's use 80mm/yr for now.
     demarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(demfile)
