@@ -1,0 +1,9 @@
+name: lsdfailtools
+dependencies:
+  - python=3.8
+  - numpy
+  - pybind11
+  - xtensor-python
+channels:
+  - defaults
+  - conda-forge
