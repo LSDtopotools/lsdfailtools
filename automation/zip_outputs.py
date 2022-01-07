@@ -8,14 +8,14 @@ def zip_output_files(rundir):
     :returns:
         - files_to_zip - list of the files that have been zipped
     """
-    zipObj = ZipFile('landslide_failures_output.zip', 'w')
+    zipObj = ZipFile(f'{rundir}/landslide_failures_output.zip', 'w')
 
     # Add multiple files to the zip
     files_to_zip = []
     for file in os.listdir(rundir):
         if file.startswith('fos_timeseries'):
             print(file)
-            files_to_zip.append(file)
+            files_to_zip.append(f'{rundir}/{file}')
 
     for i in range(len(files_to_zip)):
         zipObj.write(files_to_zip[i])
