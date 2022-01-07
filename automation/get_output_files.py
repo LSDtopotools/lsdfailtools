@@ -12,8 +12,10 @@ import os
 import rasterio
 from shapely import wkt
 import geopandas as gpd
-from prediction_landslide_outputs import *
-from run_json import *
+
+from .image_functions import ENVI_raster_binary_to_2d_array
+from .prediction_landslide_outputs import *
+from .run_json import *
 
 ############################################
 # Script with function that will run functions needed to get the outputs from
@@ -49,9 +51,9 @@ def landslide_output_from_rain(rainfall_file, rundir):
     """
     ##########################################################################
     # 0. Load rasters into arrays for DEM, slope, failtimes and prefailtimes for a given failure threshold. Let's use 80mm/yr for now.
-    demarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(demfile)
-    slopearr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(slopefile)
-    failarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(failfile)
+    demarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(demfile)
+    slopearr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(slopefile)
+    failarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(failfile)
 
     # select the point of interest from the raster files.
     #'./test_closest_calibration_points.csv' - this is the new file instead of the one with the single point

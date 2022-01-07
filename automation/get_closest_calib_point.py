@@ -8,9 +8,9 @@ import rasterio
 from shapely import wkt
 import geopandas as gpd
 
-from run_json import *
+from .run_json import *
 
-from find_closest_calibrated_point import *
+from .find_closest_calibrated_point import *
 
 ############################################
 # Script with function that will run functions needed to get the closest calibrated points from the

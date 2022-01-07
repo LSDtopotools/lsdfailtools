@@ -8,8 +8,8 @@ import rasterio
 from shapely import wkt
 import geopandas as gpd
 
-from lat_lon_area_check import *
-from run_json import *
+from .lat_lon_area_check import *
+from .run_json import *
 
 ############################################
 # Script with function that will run functions needed to calculate the points

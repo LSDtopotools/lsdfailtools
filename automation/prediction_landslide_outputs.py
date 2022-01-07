@@ -17,10 +17,10 @@ import numpy as np
 import json
 import os
 import rasterio
-import val_functions as fn
+from .val_functions import get_fos_point_of_interest
 from shapely import wkt
 import geopandas as gpd
-from run_json import *
+from .run_json import *
 
 FILE_PATHS = read_paths_file()
 bool_lat_lon = FILE_PATHS["bool_lat_lon"]
@@ -61,7 +61,7 @@ def find_lon_lat_failures(lats, lons, rain, depths, calibrated_multiple_point_pa
     lat_failures = []
     lon_failures = []
     for i in range(len(lats)):
-        lat, lon = fn.get_fos_point_of_interest(rain, depths, calibrated_multiple_point_params.loc[i], lats[i], lons[i], demval_point[i][0], slopeval_point[i][0], failval_point[i][0], rundir)
+        lat, lon = get_fos_point_of_interest(rain, depths, calibrated_multiple_point_params.loc[i], lats[i], lons[i], demval_point[i][0], slopeval_point[i][0], failval_point[i][0], rundir)
         lat_failures.append(int(lat))
         lon_failures.append(int(lon))
 

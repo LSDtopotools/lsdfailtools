@@ -14,14 +14,16 @@ from osgeo.gdalconst import *
 import pandas as pd
 import os
 import sys
-import image_functions as fn
+
+from .image_functions import ENVI_raster_binary_to_2d_array, ENVI_raster_binary_from_2d_array
+
 from shapely.ops import nearest_points
 from shapely import wkt
 import pyproj
 
 from shapely.geometry import Point
 from shapely.ops import transform
-from run_json import *
+from .run_json import *
 
 
 ### IMPORTANT NOTE ### REMEMBER THAT SOME POINTS HAVE TWO VALUES, THIS IS WHY
@@ -43,7 +45,7 @@ def convert_calib_to_lat_lon(dem_raster, calib_csv, output_calib_raster):
     dem_file = dem_raster
 
     # 0. Load rasters into arrays
-    demarr, pixelWidth, (geotransform, inDs) = fn.ENVI_raster_binary_to_2d_array(dem_file)
+    demarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(dem_file)
 
     calibration_file = calib_csv
 
@@ -59,7 +61,7 @@ def convert_calib_to_lat_lon(dem_raster, calib_csv, output_calib_raster):
     #input_array[input_array == 0] = 'nan'
 
     # convert the row,col of the calibration file into lat, lon coordinates
-    new_geotransform,new_projection,file_out = fn.ENVI_raster_binary_from_2d_array( (geotransform, inDs), output_calib_raster, pixelWidth, input_array)
+    new_geotransform,new_projection,file_out = ENVI_raster_binary_from_2d_array( (geotransform, inDs), output_calib_raster, pixelWidth, input_array)
     print('I am done. The calibration file now has lon, lat coordinates.')
 
 # Convert the raster file with the calibrated points to a shapefile + csv file
