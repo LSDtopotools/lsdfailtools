@@ -16,9 +16,9 @@ def run_landslide_simulation(input_dir, input_file_lat_lon, input_file_rain, fil
     :param input_file_lat_lon: name of the file with the test data points
     :param input_file_rain: full path and name of the rainfall timeseries data
     """
-    run_lat_lon_area_check(input_dir, input_file_lat_lon, file_paths)
-    run_find_closest_calibrated_point(file_paths)
+    run_lat_lon_area_check(input_dir, input_file_lat_lon, input_dir, file_paths)
+    run_find_closest_calibrated_point(input_dir, file_paths)
     landslide_output_from_rain(input_file_rain, input_dir, file_paths)
     files_to_zip = zip_output_files(input_dir)
     remove_zipped_files(files_to_zip)
-    remove_unwanted_files()
+    #remove_unwanted_files()

@@ -17,18 +17,18 @@ from .find_closest_calibrated_point import *
 # 10/12/2021
 ############################################
 
-def run_find_closest_calibrated_point(file_paths):
+def run_find_closest_calibrated_point(rundir, file_paths):
     """
     run_find_closest_calibrated_point finds the calibrated points closest to the test points.
     """
 
     dem_file = file_paths["dem_file"]
     calibration_file = file_paths["calibration_file"]
-    transform_bil = file_paths["transform_bil"]
-    transform_csv = file_paths["transform_csv"]
-    bool_lat_lon = file_paths["bool_lat_lon"]
-    closest_cal_points = file_paths["closest_cal_points"]
-    points_in_buffer = file_paths["points_in_buffer"]
+    transform_bil = f'{rundir}/test_transform.bil'
+    transform_csv = f'{rundir}/test_transform.csv'
+    bool_lat_lon = f'{rundir}/bool_lat_lon.csv'
+    closest_cal_points = f'{rundir}/test_closest_calibration_points_add_coords.csv'
+    points_in_buffer = f'{rundir}/test_points_within_buffer_distance.csv'
 
     # find_closest_calibrated_point
     convert_calib_to_lat_lon(dem_file,\

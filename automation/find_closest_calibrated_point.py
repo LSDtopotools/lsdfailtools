@@ -73,8 +73,7 @@ def convert_calib_raster_to_csv_shp(calib_raster):
     shapefile/csv object
     :calib_raster: raster file to be converted
     """
-    filename_full = os.path.basename(calib_raster)
-    filename = filename_full.split('.')
+    filename = calib_raster.split('.')
     filename = filename[0]
 
     inDs = gdal.Open(calib_raster)

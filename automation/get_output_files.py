@@ -32,7 +32,7 @@ def landslide_output_from_rain(rainfall_file, rundir, file_paths):
     :param rundir: directory where output files will be saved
     """
 
-    bool_lat_lon = file_paths["bool_lat_lon"]
+    bool_lat_lon = f'{rundir}/bool_lat_lon.csv'
     #rundir = file_paths["rundir"]
     # parameter files
     # the params used to define the physical soil properties in the iverson MC runs
@@ -45,8 +45,6 @@ def landslide_output_from_rain(rainfall_file, rundir, file_paths):
     # topography files
     demfile = file_paths["dem_file"]
     slopefile = file_paths["slope_file"]
-    closest_cal_points = file_paths["closest_cal_points"]
-    points_in_buffer = file_paths["points_in_buffer"]
     anomaly_failures = file_paths["anomaly_failures"]
 
     
@@ -58,7 +56,7 @@ def landslide_output_from_rain(rainfall_file, rundir, file_paths):
 
     # select the point of interest from the raster files.
     #'./test_closest_calibration_points.csv' - this is the new file instead of the one with the single point
-    calibrated_multiple_points_path = closest_cal_points
+    calibrated_multiple_points_path = f'{rundir}/test_closest_calibration_points_add_coords.csv'
     calibrated_multiple_point_params = pd.read_csv(calibrated_multiple_points_path, index_col=None)
 
     lons = calibrated_multiple_point_params['lon_test'].to_list()
@@ -97,7 +95,7 @@ def landslide_output_from_rain(rainfall_file, rundir, file_paths):
     #anomalies_list = comparison_with_anomalous_failure( anomalies_csv)
     lat_failures, lon_failures = find_lon_lat_failures(lats, lons, rain, depths,calibrated_multiple_point_params,demval_point,slopeval_point,failval_point,rundir)
     ###########################################################
-    distance_between_points_file = points_in_buffer
+    distance_between_points_file = f'{rundir}/test_points_within_buffer_distance.csv'
     distance_between_points = pd.read_csv(distance_between_points_file, index_col=None)
 
     anomalous_failures_bool = comparison_with_anomalous_failure(lat_failures, lon_failures, anomaly_failures)
