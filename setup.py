@@ -110,9 +110,14 @@ setup(
     url='https://github.com/LSDTopoTools/lsdfailtools',
     description= 'TO DO',
     long_description='',
-    packages=find_packages(include=['lsdfailtools', 'lsdfailtools.*']),
+    packages=find_packages(include=['automation','lsdfailtools', 'lsdfailtools.*']),
     ext_modules=ext_modules,
     install_requires=['pybind11>=2.0.1', 'numpy'],
     cmdclass={'build_ext': BuildExt},
+    entry_points={
+        'console_scripts': [
+            'lsdfailtools-automate = automation.run_full_landslide_simulation:main'
+            ],
+        },
     zip_safe=False,
 )
