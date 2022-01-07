@@ -81,7 +81,7 @@ def landslide_output_from_rain(rainfall_file, rundir, file_paths):
     # We are assuming that the rainfall data is the same for all the points
     # the area of interest hasa rough length of 30km which is the resolution of the
     # precipitaiton data we have.
-    rainfile = rainfall_file
+    rainfile = f'{rundir}/{rainfall_file}'
     #"/exports/csce/datastore/geos/groups/LSDTopoData/FORESEE/Data/Calibration/2014-01-01_to_2019-12-31_Intensity.csv"
 
     rain = pd.read_csv(rainfile)
