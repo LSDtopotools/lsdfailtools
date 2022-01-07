@@ -15,7 +15,6 @@ import geopandas as gpd
 
 from .image_functions import ENVI_raster_binary_to_2d_array
 from .prediction_landslide_outputs import *
-from .run_json import *
 
 ############################################
 # Script with function that will run functions needed to get the outputs from
@@ -24,31 +23,33 @@ from .run_json import *
 # Marina Ruiz Sanchez-Oro
 # 10/12/2021
 ############################################
-FILE_PATHS = read_paths_file()
-bool_lat_lon = FILE_PATHS["bool_lat_lon"]
-#rundir = FILE_PATHS["rundir"]
-# parameter files
-# the params used to define the physical soil properties in the iverson MC runs
-Iverson_MC_params_file = FILE_PATHS["iverson_param"]
 
-# observed failure data files
-# don't need this anymore!
-failfile = FILE_PATHS["ground_motion_failure"]
-
-# topography files
-demfile = FILE_PATHS["dem_file"]
-slopefile = FILE_PATHS["slope_file"]
-closest_cal_points = FILE_PATHS["closest_cal_points"]
-points_in_buffer = FILE_PATHS["points_in_buffer"]
-anomaly_failures = FILE_PATHS["anomaly_failures"]
-
-def landslide_output_from_rain(rainfall_file, rundir):
+def landslide_output_from_rain(rainfall_file, rundir, file_paths):
     """
     landslide_output_from_rain runs the iverson model on the test points given the rainfall timeseries. It finds the failures
     and generates the output csv file with the factor of safety timseries. 
     :param rainfall_file: csv file with the precipitation timeseries
     :param rundir: directory where output files will be saved
     """
+
+    bool_lat_lon = file_paths["bool_lat_lon"]
+    #rundir = file_paths["rundir"]
+    # parameter files
+    # the params used to define the physical soil properties in the iverson MC runs
+    Iverson_MC_params_file = file_paths["iverson_param"]
+
+    # observed failure data files
+    # don't need this anymore!
+    failfile = file_paths["ground_motion_failure"]
+
+    # topography files
+    demfile = file_paths["dem_file"]
+    slopefile = file_paths["slope_file"]
+    closest_cal_points = file_paths["closest_cal_points"]
+    points_in_buffer = file_paths["points_in_buffer"]
+    anomaly_failures = file_paths["anomaly_failures"]
+
+    
     ##########################################################################
     # 0. Load rasters into arrays for DEM, slope, failtimes and prefailtimes for a given failure threshold. Let's use 80mm/yr for now.
     demarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(demfile)
@@ -101,4 +102,4 @@ def landslide_output_from_rain(rainfall_file, rundir):
 
     anomalous_failures_bool = comparison_with_anomalous_failure(lat_failures, lon_failures, anomaly_failures)
     ###########################################################
-    get_output_csv(lat_failures, lon_failures, distance_between_points,anomalous_failures_bool, rundir)
+    get_output_csv(lat_failures, lon_failures, distance_between_points,anomalous_failures_bool, rundir, bool_lat_lon)

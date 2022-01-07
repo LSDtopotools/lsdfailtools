@@ -20,10 +20,6 @@ import rasterio
 from .val_functions import get_fos_point_of_interest
 from shapely import wkt
 import geopandas as gpd
-from .run_json import *
-
-FILE_PATHS = read_paths_file()
-bool_lat_lon = FILE_PATHS["bool_lat_lon"]
 
 # select from the full DEMs the pixel corresponding to the test pixels
 def select_topo_data(topo_file, lons_list, lats_list):
@@ -122,7 +118,7 @@ def comparison_with_anomalous_failure(lat_failures, lon_failures, anomalies_csv)
 ### the boolean file is just to load the coordinates in the right coordinate frame
 # this will be the same as the one of the input epsg:4326
 
-def get_output_csv(lat_failures, lon_failures, distance_between_points, anomalous_failures_bool, rundir):
+def get_output_csv(lat_failures, lon_failures, distance_between_points, anomalous_failures_bool, rundir,bool_lat_lon ):
     """
     get_output_csv creates a csv file with a timeseries of factor of safety for each test point, as well as the distance
     from the chosen calibrated point, the day of failure and whether the failure is anomalous or not.
