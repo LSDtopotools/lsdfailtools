@@ -11,6 +11,7 @@ import time
 import shutil
 import re
 import numpy
+import glob
 import tkinter
 from tkinter import filedialog
 import platform
@@ -20,9 +21,6 @@ from osgeo import gdal, ogr, osr
 from osgeo.gdalnumeric import *
 from osgeo.gdalconst import *
 import csv
-
-gcs_path = "/home/willgoodwin/Software/anaconda3/envs/coastalsat/lib/python3.7/site-packages/fiona/gdal_data/"
-
 
 ################################################################################
 ################################################################################
@@ -230,6 +228,30 @@ def maps_to_timeseries(arglist, working_dir, data_product):
 	print (working_dir)
 
 
+def move_files(path_to_target, start_date, end_date):
+	files_to_move = []
+	path_to_bil_file_list = glob.glob(path_to_target + '*bil' )
+	path_to_hdr_file_list = glob.glob(path_to_target + '*hdr' )
+	path_to_nc4_file_list = glob.glob(path_to_target + '*nc4' )
+	path_to_hdf5_file_list = glob.glob(path_to_target + '*hdf5' )
+	files_to_move.extend(path_to_bil_file_list)
+	files_to_move.extend(path_to_hdr_file_list)
+	files_to_move.extend(path_to_nc4_file_list)
+	files_to_move.extend(path_to_hdf5_file_list)
+	new_directory = path_to_target+'run_start_'+start_date+'_end_'+end_date
+
+	# Check whether the specified path exists or not
+	isExist = os.path.exists(new_directory)
+	if not isExist:
+		# Create a new directory because it does not exist
+		os.mkdir(new_directory)
+		print("The new directory is created!")
+
+	for path_to_file in files_to_move:
+		file_name = os.path.basename(path_to_file)
+		shutil.move(path_to_file, new_directory+'/'+file_name)
+
+
 
 
 ################################################################################
@@ -315,7 +337,6 @@ def raster_crop(arglist, outfile):
 
 		# Cut the raster to your desired extent
 		os.system('gdalwarp -overwrite -of ENVI -t_srs EPSG:4326 -cutline ' + cutfile + ' -crop_to_cutline ' + to_cut + ' ' + cutted_file)
-		#os.system('gdalwarp --config GDAL_DATA ' + gcs_path + ' -overwrite -of ENVI -t_srs EPSG:4326 -cutline ' + cutfile + ' -crop_to_cutline ' + to_cut + ' ' + cutted_file)
 		# Get rid of the big files
 		os.system('rm ' + outfile)
 		os.system('rm ' + cutted_file+'.aux.xml')

@@ -130,11 +130,11 @@ download_dir = None
 DirEnd = None
 
 if arglist[0] == 'GPM_M':
-	create_dir = 'GPM_RAW_MONTH'; dwnld = gpm_month_download
+	create_dir = 'GPM_RAW_MONTH_'+arglist[1]+'_'+arglist[2]; dwnld = gpm_month_download
 elif arglist[0] == 'GPM_D':
-	create_dir = 'GPM_RAW_DAY'; dwnld = gpm_day_download
+	create_dir = 'GPM_RAW_DAY_'+arglist[1]+'_'+arglist[2]; dwnld = gpm_day_download
 elif arglist[0] == 'GPM_30min':
-	create_dir = 'GPM_RAW_30min'; dwnld = gpm_30min_download
+	create_dir = 'GPM_RAW_30min_'+arglist[1]+'_'+arglist[2]; dwnld = gpm_30min_download
 else:
 	print ("Please tell me what to download")
 	sys.exit(2)
@@ -210,8 +210,10 @@ print(f'working dir: {working_dir}')
 
 fn.maps_to_timeseries(arglist, working_dir, arglist[0])
 
-
-
+fn.move_files(working_dir, arglist[1], arglist[2])
+print(f'input dir data: {input_dir_data}')
+#fn.move_files(input_dir_data, arglist[1], arglist[2])
+#os.rename(input_dir_data+'/'+arglist[0]+'/', input_dir_data+'/'+arglist[0]+'/'+'start_'+arglist[1]+'_end_'+arglist[2])
 
 
 
