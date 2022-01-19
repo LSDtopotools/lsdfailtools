@@ -36,7 +36,8 @@ import csv
 ################################################################################
 
 #GPM MONTH
-from gpm_download_month_V06B import gpm_month_download
+#from gpm_download_month_V06B import gpm_month_download
+from gpm_download_month_V06B import *
 #GPM DAY
 from gpm_download_day_V06B import gpm_day_download
 #GPM 30min
@@ -107,7 +108,7 @@ if arglist[3] == None:
 			input_dir_data = input_dir_data
 
 	except:
-		print ("ERRO! You did not choose a directory.")
+		print ("ERROR! You did not choose a directory.")
 		sys.exit(2)
 else:
 
@@ -138,65 +139,59 @@ else:
 	print ("Please tell me what to download")
 	sys.exit(2)
 
-
 try:
 	os.mkdir(input_dir_data + backslh + create_dir)
 except:
 	pass
 
 download_dir = input_dir_data + backslh + create_dir
-print(download_dir,backslh,arglist[1],arglist[2])
+print(f'this is the download dir: {download_dir,backslh,arglist[1],arglist[2]}')
 
 if arglist[5] == False:
 	dwnld(download_dir,backslh=backslh,Start_Date = arglist[1],End_Date = arglist[2])
-
 DirEnd = create_dir
 
 zero_dir = download_dir#[:-1]
-fst_dir = input_dir_data + backslh + '1'
-thd_dir = input_dir_data + backslh + '3'
-fth_dir = input_dir_data + backslh + DirEnd + "_processed"
+process_dir = input_dir_data + backslh + DirEnd + "_processed"
 
 try:
-	os.mkdir(fst_dir)
+	os.mkdir(process_dir)
 except:
-	print (fst_dir + ": this directory already exists")
-try:
-	os.mkdir(thd_dir )
-except:
-	print (thd_dir + ": this directory already exists")
-try:
-	os.mkdir(fth_dir)
-except:
-	print (fth_dir + "_processed"+": this directory already exists")
+	print (process_dir + "_processed"+": this directory already exists")
 
 
 
 ################################################################################
 ################################################################################
-"""Dwnload the files"""
+"""Download the files"""
 ################################################################################
 ################################################################################
 
 
 zero_list = os.listdir(zero_dir)
 zero_list = sorted(zero_list, key = lambda x: x.rsplit('.', 1)[0])
+print(f'I am zero list: {zero_list}')
+print(f'i am arglist {arglist}')
 
 if arglist[0] == 'GPM_M': # We do not expect this case to arise in our use case
 	for n in range(0,len(zero_list),1):
-		fn.download_months(arglist, zero_list, zero_dir, fst_dir, backslh)
+		fn.download_months(arglist, zero_list, zero_dir, process_dir, backslh, n)
 
 
 
 elif arglist[0] == 'GPM_D': # We do not expect this case to arise in our use case
+	print('hello from GPM_D')
 	for n in range(0,len(zero_list),1):
-		fn.download_days(arglist, zero_list, zero_dir, fst_dir, backslh)
+		print('I shall start the downlad')
+		fn.download_days(arglist, zero_list, zero_dir, process_dir, backslh, n)
+		print('done with download_days')
 
 
 
 elif arglist[0] == 'GPM_30min':
 	for n in range(0,len(zero_list)-1,1):
-		fn.download_hhs(arglist, zero_list, zero_dir, fst_dir, backslh, n)
+		fn.download_hhs(arglist, zero_list, zero_dir, process_dir, backslh, n)
+		print('done with download_hhs')
 
 
 
@@ -210,8 +205,10 @@ else:
 #######################################################################
 
 # Where are the .bil files?
-working_dir = fst_dir + backslh
-fn.maps_to_timeseries(arglist, working_dir)
+working_dir = process_dir + backslh #'./1/'
+print(f'working dir: {working_dir}')
+
+fn.maps_to_timeseries(arglist, working_dir, arglist[0])
 
 
 

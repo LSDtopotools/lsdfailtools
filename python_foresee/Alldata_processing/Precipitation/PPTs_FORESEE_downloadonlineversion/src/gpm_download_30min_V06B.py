@@ -119,44 +119,6 @@ def gpm_30min_download(input_dir, Start_Date = None,End_Date = None, backslh ='\
             filelist.sort()
             print (filelist)
 
-
-            '''
-            try:
-                try:
-                    startImg = filelist.index('3B-DAY.MS.MRG.3IMERG.'+str_Start_Date[0]+str_Start_Date[1]+str_Start_Date[2]+'-S000000-E002959.V06.HDF5')
-                except:
-                    startImg = filelist.index('3B-HHR-E.MS.MRG.3IMERG.20000601-S000000-E002959.0000.V06B.HDF5')
-            except:
-                startImg = None
-            #DEL UNDER START
-            if years[i] == str_Start_Date[0]:
-                if months[j] == str_Start_Date[1]:
-                    #Start month
-                    try:
-                        del filelist[:startImg]
-                    except:
-                        pass
-                else:
-                    pass
-            else:
-                pass
-            try:
-                endImg = filelist.index('3B-DAY.MS.MRG.3IMERG.'+str_End_Date[0]+str_End_Date[1]+str_End_Date[2]+'-S233000-E235959.V06.HDF5')
-            except:
-                endImg = None
-            #print startImg,endImg,
-            #print '3B-DAY.MS.MRG.3IMERG.'+str_End_Date[0]+str_End_Date[1]+str_End_Date[2]+'-S000000-E235959.V05.nc4'
-            #DEL OVER END
-            if years[i] == str_End_Date[0]:
-                if months[j] == str_End_Date[1]:
-                    #End month
-                    try:
-                        del filelist[endImg+1:]
-                    except:
-                        pass
-            else:
-                pass
-            '''
             filteredList = filelist #= list(filter(lambda x: x not in os.listdir(input_dir),filelist))
 
             print(filteredList)
@@ -165,6 +127,4 @@ def gpm_30min_download(input_dir, Start_Date = None,End_Date = None, backslh ='\
 
                 os.system('wget --user=' + os.environ["NASA_USERNAME"] + ' --password=' + os.environ["NASA_PASSWORD"] + ' --show-progress -c -q '+  url + filteredList[item] + ' -O ' + input_dir + backslh + filteredList[item])
 
-    #except:
-    #    print ('\nDownloads finished')
     print ('\nDownloads finished')

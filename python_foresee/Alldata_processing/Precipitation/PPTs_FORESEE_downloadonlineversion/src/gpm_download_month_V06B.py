@@ -9,13 +9,69 @@ import os
 import re
 import string
 import datetime
+import numpy as np
 from urllib.request import urlopen
 
 from Login_UI import retrieveLogin
 
+def what_files_to_keep_case_1(mylist,start_month_download,end_month_download, items_to_keep):
+    # for the first year of the data required, given the end date is also in that year and there is only one year to take data from
+    for item in range(0,len(mylist)):
+        month_of_file = int(mylist[item].split(".")[-3])
+        item_name = mylist[item]
+        if ((month_of_file >= start_month_download) and (month_of_file <= end_month_download)):
+            print(f'i am keeping month{month_of_file}')
+            print(f'item_name:{str(item_name)}')
+            items_to_keep.append(item_name)
+        else:
+            print(f'i am not keeping{month_of_file}')
+            print(f'item name: {item_name}')
+    return items_to_keep
+
+
+def what_files_to_keep_case_2(mylist, start_month_download, items_to_keep):
+    # first year but there are more years to come. Download ends in month 12 instead in End_month.
+    for item in range(0,len(mylist)):
+        month_of_file = int(mylist[item].split(".")[-3])
+        item_name = mylist[item]
+        if ((month_of_file >= start_month_download)):
+            print(f'i am keeping month{month_of_file}')
+            print(f'item_name:{str(item_name)}')
+            items_to_keep.append(item_name)
+        else:
+            print(f'i am not keeping{month_of_file}')
+            print(f'item name: {item_name}')
+    return items_to_keep
+
+def what_files_to_keep_case_3(mylist,items_to_keep):
+    # keep all files in that year - this is the case for an intermediate year in the given time period
+    for item in range(0,len(mylist)):
+        month_of_file = int(mylist[item].split(".")[-3])
+        item_name = mylist[item]
+        print(f'i am keeping month{month_of_file}')
+        items_to_keep.append(item_name)
+    return items_to_keep
+
+
+def what_files_to_keep_case_4(mylist, end_month_download,items_to_keep):
+    # last year of the period. Always starts in month 1 and finishes in end_month
+    for item in range(0,len(mylist)):
+        month_of_file = int(mylist[item].split(".")[-3])
+        item_name = mylist[item]
+        if ((month_of_file <= end_month_download)):
+            print(f'i am keeping month{month_of_file}')
+            print(f'item_name:{str(item_name)}')
+            items_to_keep.append(item_name)
+        else:
+            print(f'i am not keeping{month_of_file}')
+            print(f'item name: {item_name}')
+    return items_to_keep
+
+
+
 def gpm_month_download(outputDir, Start_Date = None,End_Date = None, backslh ='\\'):
 
-    GetLoginInfo = list(retrieveLogin())
+    #GetLoginInfo = list(retrieveLogin())
 
     #Get actual time
     try:
@@ -42,6 +98,8 @@ def gpm_month_download(outputDir, Start_Date = None,End_Date = None, backslh ='\
 
     str_Start_Date = list(map(str,Start_Date))
     str_End_Date = list(map(str,End_Date))
+    print('hello')
+
 
     #Start month
     if len(str_Start_Date[1]) == 1:
@@ -59,69 +117,78 @@ def gpm_month_download(outputDir, Start_Date = None,End_Date = None, backslh ='\
 
 
     years = list(map(str,range(start_year,end_year+1)))
+    print(f'years: {years}')
+    items_to_keep = []
+    start_datetime = datetime.datetime(Start_Date[0], Start_Date[1], Start_Date[2])
+    end_datetime = datetime.datetime(End_Date[0], End_Date[1], End_Date[2])
+    num_months = (end_datetime.year - start_datetime.year) * 12 + (end_datetime.month - start_datetime.month)
+    full_file_list = []
+    year_count = 0
 
-    #Download files
-    try:
-        for i in range(0,len(years),1):
 
-            url ='https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGM.06/'+years[i]+'/'
+    for i in range(0,len(years),1):
+        #print(f'I am moving on to year {years[i]}')
 
-            #Acess the URL
-            try:
-                urlpath =urlopen(url)
-            except:
-                continue
+        url ='https://gpm1.gesdisc.eosdis.nasa.gov/data/GPM_L3/GPM_3IMERGM.06/'+years[i]+'/'
+        print(url)
 
-            #Decode the URL
-            string = urlpath.read().decode('utf-8')
+        #Acess the URL
+        try:
+            urlpath =urlopen(url)
+        except:
+            continue
 
-            #Extract HDF5 files and make an file list
-            pattern = re.compile('3B.*?HDF5.*?')
-            filelist = list(set(list(map(str,pattern.findall(string)))))
-            filelist.sort()
+        #Decode the URL
+        string = urlpath.read().decode('utf-8')
 
-            try:
-                try:
-                    startImg = filelist.index('3B-MO.MS.MRG.3IMERG.'+str_Start_Date[0]+str_Start_Date[1]+'01'+'-S000000-E235959.'+ str_Start_Date[1] +'.V06B.HDF5')
-                except:
-                    startImg = filelist.index('3B-MO.MS.MRG.3IMERG.20000601-S000000-E235959.06.V06B.HDF5')
-            except:
-                startImg = None
+        #Extract HDF5 files and make a file list
+        pattern = re.compile('3B.*?HDF5.*?')
+        filelist = list(set(list(map(str,pattern.findall(string)))))
+        filelist.sort()
 
-            #DEL UNDER START
-            if years[i] == str_Start_Date[0]:
-                #Start month
-                try:
-                    del filelist[:startImg]
-                except:
-                    pass
-            else:
-                pass
+        filteredList = filelist #= list(filter(lambda x: x not in os.listdir(outputDir),filelist))
+        # extend to get a full list
+        #full_file_list.extend(filteredList)
+        start_month_download = int(str_Start_Date[1])
+        end_month_download = int(str_End_Date[1])
 
-            try:
-                endImg = filelist.index('3B-MO.MS.MRG.3IMERG.'+str_End_Date[0]+str_End_Date[1]+'01'+'-S000000-E235959.'+str_End_Date[1]+'.V06B.HDF5')
-            except:
-                endImg = None
 
-            #DEL OVER END
-            if years[i] == str_End_Date[0]:
-                #End month
-                try:
-                    del filelist[endImg+1:]
-                except:
-                    pass
-            else:
-                pass
+        months_to_download = np.arange(int(start_month_download), int(end_month_download),1)
+        #items_to_keep = []
+        #print(f'this is year count {year_count}')
+        #print(f'this is the length of years: {len(years)}')
+        if (year_count == 0 and len(years)==1):
+            # we start from the first year
+            to_keep = what_files_to_keep_case_1(filteredList, start_month_download, end_month_download,items_to_keep)
+            print('case 1: this is the first year and there are no more years to come')
+            to_keep.extend(full_file_list)
+        elif (year_count == 0 and len(years)!=1):
+            # first year but there are more to come:
+            to_keep = what_files_to_keep_case_2(filteredList,start_month_download,items_to_keep)
+            to_keep.extend(full_file_list)
+            print('case 2: this is the first year and there are more years to come')
+        elif (year_count != 0 and len(years)!=(year_count+1)):
+            #keep all files
+            to_keep = what_files_to_keep_case_3(filteredList,items_to_keep)
+            to_keep.extend(full_file_list)
+            print('case 3: this is an intermediate year')
+        else:
+            # last year
+            to_keep = what_files_to_keep_case_4(filteredList,end_month_download,items_to_keep)
+            to_keep.extend(full_file_list)
+            print('case 4: this is the last year')
 
-            filteredList = filelist #= list(filter(lambda x: x not in os.listdir(outputDir),filelist))
 
-            print(filteredList)
 
-            for item in range(0,len(filteredList)):
+        print(f'these are the items to keep: {items_to_keep}')
+        year_count +=1
+        print('Starting download')
 
-                os.system('wget --user=' + GetLoginInfo[0] + ' --password=' + GetLoginInfo[1] + ' --show-progress -c -q '+  url + filteredList[item] + ' -O ' + outputDir + backslh + filteredList[item])
 
-    except:
-        print ('\nDownloads finished')
+        for item in range(0,len(items_to_keep)):
+            os.system('wget --user=' + os.environ["NASA_USERNAME"] + ' --password=' + os.environ["NASA_PASSWORD"] + ' --show-progress -c -q '+  url + items_to_keep[item] + ' -O ' + outputDir + backslh + items_to_keep[item])
 
-    print ('\nDownloads finished')
+    #except:
+        #print ('\nDownloads finished')
+
+    #print ('\nDownloads finished')

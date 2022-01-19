@@ -31,7 +31,7 @@ gcs_path = "/home/willgoodwin/Software/anaconda3/envs/coastalsat/lib/python3.7/s
 ################################################################################
 
 #GPM MONTH
-from gpm_download_month_V06B import gpm_month_download
+#from gpm_download_month_V06B import gpm_month_download
 #GPM DAY
 from gpm_download_day_V06B import gpm_day_download
 #GPM 30min
@@ -159,37 +159,72 @@ def ENVI_raster_binary_to_2d_array(file_name):
 
 
 
-def maps_to_timeseries(arglist, working_dir):
+def maps_to_timeseries(arglist, working_dir, data_product):
 	# List the .bil files
 	print('Got to the timeseries function')
 	files = sorted(os.listdir(working_dir)); bilfiles = []
+
 	for i in range(len(files)):
 		ending = files[i][-4:]
+		print(f"i am the ending: {ending}")
 		if ending == '.bil':
 			bilfiles.append(files[i])
+	print(bilfiles)
 
 
 	#Timelist = []
 	#CumTimelist = []
 	#Intlist = []
 	Full_list = []
+	thirty_one_day_months = [1,3, 5, 7, 8, 10, 12]
+	thirty_day_months = [4, 6, 9, 11]
+	february_special_month = [2]
 	for i in range(len(bilfiles)):
 		print (bilfiles[i])
-		timer = datetime.datetime.strptime(bilfiles[i], 'Calib_rainfall_%Y%m%d-S%H%M%S-V06B_cut.bil')
-
+		leap_year = False
+		file_ending = bilfiles[i].split('/')[-1]
+		if file_ending[-8:] == '_cut.bil':
+			timer = datetime.datetime.strptime(bilfiles[i], 'Calib_rainfall_%Y%m%d-S%H%M%S-V06B_cut.bil')
+			month = timer.month
+			year = timer.year
+			if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
+				leap_year = True
+		else:
+			print('I am not the right file')
+			pass
 		# Add to the rainfall list
 		Rainarr, pixelWidth, (geotransform, inDs) = ENVI_raster_binary_to_2d_array(working_dir + bilfiles[i])
+		print(Rainarr)
+		# takes the average over the whole raster image
 		Rain = numpy.mean(Rainarr)
-		Intensity = Rain/(30*60) # Intensity of rainfall during the period (mm/sec)
+		if data_product == 'GPM_30min':
+			converting_factor = 30*60 # seconds in 30 minutes
+		elif data_product == 'GPM_D':
+			converting_factor = 24*3600 # seconds in a day
+		else:
+			if month in thirty_day_months:
+				converting_factor = 30*24*3600 # seconds in a month
+				print('I have 30 days')
+			elif month in thirty_one_day_months:
+				converting_factor = 31*24*3600 # seconds in a month
+				print('I have 31 days')
+			else:
+				if leap_year == True:
+					print('I am february in a leap year ')
+					converting_factor = 29*24*3600 # seconds in a month
+				else:
+					print('I am february in a non-leap year')
+					converting_factor = 28*24*3600 # seconds in a month
+		Intensity = Rain/(converting_factor) # Intensity of rainfall during the period (mm/sec) - converted from mm
 		#Intlist.append(Intensity)
 
 		# Save it all together
-		Full_list.append([30*60, Intensity])
+		Full_list.append([converting_factor, Intensity])
 
 	# Now save the stuff
-	with open(working_dir+arglist[1]+"_to_"+arglist[2]+"_Intensity.csv", "w", newline="") as f:
+	with open(working_dir+arglist[1]+"_to_"+arglist[2]+"_"+arglist[0]+"_rainfall.csv", "w", newline="") as f:
 	    writer = csv.writer(f)
-	    writer.writerow(['duration_s','intensity_mm_sec'])
+	    writer.writerow(['duration_s','rainfall_mm_sec'])
 	    writer.writerows(Full_list)
 	print ('DOOOOONE')
 	print (working_dir)
@@ -200,21 +235,26 @@ def maps_to_timeseries(arglist, working_dir):
 ################################################################################
 ################################################################################
 
-def download_months(arglist, zero_list, zero_dir, fst_dir, backslh):
+def download_months(arglist, zero_list, zero_dir, fst_dir, backslh, n):
 	if zero_list[n].endswith('.HDF5') > -1 and zero_list[n].find('.xml') == -1 and zero_list[n].find('.aux') == -1 and zero_list[n].find('.tfw') == -1:
 			if 	zero_list[n].find('.HDF5') > -1:
-				extract_subdata = 'HDF5:"%s%s%s"://Grid/precipitation' % (zero_dir,backslh,zero_list[n])
+				#extract_subdata = 'HDF5:"%s%s%s"://Grid/precipitation' % (zero_dir,backslh,zero_list[n])
+				extract_subdata = "%s%s%s" % (zero_dir,backslh,zero_list[n])
 				outfile = '%s%s%s.tif' % (fst_dir,backslh,zero_list[n][:-5])
+				print(f'this is the outfile: {outfile}')
 
 				process(outfile,extract_subdata,arglist[0])
 				raster_crop(arglist, outfile)
 				extract_subdata = outfile = None
 
 
-def download_days(arglist, zero_list, zero_dir, fst_dir, backslh):
+def download_days(arglist, zero_list, zero_dir, fst_dir, backslh, n):
 	if zero_list[n].endswith('.nc4') > -1 and zero_list[n].find('.xml') == -1 and zero_list[n].find('.aux') == -1 and zero_list[n].find('.tfw') == -1:
-			extract_subdata = 'HDF5:"%s%s%s"://precipitationCal' % (zero_dir, backslh, zero_list[n])
+			#extract_subdata = 'HDF5:"%s%s%s"://precipitationCal' % (zero_dir, backslh, zero_list[n])
+			extract_subdata = "%s%s%s" % (zero_dir,backslh,zero_list[n])
+			print(f'this is extract_subdata: {extract_subdata}')
 			outfile = '%s%s%s_precipitationCal.tif' % (fst_dir,backslh, zero_list[n][:-4])
+			print(f'this is the outfile: {outfile}')
 
 			process(outfile,extract_subdata,arglist[0])
 			raster_crop(arglist, outfile)
@@ -228,6 +268,7 @@ def download_hhs(arglist, zero_list, zero_dir, fst_dir, backslh, n):
 			extract_subdata = "%s%s%s" % (zero_dir,backslh,zero_list[n])
 			#extract_subdata = 'HDF5:"%s%s%s"://Grid/precipitation' % (zero_dir,backslh,zero_list[n])
 			outfile = '%s%s%s.bil' % (fst_dir,backslh,zero_list[n][:-5])
+			print(f'this is the outfile: {outfile}')
 
 			process(outfile,extract_subdata,arglist[0])
 			raster_crop(arglist, outfile)
@@ -242,15 +283,35 @@ def raster_crop(arglist, outfile):
 	if arglist[4] != 'None':
 		cutfile = arglist[4]
 		to_cut = outfile
+		print(f'cutfile file: {cutfile}')
+		print(f'to_cut file: {to_cut}')
 		cutted_file = outfile[:-4] + '_cut.bil'
-		# Give it a nice and easy name
-		A = cutted_file.split('.')
-		AA = A[0].split('/')[:-1]
-		AAA = '/'.join(AA)+'/'
-		B = A[4][:-7]
-		BB = A[6]
+		print(f'cutted file: {cutted_file}')
 
-		cutted_file = AAA+'Calib_rainfall_' + B + BB + '.bil'
+		# Find out the file path
+		f_path_str = cutted_file.rsplit('/',1)[0]
+		print(f'f_name {f_path_str}')
+		f_path = f_path_str+'/'
+		print(f'f_path {f_path}')
+
+		# Create the file name from existing file
+		f_name_str = cutted_file.rsplit('/',1)[-1]
+		f_name_str_split = f_name_str.split('.')
+		print(f_name_str_split)
+		date_str = f_name_str_split[4][:16]
+		print(f'date_str {date_str}')
+		end_string = f_name_str_split[6]
+		print(f'end_string {end_string}')
+		# the end results of the cutted file should be:
+		## A = split the file. we want only the stuff on the first chunk - this will have path info
+		## AA = 1 (name directory where we find the data)
+		## AAA = /1/ (add the slashes to make up the path)
+		## B = 20180101 (the date) - we also want to include the time if it's 30m
+		## BB = 'V06B_cut' - the final extension before the file type.
+
+
+
+		cutted_file = f_path + 'Calib_rainfall_' + date_str + '-' + end_string + '.bil'
 
 		# Cut the raster to your desired extent
 		os.system('gdalwarp -overwrite -of ENVI -t_srs EPSG:4326 -cutline ' + cutfile + ' -crop_to_cutline ' + to_cut + ' ' + cutted_file)

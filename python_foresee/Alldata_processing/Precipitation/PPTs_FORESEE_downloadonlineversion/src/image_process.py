@@ -13,8 +13,9 @@ from osgeo import gdal, ogr, osr
 from osgeo.gdalnumeric import *
 from osgeo.gdalconst import *
 
-
-gcs_path = "/home/willgoodwin/Software/anaconda3/envs/coastalsat/lib/python3.7/site-packages/fiona/gdal_data/"
+# TODO: need to change this process function to be customised for each specific dataset
+# This is because the data has slightly different format and the raster/netcdf layers that we need are
+# named differently.
 
 
 def process(out_dir,data_file,dataInfo):
@@ -23,10 +24,9 @@ def process(out_dir,data_file,dataInfo):
 	print ()
 	print ('PROCESSING')
 	print (out_dir)
-	print (data_file)
+	print (f'file name: {data_file}')
 	print (dataInfo)
 	print()
-
 
 
 	hourFactor = None
@@ -35,11 +35,14 @@ def process(out_dir,data_file,dataInfo):
 		hourFactor = 1
 
 	elif dataInfo == 'GPM_M':
-		fileName = (str(data_file).split("\\")[-1]).split('"')[0]
+		# we need to split also the directory
+		fileName = (str(data_file).split("\\")[-1]).split('/')[-1]#.split('"')[1].split('/')[-1]
+		print(f'this is the filename: {fileName}')
 
 
 		if str(fileName[20:28]) == '20140312':
 			hourFactor = 456
+		#print(fileName[20:24])
 
 		elif (int(fileName[20:24]) % 4) == 0:
 					if (fileName[24:26]) == '02':
@@ -66,13 +69,24 @@ def process(out_dir,data_file,dataInfo):
 	fname = str(data_file)
 	outname = str(out_dir)
 	outfile =  outname #[:-4].replace(".", "")
+	data_file_no_extension = os.path.splitext(data_file)[0]
 	#outfile = outfile + '.bil'
 
 	#####################################
 	# 0. Make the HDF5 file into a .tif containing the calibrated precipitation
 	#####################################
-	print (data_file)
-	os.system('gdal_translate -of GTiff HDF5:' + data_file + '://Grid/precipitationCal ' + data_file[:-5] + '.tif')
+	print (f"data file name:{data_file}")
+	print(f'This is the data file no extension: {data_file_no_extension}')
+	#quit()
+	if dataInfo == 'GPM_30min':
+		os.system('gdal_translate -of GTiff HDF5:' + data_file + '://Grid/precipitationCal ' + data_file_no_extension + '.tif')
+	elif dataInfo == 'GPM_D':
+		os.system('gdal_translate -of GTiff HDF5:' + data_file + '://precipitationCal ' + data_file_no_extension + '.tif')
+	else:
+		os.system('gdal_translate -of GTiff HDF5:' + data_file + '://Grid/precipitation ' + data_file_no_extension + '.tif')
+
+	print('done converting')
+	print(' I can do my job up to here. I am not a complete failure yay!')
 
 
 	#####################################
@@ -83,13 +97,15 @@ def process(out_dir,data_file,dataInfo):
 	print ('transposing and projecting into ', outfile)
 
 	# Open the created .tif
-	ds = gdal.Open(data_file[:-5] + '.tif')
+	ds = gdal.Open(data_file_no_extension + '.tif')
 
 	# Find out its transformation
 	#gt=ds.GetGeoTransform()
 
 	# Extract the band you need
 	band = ds.GetRasterBand(1)
+	print('done extracting band')
+
 
 
 	arr = band.ReadAsArray()
@@ -98,6 +114,7 @@ def process(out_dir,data_file,dataInfo):
 
 	# Set the driver
 	driver = gdal.GetDriverByName("ENVI")
+	print('set the driver')
 
 	# Set the extents and pixel sizes. That will be the tricky part
 	x_pixels = ds.RasterYSize  # number of pixels in x
@@ -111,6 +128,7 @@ def process(out_dir,data_file,dataInfo):
 	# Pixels need to cover the entire extent
 	X_PXL_SIZE = (x_max - x_min) / x_pixels # size of the X pixels
 	Y_PXL_SIZE = (y_max - y_min) / y_pixels  # size of the Y pixels
+	print('calculated raster properties')
 
 
 	#wkt_projection = 'a projection in wkt that you got from other file'
@@ -122,6 +140,7 @@ def process(out_dir,data_file,dataInfo):
         y_pixels,
         1,
         gdal.GDT_Float32, )
+	print('created driver')
 
 	# Define the GeoTransform
 
@@ -136,18 +155,24 @@ def process(out_dir,data_file,dataInfo):
 
 
 	# Define the target srs
+	print('creating srs')
 	srs = osr.SpatialReference()
 	srs.ImportFromEPSG(4326)
 	dataset.SetProjection(srs.ExportToWkt())
+	print('writing to band')
 
 
 
 
 	# Write array to band
 	dataset.GetRasterBand(1).WriteArray(TPSGPM)
+	print('save to disk')
 
 	# Save to disk
 	dataset.FlushCache()  # Write to disk.
+	print('remove tif file')
 
 	# remove the annoying tif file
-	os.system('rm ' + data_file[:-5] + '.tif')
+	os.system('rm ' + data_file_no_extension + '.tif')
+	print('Done removing')
+	print('Script image_process.py is working fine')
