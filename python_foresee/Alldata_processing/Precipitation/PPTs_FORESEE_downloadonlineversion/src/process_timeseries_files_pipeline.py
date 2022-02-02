@@ -15,24 +15,29 @@ import argparse
 import glob
 import os
 import pandas as pd
+from shapely.geometry import Point
+from shapely.ops import transform
+import pyproj
 
 parser = argparse.ArgumentParser()
 
 #-db DATABASE -u USERNAME -p PASSWORD -size 20000
 # 41parser.add_argument("-host", "--hostname", dest = "hostname", default = "xyz.edu", help="Server name")
-parser.add_argument("-f", "--file_folder", dest = "file_folder", help="Folder with the ")
-parser.add_argument("-x", "--x_lon",dest = "longitude", help="longitude of point ")
-parser.add_argument("-y", "--y_lat",dest ="latitude", help="latitude of point")
-parser.add_argument("-t", "--time",dest = "time", help="Date time in format %Y-%m-%d %H%M%S")#, type=int)
+parser.add_argument("-f", "--file_folder", dest = "file_folder", help="Folder with the files")
+parser.add_argument("-c", "--crs", dest = "crs", help="Coordinate system in the format EPSG:XXXX")
+parser.add_argument("-x", "--x_lon",dest = "longitude", help="Longitude of point", type=int)
+parser.add_argument("-y", "--y_lat",dest ="latitude", help="Latitude of point", type=int)
+parser.add_argument("-t", "--time",dest = "time", help="Date time in format %Y-%m-%d:%H%M%S")#, type=int)
 
 args = parser.parse_args()
 
 file_folder = args.file_folder
+coordinate = args.crs
 x_lon_to_slice = args.longitude
 y_lat_to_slice = args.latitude
 time_to_slice = args.time
-
-time_to_slice = datetime.datetime.strptime(time_to_slice, "%Y-%m-%d %H%M%S")
+print(time_to_slice)
+time_to_slice = datetime.datetime.strptime(time_to_slice, "%Y-%m-%d:%H%M%S")
 print(type(time_to_slice))
 print(time_to_slice)
 
@@ -120,12 +125,24 @@ def concatenate_raster_files(dataset_names,output_joint_file_name):
 
     return joint_ds, date_list
 
-#file_names = ["Calib_rainfall_20150101-S000000-V06B_cut.bil", "Calib_rainfall_20150201-S000000-V06B_cut.bil"]
+def convert_crs_point(point_x, point_y, in_proj, out_proj):
+    in_pt = Point(point_x, point_y)
+    in_proj = pyproj.CRS(in_proj)
+    out_proj = pyproj.CRS(out_proj)
+    project =  pyproj.Transformer.from_crs(in_proj, out_proj, always_xy=True).transform
+    AoI_point = transform(project, in_pt)
+    return AoI_point
+
+# first we need to convert the point to the coordinate system that we want.
+# need to first check what the coordinate system of the area is
+
+
+
 file_names_sorted = sort_file_list(file_names)
 
 print(f'These are the files I am going to concatenate: {file_names}')
 output_joint_file_name = 'joint_ds_with_all_times.nc'
-print(output_joint_file_name)
+
 
 joint_ds, date_list = concatenate_raster_files(file_names_sorted, output_joint_file_name)
 print(f'I have concatenated all your files and created a time series')
@@ -135,7 +152,18 @@ print(f'This is the date list: {date_list}')
 # need to make this better as this is not necessarily the closest point
 time_selected = joint_ds.sel(time=time_to_slice)
 
-timeseries=output_precipitation_timeseries(x_lon_to_slice, y_lat_to_slice, output_joint_file_name)
+# first we need to convert the point to the coordinate system that we want.
+# need to first check what the coordinate system of the area is
+
+joint_ds = xr.open_dataset('joint_ds_with_all_times.nc', engine="rasterio")
+raster_crs = joint_ds.rio.crs
+
+converted_lat_lon = convert_crs_point(x_lon_to_slice, y_lat_to_slice, coordinate, raster_crs)
+x_converted = round(converted_lat_lon.x, 2)
+y_converted = round(converted_lat_lon.y,2)
+
+
+timeseries=output_precipitation_timeseries(x_converted, y_converted, output_joint_file_name)
 
 timeseries_df = pd.DataFrame(timeseries, columns=['precipitation_mm/s'])
 # need to add time datetime column
