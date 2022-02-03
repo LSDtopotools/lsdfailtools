@@ -1,10 +1,13 @@
 '''
-Author: Marina Ruiz Sanchez-Oro
+process_timeseries_files_pipeline.py
+
+Processes precipitation timeseries data from raster files downloaded from the
+NASA GPM mission.
+
+Author: Marina Ruiz Sanchez-Oro (MRSO)
 Date: 17/01/2022
 '''
 
-
-import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 import rioxarray
@@ -20,9 +23,6 @@ from shapely.ops import transform
 import pyproj
 
 parser = argparse.ArgumentParser()
-
-#-db DATABASE -u USERNAME -p PASSWORD -size 20000
-# 41parser.add_argument("-host", "--hostname", dest = "hostname", default = "xyz.edu", help="Server name")
 parser.add_argument("-f", "--file_folder", dest = "file_folder", help="Folder with the files")
 parser.add_argument("-c", "--crs", dest = "crs", help="Coordinate system in the format EPSG:XXXX")
 parser.add_argument("-x", "--x_lon",dest = "longitude", help="Longitude of point", type=int)
@@ -57,6 +57,21 @@ print(f'file folder: {file_folder},\
 
 
 def sort_file_list(file_list):
+    """
+    Sort list of files based on date given on the filename.
+
+    Parameters
+    ----------
+    file_list : list of str
+        List of files to sort.
+
+    Returns
+    ----------
+    file_list_sorted : list of str
+        List of sorted files.
+
+    Author: MRSO
+    """
     file_list_sorted=[]
     timeformat = "%Y%m%d" # this is how your timestamp looks like
     regex = re.compile("Calib_rainfall_([0-9]{8})-S([0-9]{6})")
@@ -74,6 +89,19 @@ def sort_file_list(file_list):
 
 
 def extract_datetime_from_file(file_name):
+    """
+    Extract date from a file name and convert it to a datetime object.
+
+    Parameters
+    ----------
+    file_name : str
+        Name of file to extract date from.
+
+    Returns
+    ----------
+    date_formatted : datetime
+        Date extracted from filename.
+    """
     date_file_1 = re.search("([0-9]{8})", file_name)
     hour_file_1 = re.search("(S[0-9]{6})",file_name)
     date_number_1 = date_file_1.group(0)
@@ -90,11 +118,42 @@ def extract_datetime_from_file(file_name):
 
 
 def output_precipitation_timeseries(lon, lat, netcdf_filename):
+    """
+    Extract a precipitation timeseries from a netCDF file given a lat, lon point.
+
+    Parameters
+    ----------
+    lon : int
+        Longitude.
+    lat : int
+        Latitude.
+    netcdf_filename : str
+        Name of netCDF (.nc) file to extract date from.
+
+    Returns
+    ----------
+    precip_timeseries : list of int
+        Timeseries of precipitation for the given lat, lon coordinates.
+    """
     joint_ds = xr.open_dataset(netcdf_filename, engine="rasterio")
-    precip_timeseries = joint_ds.sel(x=x_lon_to_slice, y = y_lat_to_slice, method="nearest").precipitation.to_numpy().ravel()
+    precip_timeseries = joint_ds.sel(x=lon, y = lat, method="nearest").precipitation.to_numpy().ravel()
     return precip_timeseries
 
 def output_precipitation_raster(time_to_slice, netcdf_filename):
+    """
+    Slice a netCDF file from a timeslice and create new netCDF file with the sliced data.
+
+    Parameters
+    ----------
+    time_to_slice : datetime
+        Date and time to slice from the data.
+    netcdf_filename : str
+        Name of netCDF (.nc) file to extract date from.
+
+    Returns
+    ----------
+    None
+    """
     # could potentially increase functionality by adding output data format: netcdf or raster
     joint_ds = xr.open_dataset(netcdf_filename, engine="rasterio")
     sliced_joint_ds = joint_ds.sel(time=time_to_slice).precipitation
@@ -103,7 +162,25 @@ def output_precipitation_raster(time_to_slice, netcdf_filename):
     #return sliced_joint_ds
 
 
-def concatenate_raster_files(dataset_names,output_joint_file_name):
+def concatenate_raster_files(dataset_names, output_joint_file_name):
+    """
+    Read from a list of raster files, concatenate them along the time direction\
+    and create a netCDF file.
+
+    Parameters
+    ----------
+    dataset_names : list of str
+        Names of the raster files to concatenate.
+    output_joint_file_name : str
+        Name of output file.
+
+    Returns
+    ----------
+    joint_ds : xarray dataset
+        Concatenated raster files.
+    date_list : list of datetime
+        Dates corresponding to the raster files.
+    """
     joint_ds_list = []
     date_list = []
     for i in range(len(dataset_names)):
@@ -121,11 +198,31 @@ def concatenate_raster_files(dataset_names,output_joint_file_name):
         date_list.append(date_file)
 
     joint_ds = xr.concat(joint_ds_list, dim='time')
+    joint_ds['precipitation'].attrs = {'description':'precipitation amount in mm/s'}
     joint_ds.to_netcdf(output_joint_file_name, mode='w', format='NETCDF3_64BIT')
 
     return joint_ds, date_list
 
 def convert_crs_point(point_x, point_y, in_proj, out_proj):
+    """
+    Change the coordinate system of a lat, lon point.
+
+    Parameters
+    ----------
+    point_x : int
+        Longitude coordinate.
+    point_y : int
+        Latitude coordinate.
+    in_proj : str
+        Coordinate system to transform from.
+    out_proj : str
+        Coordinate system to transform to.
+
+    Returns
+    ----------
+    AoI_point : shapely Point
+        Lat, lon point in new coordinate system.
+    """
     in_pt = Point(point_x, point_y)
     in_proj = pyproj.CRS(in_proj)
     out_proj = pyproj.CRS(out_proj)
